@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Runtime.Serialization;
+using System;
 
-public struct Stat
+[Serializable]
+public struct Stat : ISerializable
 {
 	/* Instance Vars and Accessors */
 
@@ -151,6 +152,18 @@ public struct Stat
 		this.hasMax = true;
 		this.maxValue = maxValue;
 	}
+	public Stat(SerializationInfo info, StreamingContext context) : this(0)
+	{
+		baseValue = info.GetInt32 ("base");
+		addValue = info.GetInt32 ("add");
+		multiValue = info.GetInt32 ("multi");
+		lockValue = info.GetInt32 ("lock");
+		locked = info.GetBoolean ("locked");
+		hasMin = info.GetBoolean ("hasMin");
+		minValue = info.GetInt32 ("min");
+		hasMax = info.GetBoolean ("hasMax");
+		maxValue = info.GetInt32 ("max");
+	}
 
 	/* Instance Methods */
 
@@ -203,11 +216,26 @@ public struct Stat
 			addValue = minValue;
 	}
 
+	// Procs whenever some value changes in the Stat that may affect the value output
 	public delegate void ChangedStat(Stat s);
 	public event ChangedStat statModified;
 	private void OnStatChanged()
 	{
 		if (statModified != null)
 			statModified (this);
+	}
+
+	// For serialization
+	public void GetObjectData(SerializationInfo info, StreamingContext context)
+	{
+		info.AddValue ("base", baseValue);
+		info.AddValue ("add", addValue);
+		info.AddValue ("multi", multiValue);
+		info.AddValue ("lock", lockValue);
+		info.AddValue ("locked", locked);
+		info.AddValue ("hasMin", hasMin);
+		info.AddValue ("min", minValue);
+		info.AddValue ("hasMax", hasMax);
+		info.AddValue ("max", maxValue);
 	}
 }
