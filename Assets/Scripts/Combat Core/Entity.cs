@@ -10,15 +10,15 @@ public class Entity : MonoBehaviour
 	/* Instance Vars */
 
 	// A resource pool that is deducted from when taking damage. Death occurs when it reaches 0.
-	private int health;
-	public Stat healthMax;
+	private float health;
+	public float healthMax;
 
 	// A resource pool that is deducted before health. Can regen after a delay.
-	private int shields;
-	public Stat shieldsMax;
-	public int shieldRegen;
+	private float shields;
+	public float shieldsMax;
+	public float shieldRegen;
 	private float shieldDelay;
-	public Stat shieldDelayMax;
+	public float shieldDelayMax;
 
 	// Each reduces the damage taken from their respective damage types
 	public Stat physResist;
@@ -53,22 +53,75 @@ public class Entity : MonoBehaviour
 	private List<Ability> abilities;
 
 	/* Static Methods */
-	public static void damageEntity(Entity e, int damage, DamageType dt, bool ignoreShields = false, params Status[] s)
+	public static void damageEntity(Entity victim, Entity attacker, float damage, DamageType dt, bool ignoreShields = false, params Status[] s)
 	{
 		if (damage < 0)
 			damage = 0;
 
-		//TODO damage method
+		//the actual damage value that will be subtracted from health/shields
+		float calcDamage = damage;
+
+		//do special dt-based effects and apply resistances
+		switch (dt)
+		{
+		case DamageType.PHYSICAL:
+			calcDamage /= (float)victim.physResist;
+			break;
+		case DamageType.ELECTRIC:
+			calcDamage /= (float)victim.elecResist;
+			//TODO special electric dt effect
+			break;
+		case DamageType.BIO:
+			calcDamage /= (float)victim.biolResist;
+			//TODO special biological dt effect
+			break;
+		case DamageType.CRYO:
+			calcDamage /= (float)victim.cryoResist;
+			//TODO specal cryo dt effect
+			break;
+		case DamageType.PYRO:
+			calcDamage /= (float)victim.pyroResist;
+			//TODO special pyro dt effect
+			break;
+		case DamageType.VOID:
+			calcDamage /= (float)victim.voidResist;
+			//TODO special void dt effect
+			break;
+		}
+
+		bool hitShields = victim.shields > 0f;
+		if (hitShields)
+		{
+			victim.shields -= calcDamage;
+			if (victim.shields <= 0f)
+			{
+				victim.shields = 0f;
+				victim.OnShieldsDown ();
+				victim.shieldDelay = victim.shieldDelayMax;
+			}
+		}
+		else
+		{
+			victim.health -= calcDamage;
+			if (victim.health <= 0f)
+			{
+				victim.health = 0f;
+				victim.OnDeath ();
+			}
+		}
+
+		victim.OnDamageTaken (attacker, damage, calcDamage, dt, hitShields);
+		attacker.OnDamageDealt (victim, damage, calcDamage, dt, hitShields);
 	}
 
-	public static void healEntity(Entity e, int healAmount)
+	public static void healEntity(Entity e, float healAmount)
 	{
-		if (healAmount < 0)
-			healAmount = 0;
+		if (healAmount < 0f)
+			healAmount = 0f;
 		e.health += healAmount;
-		if (e.health > e.healthMax.value)
-			e.health = e.healthMax.value;
-
+		if (e.health > e.healthMax)
+			e.health = e.healthMax;
+		
 		//TODO heal effect
 	}
 
@@ -76,14 +129,14 @@ public class Entity : MonoBehaviour
 	public void Awake()
 	{
 		// Setup defaults
-		healthMax = new Stat(75, 0);
-		health = healthMax.value;
+		healthMax = 75f;
+		health = healthMax;
 
-		shieldsMax = new Stat (25, 0);
-		shields = shieldsMax.value;
-		shieldRegen = 1;
-		shieldDelayMax = new Stat (5, 0);
-		shieldDelay = shieldDelayMax.value;
+		shieldsMax = 25f;
+		shields = shieldsMax;
+		shieldRegen = 1f;
+		shieldDelayMax = 5f;
+		shieldDelay = 0f;
 
 		physResist = new Stat (0, 0, 100);
 		elecResist = new Stat (0, 0, 100);
@@ -158,5 +211,58 @@ public class Entity : MonoBehaviour
 		return rooted.value > 0;
 	}
 
+	// --Hook Callers--
 
+	// This Entity took damage
+	private void OnDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	{
+		foreach (Status s in statuses)
+			s.OnDamageTaken (this, attacker, rawDamage, calcDamage, dt, hitShields);
+
+		if (tookDamage != null)
+			tookDamage (this, attacker, rawDamage, calcDamage, dt, hitShields);
+	}
+
+	// This Entity dealt damage
+	private void OnDamageDealt(Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	{
+		foreach (Status s in statuses)
+			s.OnDamageDealt (this, victim, rawDamage, calcDamage, dt, hitShields);
+
+		if (tookDamage != null)
+			dealtDamage (victim, this, rawDamage, calcDamage, dt, hitShields);
+	}
+
+	// This Entity has died
+	private void OnDeath()
+	{
+		foreach (Status s in statuses)
+			s.OnDeath (this);
+		
+		if (entityDied != null)
+			entityDied ();
+	}
+
+	// Shields have fallen to zero
+	private void OnShieldsDown()
+	{
+		foreach (Status s in statuses)
+			s.OnShieldsDown (this);
+
+		if (shieldsBroken != null)
+			shieldsBroken ();
+	}
+
+	//TODO add the rest of the hook callers, delegates, and events
+
+	/* Delegates and Events */
+	public delegate void EntityAttacked(Entity victim, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields);
+	public event EntityAttacked tookDamage;
+	public event EntityAttacked dealtDamage;
+
+	public delegate void EntityDeath();
+	public event EntityDeath entityDied;
+
+	public delegate void EntityShieldsDown();
+	public event EntityShieldsDown shieldsBroken;
 }

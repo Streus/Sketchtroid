@@ -11,6 +11,7 @@ public class Controller : MonoBehaviour
 
 	/* Instance Vars */
 	private Entity self;
+	private Animator anim;
 
 	/* Static Methods */
 
@@ -19,5 +20,6 @@ public class Controller : MonoBehaviour
 	public void Awake()
 	{
 		self = GetComponent<Entity> ();
+		anim = GetComponent<Animator> ();
 	}
 }

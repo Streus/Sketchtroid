@@ -73,7 +73,7 @@ public class Ability : ISerializable
 		this.preAnim = preAnim;
 		this.postAnim = postAnim;
 	}
-	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.effectName, a.checkName, a.preAnim, a.postAnim) { }
+	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ }
 	public Ability(SerializationInfo info, StreamingContext context)
 	{
 		name = info.GetString ("name");
@@ -155,11 +155,24 @@ public class Ability : ISerializable
 	// Equiv checks
 	public override bool Equals (object obj)
 	{
-		return this.name.Equals ((Ability)obj);
+		return this.name.Equals (((Ability)obj).name);
 	}
 	public override int GetHashCode ()
 	{
 		return base.GetHashCode ();
+	}
+
+	// String representation
+	public override string ToString ()
+	{
+		return name + "\n" +
+		desc + "\n" +
+		"Icon: " + iconPath + "\n" +
+		"Cooldown: " + cooldownCurr.ToString ("#00.0") + " / " + cooldownMax.ToString ("#00.0") + "\n" +
+		"Effect: " + effectName + "\n" +
+		"Prereq: " + checkName + "\n" +
+		"PreAnim: " + preAnim + "\n" +
+		"PostAnim: " + postAnim + "\n";
 	}
 
 	/* Use Effects */

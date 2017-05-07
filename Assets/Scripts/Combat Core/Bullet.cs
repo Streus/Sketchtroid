@@ -11,7 +11,7 @@ public enum DamageType
 {
 	PHYSICAL,
 	ELECTRIC,
-	BIOLOGICAL,
+	BIO,
 	CRYO,
 	PYRO,
 	VOID
