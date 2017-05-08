@@ -65,26 +65,26 @@ public class Entity : MonoBehaviour
 		switch (dt)
 		{
 		case DamageType.PHYSICAL:
-			calcDamage /= (float)victim.physResist;
+			calcDamage /= (float)victim.physResist.value;
 			break;
 		case DamageType.ELECTRIC:
-			calcDamage /= (float)victim.elecResist;
+			calcDamage /= (float)victim.elecResist.value;
 			//TODO special electric dt effect
 			break;
 		case DamageType.BIO:
-			calcDamage /= (float)victim.biolResist;
+			calcDamage /= (float)victim.biolResist.value;
 			//TODO special biological dt effect
 			break;
 		case DamageType.CRYO:
-			calcDamage /= (float)victim.cryoResist;
+			calcDamage /= (float)victim.cryoResist.value;
 			//TODO specal cryo dt effect
 			break;
 		case DamageType.PYRO:
-			calcDamage /= (float)victim.pyroResist;
+			calcDamage /= (float)victim.pyroResist.value;
 			//TODO special pyro dt effect
 			break;
 		case DamageType.VOID:
-			calcDamage /= (float)victim.voidResist;
+			calcDamage /= (float)victim.voidResist.value;
 			//TODO special void dt effect
 			break;
 		}
