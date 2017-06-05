@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Entity : MonoBehaviour
+public class Entity : MonoBehaviour//, IReapable TODO implement this eventually
 {
 	/* Static Vars */
 

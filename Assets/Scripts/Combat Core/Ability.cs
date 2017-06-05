@@ -178,10 +178,12 @@ public class Ability : ISerializable
 	/* Use Effects */
 
 	//TODO add ability effects here
+	//apply each with [Preserve] to prevent linker from removing methods
 
 	/* Prereq Checks */
 
 	//TODO add custom prerequisite checks here
+	//apply each with [Preserve] to prevent linker from removing methods
 
 	/* Delegates and Events */
 

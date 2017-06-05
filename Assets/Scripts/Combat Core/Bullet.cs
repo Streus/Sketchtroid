@@ -75,7 +75,12 @@ public class Bullet : MonoBehaviour
 		physbody.AddForce (transform.up * movespeed, ForceMode2D.Impulse);
 	}
 
-	public void Update()
+	public virtual void Start()
+	{
+
+	}
+
+	public virtual void Update()
 	{
 		duration -= Time.deltaTime;
 		if (duration <= 0f)
@@ -84,27 +89,54 @@ public class Bullet : MonoBehaviour
 		}
 	}
 
-	public void FixedUpdate()
+	public virtual void FixedUpdate()
 	{
 
 	}
 
-	public void LateUpdate()
+	public virtual void LateUpdate()
 	{
 
 	}
 
-	public void OnTriggerEnter2D (Collider2D col)
+	public virtual void OnTriggerEnter2D (Collider2D col)
 	{
-		
+		Entity e = col.GetComponent<Entity> ();
+		IInteractable i = col.GetComponent<IInteractable> ();
+		if (e != null)
+		{
+			Entity.damageEntity (e, source, damage, damageType);
+			OnHit (col, e);
+			if (destroyOnHit)
+				OnDeath ();
+		}
+		else if (i != null)
+		{
+			if (i.getKeyType () == damageType && i.interactable)
+			{
+				i.OnInteract ();
+			}
+		}
+		else if (col.CompareTag ("Destr"))
+		{
+
+		}
+		else if (col.CompareTag ("Indes"))
+		{
+			OnDeath ();
+		}
 	}
 
-	public void OnHit(Collider2D col, Entity hit)
+	public virtual void OnEntHit(Collider2D col, Entity hit)
 	{
 
 	}
+	public void OnHit(Collider2D col)
+	{
+		OnHit (col, null);
+	}
 
-	public void OnDeath()
+	public virtual void OnDeath()
 	{
 
 
@@ -128,9 +160,10 @@ public enum Faction
 	ENEMY_2
 }
 
-/* Same story */
+/* Same story as above */
 public enum DamageType
 {
+	NONE,
 	PHYSICAL,
 	ELECTRIC,
 	BIO,
