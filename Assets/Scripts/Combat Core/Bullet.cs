@@ -103,23 +103,26 @@ public class Bullet : MonoBehaviour
 	{
 		Entity e = col.GetComponent<Entity> ();
 		IInteractable i = col.GetComponent<IInteractable> ();
+		IDestructable d = col.GetComponent<IDestructable> ();
 		if (e != null)
 		{
 			Entity.damageEntity (e, source, damage, damageType);
-			OnHit (col, e);
+			OnEntHit (col, e);
 			if (destroyOnHit)
 				OnDeath ();
 		}
 		else if (i != null)
 		{
+			OnHit (col);
 			if (i.getKeyType () == damageType && i.interactable)
 			{
 				i.OnInteract ();
 			}
 		}
-		else if (col.CompareTag ("Destr"))
+		else if (d != null)
 		{
-
+			OnHit (col);
+			d.damage (damage);
 		}
 		else if (col.CompareTag ("Indes"))
 		{
@@ -133,7 +136,7 @@ public class Bullet : MonoBehaviour
 	}
 	public void OnHit(Collider2D col)
 	{
-		OnHit (col, null);
+		OnEntHit (col, null);
 	}
 
 	public virtual void OnDeath()

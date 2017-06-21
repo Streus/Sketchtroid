@@ -20,10 +20,17 @@ public class RegisteredObject : MonoBehaviour
 		get { return registeredID; }
 	}
 
+	/* Static Methods */
+	public static RegisteredObject[] getObjects()
+	{
+		return objects.ToArray ();
+	}
+
 	/* Instance Methods */
 	public void Reset()
 	{
-		registeredID = (uint)DateTime.Now.Ticks;
+		long root = ((uint)DateTime.Now.Ticks) + (DateTime.Now.Ticks >> 32);
+		registeredID = (uint)root;
 	}
 
 	public void Awake()
@@ -34,11 +41,6 @@ public class RegisteredObject : MonoBehaviour
 	public void OnDestroy()
 	{
 		objects.Remove (this);
-	}
-
-	public RegisteredObject[] getObjects()
-	{
-		return objects.ToArray ();
 	}
 
 	// Get the reapable script attached to this GO and return its seed

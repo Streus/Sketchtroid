@@ -67,14 +67,14 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 		Dictionary<uint, ISerializable> currData;
 
 		//if no data is saved, exit the method
-		if (!scenes.TryGetValue (curr, currData))
+		if (!scenes.TryGetValue (curr, out currData))
 			return;
 
 		//iterate over the list of ROs and pass them data
 		foreach (RegisteredObject ro in RegisteredObject.getObjects())
 		{
 			ISerializable data;
-			if (!currData.TryGetValue (ro.rID, data))
+			if (!currData.TryGetValue (ro.rID, out data))
 				throw new ApplicationException ("RO (" + ro.rID + ") failed to save data!");
 			ro.sow (data);
 		}

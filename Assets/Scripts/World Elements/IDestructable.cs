@@ -3,8 +3,7 @@ using System.Collections;
 
 public interface IDestructable
 {
-	float health{ get; private set; }
+	float health{ get; }
 
 	void damage(float amount);
 }
-
