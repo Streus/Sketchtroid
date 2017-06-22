@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System;
 using System.Runtime.Serialization;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 public class RegisteredObject : MonoBehaviour
 {
 	/* Static Vars */
-	private static List<RegisteredObject> objects;
+	private static List<RegisteredObject> directory;
+	static RegisteredObject()
+	{ 
+		directory = new List<RegisteredObject>();
+	}
 
 	/* Instance Vars */
+	[SerializeField]
 	private uint registeredID;
 	public uint rID
 	{
@@ -23,7 +24,7 @@ public class RegisteredObject : MonoBehaviour
 	/* Static Methods */
 	public static RegisteredObject[] getObjects()
 	{
-		return objects.ToArray ();
+		return directory.ToArray ();
 	}
 
 	/* Instance Methods */
@@ -35,12 +36,14 @@ public class RegisteredObject : MonoBehaviour
 
 	public void Awake()
 	{
-		objects.Add (this);
+		directory.Add (this);
+		Debug.Log ("Added " + rID.ToString ("0000000000") + " to directory."); //DEBUG
 	}
 
 	public void OnDestroy()
 	{
-		objects.Remove (this);
+		directory.Remove (this);
+		Debug.Log ("Removed " + rID.ToString ("0000000000") + " from directory."); //DEBUG
 	}
 
 	// Get the reapable script attached to this GO and return its seed
@@ -48,7 +51,7 @@ public class RegisteredObject : MonoBehaviour
 	{
 		IReapable blade = GetComponent<IReapable> ();
 		if (blade == null)
-			throw new ReapException ();
+			throw new ReapException ("Registered Object has no values to reap");
 		return blade.reap ();
 			
 	}
@@ -58,9 +61,12 @@ public class RegisteredObject : MonoBehaviour
 	{
 		IReapable hole = GetComponent<IReapable> ();
 		if (hole == null)
-			throw new ReapException ();
+			throw new ReapException ("Registered Object has nowhere to sow values");
 		hole.sow (seed);
 	}
 }
 
-public class ReapException : ApplicationException { }
+public class ReapException : ApplicationException
+{
+	public ReapException(string message) : base(message) { }
+}

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Runtime.Serialization;
 
-public class Entity : MonoBehaviour//, IReapable TODO implement this eventually
+public class Entity : MonoBehaviour, IReapable
 {
 	/* Static Vars */
 
@@ -47,10 +48,10 @@ public class Entity : MonoBehaviour//, IReapable TODO implement this eventually
 	private List<Status> statuses;
 
 	// The Extensions currently applied to this Entity
-	private List<Extension> extensions;
+	public List<Extension> extensions;
 
 	// The Abilities that this Entity
-	private List<Ability> abilities;
+	public List<Ability> abilities;
 
 	/* Static Methods */
 	public static void damageEntity(Entity victim, Entity attacker, float damage, DamageType dt, bool ignoreShields = false, params Status[] s)
@@ -153,12 +154,24 @@ public class Entity : MonoBehaviour//, IReapable TODO implement this eventually
 		freezeProgress = new Stat (0, 0);
 
 		statuses = new List<Status> ();
-		extensions = new List<Extension> (3);
-		abilities = new List<Ability> (3);
-
 
 		// Load values if this Entity has a profile saved
 		//TODO
+	}
+
+	// --- IReapable Methods ---
+	public void sow(ISerializable seed)
+	{
+		//TODO sow code
+	}
+
+	public ISerializable reap()
+	{
+		Seed seed = new Seed (gameObject);
+
+		//TODO reap code
+
+		return seed;
 	}
 
 	public void Start()
@@ -211,7 +224,7 @@ public class Entity : MonoBehaviour//, IReapable TODO implement this eventually
 		return rooted.value > 0;
 	}
 
-	// --Hook Callers--
+	// --- Hook Callers ---
 
 	// This Entity took damage
 	private void OnDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
@@ -265,4 +278,28 @@ public class Entity : MonoBehaviour//, IReapable TODO implement this eventually
 
 	public delegate void EntityShieldsDown();
 	public event EntityShieldsDown shieldsBroken;
+
+	/* Inner Classes */
+	private class Seed : SeedBase //TODO Entity.Seed class
+	{
+		/* Instance Vars */
+
+
+		/* Constructors */
+		public Seed(GameObject subject) : base(subject)
+		{
+
+		}
+		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+
+		}
+
+		public override void GetObjectData (SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData (info, context);
+
+
+		}
+	}
 }

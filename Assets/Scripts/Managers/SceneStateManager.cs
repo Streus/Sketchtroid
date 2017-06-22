@@ -9,14 +9,11 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 {
 	/* Static Vars */
 	private static SceneStateManager _instance;
-	public static SceneStateManager instance
+	public static SceneStateManager instance()
 	{
-		get
-		{
-			if (_instance == null)
-				_instance = new SceneStateManager ();
-			return _instance;
-		}
+		if (_instance == null)
+			_instance = new SceneStateManager ();
+		return _instance;
 	}
 
 	/* Instance Vars */
@@ -46,6 +43,8 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 	// Save the data for the current scene
 	private void newSceneLoaded(Scene next, LoadSceneMode mode)
 	{
+		Debug.Log ("Saving current Scene."); //DEBUG
+
 		//create a dictionary for the incoming data
 		Dictionary<uint, ISerializable> currData = new Dictionary<uint, ISerializable>();
 
@@ -61,6 +60,8 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 	// Load saved data into ROs in the new scene
 	private void activeSceneTransitioned(Scene prev, Scene curr)
 	{
+		Debug.Log ("Loading values for new Scene."); //DEBUG
+
 		if (!scenes.ContainsKey (prev))
 			throw new ApplicationException ("Leaving a scene (" + prev.name + ") that did not save any data!");
 

@@ -11,7 +11,7 @@ public class Extension : ISerializable
 	private readonly string prefabName;
 
 	// The GO this Extension handles
-	private GameObject inst;
+	public GameObject inst;
 
 	// The Entity that handles this Extension
 	private readonly Entity parent;
