@@ -155,8 +155,7 @@ public class Entity : MonoBehaviour, IReapable
 
 		statuses = new List<Status> ();
 
-		// Load values if this Entity has a profile saved
-		//TODO
+		Debug.Log ("Entity Awake");
 	}
 
 	// --- IReapable Methods ---
@@ -176,7 +175,7 @@ public class Entity : MonoBehaviour, IReapable
 
 	public void Start()
 	{
-
+		Debug.Log ("Entity Start");
 	}
 
 	public void Update()

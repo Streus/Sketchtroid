@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+
 [CustomEditor(typeof(RegisteredObject))]
 public class ROProperty : Editor
 {
@@ -11,7 +12,11 @@ public class ROProperty : Editor
 	public void OnEnable()
 	{
 		ro = (RegisteredObject)target;
-		tar = new SerializedObject (ro);
+		try
+		{
+			tar = new SerializedObject (ro);
+		}
+		catch(System.NullReferenceException nre) { }
 		//uID = target.FindProperty ("rID");
 	}
 
@@ -20,5 +25,8 @@ public class ROProperty : Editor
 		tar.Update ();
 
 		EditorGUILayout.LabelField ("ID: " + ro.rID.ToString("0000000000"));
+
+		if (GUI.changed)
+			EditorUtility.SetDirty (ro);
 	}
 }

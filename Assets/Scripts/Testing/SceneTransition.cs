@@ -9,7 +9,10 @@ public class SceneTransition : MonoBehaviour
 	public void Awake()
 	{
 		if (_instance == null)
+		{
 			DontDestroyOnLoad (gameObject);
+			_instance = this;
+		}
 		else
 			Destroy (gameObject);
 
@@ -22,12 +25,11 @@ public class SceneTransition : MonoBehaviour
 		Scene curr = SceneManager.GetActiveScene ();
 		string nextRoom = "";
 
-		if (curr.Equals (SceneManager.GetSceneByName ("test1")))
+		if (curr.name.Equals("test1"))
 			nextRoom = "test2";
-		else if (curr.Equals (SceneManager.GetSceneByName ("test2")))
+		else if (curr.name.Equals("test2"))
 			nextRoom = "test1";
-		
-		SceneManager.LoadScene (nextRoom, LoadSceneMode.Single);
-		SceneManager.SetActiveScene (SceneManager.GetSceneByName(nextRoom));
+
+		SceneStateManager.instance().transitionTo (nextRoom, LoadSceneMode.Single);
 	}
 }

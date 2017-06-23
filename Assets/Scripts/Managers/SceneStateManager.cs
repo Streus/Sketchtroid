@@ -17,7 +17,7 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 	}
 
 	/* Instance Vars */
-	private Dictionary<Scene, Dictionary<uint, ISerializable>> scenes;
+	private Dictionary<string, Dictionary<uint, ISerializable>> scenes;
 
 	/* Static Methods */
 
@@ -26,23 +26,23 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 	private SceneStateManager()
 	{
 		// First time instantiation
-		scenes = new Dictionary<Scene, Dictionary<uint, ISerializable>>();
+		scenes = new Dictionary<string, Dictionary<uint, ISerializable>>();
 		SceneManager.activeSceneChanged += activeSceneTransitioned;
-		SceneManager.sceneLoaded += newSceneLoaded;
 	}
 
 	/* Destructor */
 	~SceneStateManager()
 	{
 		SceneManager.activeSceneChanged -= activeSceneTransitioned;
-		SceneManager.sceneLoaded -= newSceneLoaded;
 	}
 
 	/* Instance Methods */
 
 	// Save the data for the current scene
-	private void newSceneLoaded(Scene next, LoadSceneMode mode)
+	public void transitionTo(string nextName, LoadSceneMode mode)
 	{
+		SceneManager.LoadScene(nextName, mode);
+
 		Debug.Log ("Saving current Scene."); //DEBUG
 
 		//create a dictionary for the incoming data
@@ -53,8 +53,11 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 			currData.Add (ro.rID, ro.reap ());
 
 		//replace any old data with the new data
-		scenes.Remove (SceneManager.GetActiveScene ());
-		scenes.Add (SceneManager.GetActiveScene (), currData);
+		scenes.Remove (SceneManager.GetActiveScene().name);
+		scenes.Add (SceneManager.GetActiveScene().name, currData);
+
+		//Do the scene transition
+		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
 	}
 
 	// Load saved data into ROs in the new scene
@@ -62,13 +65,13 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 	{
 		Debug.Log ("Loading values for new Scene."); //DEBUG
 
-		if (!scenes.ContainsKey (prev))
+		if (prev.name != null && !scenes.ContainsKey (prev.name))
 			throw new ApplicationException ("Leaving a scene (" + prev.name + ") that did not save any data!");
 
 		Dictionary<uint, ISerializable> currData;
 
 		//if no data is saved, exit the method
-		if (!scenes.TryGetValue (curr, out currData))
+		if (!scenes.TryGetValue (curr.name, out currData))
 			return;
 
 		//iterate over the list of ROs and pass them data

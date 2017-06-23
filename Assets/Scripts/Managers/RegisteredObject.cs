@@ -37,13 +37,11 @@ public class RegisteredObject : MonoBehaviour
 	public void Awake()
 	{
 		directory.Add (this);
-		Debug.Log ("Added " + rID.ToString ("0000000000") + " to directory."); //DEBUG
 	}
 
 	public void OnDestroy()
 	{
 		directory.Remove (this);
-		Debug.Log ("Removed " + rID.ToString ("0000000000") + " from directory."); //DEBUG
 	}
 
 	// Get the reapable script attached to this GO and return its seed
@@ -51,9 +49,9 @@ public class RegisteredObject : MonoBehaviour
 	{
 		IReapable blade = GetComponent<IReapable> ();
 		if (blade == null)
-			throw new ReapException ("Registered Object has no values to reap");
+			throw new ReapException ("Registered Object " + ToString() + " has no values to reap");
+		Debug.Log (ToString () + " reaped values."); //DEBUG
 		return blade.reap ();
-			
 	}
 
 	// Take a seed and pass it along to the reapable script attached to this GO
@@ -61,8 +59,14 @@ public class RegisteredObject : MonoBehaviour
 	{
 		IReapable hole = GetComponent<IReapable> ();
 		if (hole == null)
-			throw new ReapException ("Registered Object has nowhere to sow values");
+			throw new ReapException ("Registered Object " + ToString() + " has nowhere to sow values");
+		Debug.Log (ToString () + " sowed values.");
 		hole.sow (seed);
+	}
+
+	public override string ToString ()
+	{
+		return rID.ToString ("0000000000");
 	}
 }
 
