@@ -110,6 +110,8 @@ public class Status : ISerializable
 	// Called by the subject during the update loop
 	public void updateDuration(Entity subject, float time)
 	{
+		OnUpdate (subject, time);
+
 		duration -= time;
 		if (duration <= 0f)
 		{
@@ -200,7 +202,7 @@ public class Status : ISerializable
 	}
 
 	// Called when the subject is healed
-	public void OnHealed(Entity subject, int healAmount)
+	public void OnHealed(Entity subject, float healAmount)
 	{
 		foreach (StatusComponent sc in components)
 			sc.OnHealed (subject, healAmount);

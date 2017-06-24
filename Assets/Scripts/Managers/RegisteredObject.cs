@@ -60,7 +60,7 @@ public class RegisteredObject : MonoBehaviour
 		IReapable hole = GetComponent<IReapable> ();
 		if (hole == null)
 			throw new ReapException ("Registered Object " + ToString() + " has nowhere to sow values");
-		Debug.Log (ToString () + " sowed values.");
+		Debug.Log (ToString () + " sowed values."); //DEBUG
 		hole.sow (seed);
 	}
 

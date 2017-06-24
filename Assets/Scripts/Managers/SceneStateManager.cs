@@ -5,7 +5,9 @@ using UnityEngine.SceneManagement;
 using System.Runtime.Serialization;
 using System;
 
-public class SceneStateManager// : ISerializable TODO make SSM serializable too
+//TODO set up a way to update reset timers using Unity's deltaTime
+[Serializable]
+public class SceneStateManager : ISerializable
 {
 	/* Static Vars */
 	private static SceneStateManager _instance;
@@ -18,16 +20,27 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 
 	/* Instance Vars */
 	private Dictionary<string, Dictionary<uint, ISerializable>> scenes;
+	private Dictionary<string, float> resetTimers;
+
+	private const float RESET_TIMER_MAX = 900f;
 
 	/* Static Methods */
 
 
-	/* Constructor */
+	/* Constructors */
 	private SceneStateManager()
 	{
 		// First time instantiation
 		scenes = new Dictionary<string, Dictionary<uint, ISerializable>>();
+		resetTimers = new Dictionary<string, float> ();
 		SceneManager.activeSceneChanged += activeSceneTransitioned;
+	}
+	public SceneStateManager(SerializationInfo info, StreamingContext context)
+	{
+		Type scene_type = typeof(Dictionary<string, Dictionary<uint, ISerializable>>);
+		Type rt_type = typeof(Dictionary<string, float>);
+		scenes = (Dictionary<string, Dictionary<uint, ISerializable>>)info.GetValue ("scenes", scene_type);
+		resetTimers = (Dictionary<string, float>)info.GetValue ("resetTimers", rt_type);
 	}
 
 	/* Destructor */
@@ -54,7 +67,9 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 
 		//replace any old data with the new data
 		scenes.Remove (SceneManager.GetActiveScene().name);
+		resetTimers.Remove (SceneManager.GetActiveScene ().name);
 		scenes.Add (SceneManager.GetActiveScene().name, currData);
+		resetTimers.Add (SceneManager.GetActiveScene ().name, RESET_TIMER_MAX);
 
 		//Do the scene transition
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -66,7 +81,7 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 		Debug.Log ("Loading values for new Scene."); //DEBUG
 
 		if (prev.name != null && !scenes.ContainsKey (prev.name))
-			throw new ApplicationException ("Leaving a scene (" + prev.name + ") that did not save any data!");
+			Debug.LogError ("Leaving a scene (" + prev.name + ") that did not save any data!"); //DEBUG
 
 		Dictionary<uint, ISerializable> currData;
 
@@ -78,9 +93,16 @@ public class SceneStateManager// : ISerializable TODO make SSM serializable too
 		foreach (RegisteredObject ro in RegisteredObject.getObjects())
 		{
 			ISerializable data;
-			if (!currData.TryGetValue (ro.rID, out data))
-				throw new ApplicationException ("RO (" + ro.rID + ") failed to save data!");
-			ro.sow (data);
+			if (currData.TryGetValue (ro.rID, out data))
+				ro.sow (data);
+			else
+				Debug.LogError ("RO (" + ro.rID + ") failed to save data!"); //DEBUG
 		}
+	}
+
+	public void GetObjectData(SerializationInfo info, StreamingContext context)
+	{
+		info.AddValue ("scenes", scenes);
+		info.AddValue ("resetTimers", resetTimers);
 	}
 }

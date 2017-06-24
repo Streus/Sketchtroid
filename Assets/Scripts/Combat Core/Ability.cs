@@ -114,13 +114,16 @@ public class Ability : ISerializable
 	// Update the cooldown in accordance with the time the last update took
 	public void updateCooldown(float time)
 	{
+		if (!active)
+			return;
+
 		_cooldownCurr -= time;
 		if (_cooldownCurr < 0f)
 			_cooldownCurr = 0f;
 	}
 
 	// Called to use the Ability
-	public bool use(Entity subject, Vector2 targetPosition)
+	public bool use(Entity subject, Vector2 targetPosition, params object[] args)
 	{
 		if (!isReady ())
 			return false;
@@ -128,7 +131,7 @@ public class Ability : ISerializable
 		if (!check (subject))
 			return false;
 
-		return effect (subject, targetPosition);
+		return effect (subject, targetPosition, args);
 	}
 
 	// For serialization
@@ -188,7 +191,7 @@ public class Ability : ISerializable
 	/* Delegates and Events */
 
 	// The effect that will occur when this ability is used
-	private delegate bool UseEffect(Entity subject, Vector2 targetPosition);
+	private delegate bool UseEffect(Entity subject, Vector2 targetPosition, params object[] args);
 
 	// A secondary boolean check to run before running an effect
 	private delegate bool PrereqCheck(Entity Subject);

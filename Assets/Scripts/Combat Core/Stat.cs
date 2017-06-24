@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using System;
+using UnityEngine;
 
 [Serializable]
 public struct Stat : ISerializable
@@ -7,6 +8,7 @@ public struct Stat : ISerializable
 	/* Instance Vars and Accessors */
 
 	// The imutable inital value of this Stat
+	[SerializeField]
 	private int baseValue;
 
 	// Added onto the base
@@ -16,6 +18,7 @@ public struct Stat : ISerializable
 	private float multiValue;
 
 	// A value that can replace the calculated value
+	[SerializeField]
 	private int lockValue;
 
 	// Is this Stat locked to lockValue?

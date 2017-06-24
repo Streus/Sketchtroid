@@ -7,5 +7,7 @@ public interface IReapable
 
 	// Take a serializable class and attempt to use it to fill values
 	void sow(ISerializable seed);
-}
 
+	// "Destroyed" objects will be removed by the SSM
+	bool destroyed { get; set; }
+}

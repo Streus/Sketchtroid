@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-
+#pragma warning disable 0168
 [CustomEditor(typeof(RegisteredObject))]
 public class ROProperty : Editor
 {

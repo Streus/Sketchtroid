@@ -58,7 +58,7 @@ public class StatusComponent : ISerializable
 	public virtual void OnRooted(Entity subject){ }
 
 	// Called when the subject is healed
-	public virtual void OnHealed(Entity subject, int healAmount){ }
+	public virtual void OnHealed(Entity subject, float healAmount){ }
 
 	// For serialization
 	public void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -66,7 +66,7 @@ public class Bullet : MonoBehaviour
 	}
 
 	/* Instance Methods */
-	public void Awake()
+	public virtual void Awake()
 	{
 		colbody = GetComponent<Collider2D> ();
 		physbody = GetComponent<Rigidbody2D> ();
@@ -99,11 +99,18 @@ public class Bullet : MonoBehaviour
 
 	}
 
-	public virtual void OnTriggerEnter2D (Collider2D col)
+	public void OnTriggerEnter2D (Collider2D col)
 	{
 		Entity e = col.GetComponent<Entity> ();
+		CollisionRelay relay = col.GetComponent<CollisionRelay> ();
 		IInteractable i = col.GetComponent<IInteractable> ();
-		IDestructable d = col.GetComponent<IDestructable> ();
+		Destructable d = col.GetComponent<Destructable> ();
+
+		if (relay != null && e == null)
+		{
+			e = relay.logCollision (this);
+		}
+
 		if (e != null)
 		{
 			Entity.damageEntity (e, source, damage, damageType);
@@ -124,25 +131,35 @@ public class Bullet : MonoBehaviour
 			OnHit (col);
 			d.damage (damage);
 		}
-		else if (col.CompareTag ("Indes"))
-		{
-			OnDeath ();
-		}
 	}
 
-	public virtual void OnEntHit(Collider2D col, Entity hit)
+	// Collision with an indestructable target
+	public void OnCollisionEnter2D(Collision2D col)
+	{
+		OnHit (col.collider);
+
+		IInteractable i = col.collider.GetComponent<IInteractable> ();
+		if (i != null)
+		{
+			if (i.getKeyType () == damageType && i.interactable)
+			{
+				i.OnInteract ();
+			}
+		}
+		OnDeath ();
+	}
+
+	protected virtual void OnEntHit(Collider2D col, Entity hit)
 	{
 
 	}
-	public void OnHit(Collider2D col)
+	protected void OnHit(Collider2D col)
 	{
 		OnEntHit (col, null);
 	}
 
 	public virtual void OnDeath()
 	{
-
-
 		//finish up by destroying this bullet
 		Destroy(gameObject);
 	}
@@ -150,8 +167,15 @@ public class Bullet : MonoBehaviour
 	// Create stuff in here and I'll knife you
 	public void OnDestroy()
 	{
-
+		// Call the bulletDied event, which most of the time will remove this bullet
+		//from any collision logs it might be in
+		if (bulletDied != null)
+			bulletDied (this);
 	}
+
+	// Event for Entities to listen to so they can cull their collison logs
+	public delegate void BulletDeath(Bullet corpse);
+	public event BulletDeath bulletDied;
 }
 
 /* Threw this here because indiv. file for it is a waste */

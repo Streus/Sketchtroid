@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(Entity))]
 [RequireComponent(typeof(Animator))]
@@ -26,7 +27,7 @@ public class Controller : MonoBehaviour
 		physbody = GetComponent<Rigidbody2D> ();
 	}
 
-	private bool isUpdating()
+	protected bool isUpdating()
 	{
 		return physbody.simulated && !self.isStunned ();
 	}
@@ -43,6 +44,12 @@ public class Controller : MonoBehaviour
 			return;
 	}
 
+	public virtual void LateUpdate()
+	{
+		if (!isUpdating ())
+			return;
+	}
+
 	protected void facePoint(Vector2 point)
 	{
 		Quaternion rot = Quaternion.LookRotation (transform.position - (Vector3)point, Vector3.back);
@@ -54,5 +61,30 @@ public class Controller : MonoBehaviour
 	{
 		if (transform != null)
 			facePoint (transform.position);
+	}
+
+	protected void faceTargetLeading(Transform target, float bulletSpeed)
+	{
+		Rigidbody2D body = target.GetComponent<Rigidbody2D> ();
+		if (body == null)
+			throw new ArgumentException ("Tried to lead a velocity-less target.");
+
+		float stepsToCollision = Vector2.Distance (transform.position, target.position);
+		facePoint ((Vector2)target.position + (body.velocity * stepsToCollision));
+	}
+
+	// Attempt to use the ability at the given index
+	protected bool useAbility(int index, Vector2 targetPos, params object[] args)
+	{
+		try
+		{
+			return self.getAbility (index).use (self, targetPos, args);
+		}
+		#pragma warning disable 0168
+		catch(IndexOutOfRangeException ioore)
+		#pragma warning restore 0168
+		{
+			return false;
+		}
 	}
 }
