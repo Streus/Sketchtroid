@@ -113,10 +113,13 @@ public class Bullet : MonoBehaviour
 
 		if (e != null)
 		{
-			Entity.damageEntity (e, source, damage, damageType);
-			OnEntHit (col, e);
-			if (destroyOnHit)
-				OnDeath ();
+			if (faction != e.getFaction ())
+			{
+				Entity.damageEntity (e, source, damage, damageType);
+				OnEntHit (col, e);
+				if (destroyOnHit)
+					OnDeath ();
+			}
 		}
 		else if (i != null)
 		{

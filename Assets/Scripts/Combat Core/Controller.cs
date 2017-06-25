@@ -16,6 +16,9 @@ public class Controller : MonoBehaviour
 	protected Animator anim;
 	protected Rigidbody2D physbody;
 
+	// The states this Controller can transition in and out of
+	protected BehaviorState[] states;
+
 	/* Static Methods */
 
 
@@ -29,7 +32,7 @@ public class Controller : MonoBehaviour
 
 	protected bool isUpdating()
 	{
-		return physbody.simulated && !self.isStunned ();
+		return physbody.simulated && !self.isStunned () && !self.frozen();
 	}
 
 	public virtual void Update()

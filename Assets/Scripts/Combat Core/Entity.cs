@@ -11,6 +11,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 	/* Instance Vars */
 
+	// The faction this Entity belongs to. Entities of the same faction cannot hurt eachother
+	[SerializeField]
+	private Faction faction;
+
 	// A resource pool that is deducted from when taking damage. Death occurs when it reaches 0.
 	private float health;
 	public float healthMax = 75f;
@@ -46,7 +50,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	private Stat rooted;
 
 	// Used with Cryo damage type
-	private Stat freezeProgress;
+	private float freezeProgress;
 
 	// The Statuses currently affecting this Entity
 	private List<Status> statuses;
@@ -95,7 +99,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			break;
 		case DamageType.CRYO:
 			calcDamage *= (100f - (float)victim.cryoResist.value) / 100f;
-			//TODO specal cryo dt effect
+			victim.freezeProgress++;
+			//TODO specal cryo dt effect. change sprite color based on freezeProg?
 			break;
 		case DamageType.PYRO:
 			calcDamage *= (100f - (float)victim.pyroResist.value) / 100f;
@@ -107,7 +112,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 			break;
 		}
 
-		bool hitShields = victim.shields > 0f;
+		bool hitShields = victim.shields > 0f && !ignoreShields;
 		if (hitShields)
 		{
 			//deal damage to the shields
@@ -165,7 +170,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		invincible = new Stat (0, 0);
 		stunned = new Stat (0, 0);
 		rooted = new Stat (0, 0);
-		freezeProgress = new Stat (0, 0, 100);
+		freezeProgress = 0f;
 
 		statuses = new List<Status> ();
 
@@ -174,6 +179,11 @@ public sealed class Entity : MonoBehaviour, IReapable
 		//initialize Extensions
 		foreach (Extension e in extensions)
 			e.init (this);
+	}
+
+	public Faction getFaction()
+	{
+		return faction;
 	}
 
 	// --- IReapable Methods ---
@@ -220,9 +230,12 @@ public sealed class Entity : MonoBehaviour, IReapable
 		//update combat timer
 		combatTimer -= Time.deltaTime;
 		if (combatTimer <= 0f)
-		{
 			combatTimer = 0f;
-		}
+
+		//update freeze progress
+		freezeProgress -= Time.deltaTime;
+		if (freezeProgress <= 0f)
+			freezeProgress = 0f;
 
 		//shield recharge + recharge delay
 		shieldDelay -= Time.deltaTime;
@@ -383,10 +396,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 			bullet.bulletDied -= removeColLogEntry;
 	}
 
-	// --- inCombat, Invincible, Stunned, Rooted accessors and modifiers ---
+	// --- inCombat, Frozen, Invincible, Stunned, Rooted accessors and modifiers ---
 	public bool inCombat()
 	{
 		return combatTimer > 0f;
+	}
+	public bool frozen()
+	{
+		return freezeProgress > (float)cryoResist.value + 50f;
 	}
 	public bool setInvincible(bool val)
 	{

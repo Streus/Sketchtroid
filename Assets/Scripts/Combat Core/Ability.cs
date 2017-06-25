@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Runtime.Serialization;
 using System;
 using System.Reflection;
+using UnityEngine.Scripting;
 
 [Serializable]
 public class Ability : ISerializable
@@ -64,11 +65,11 @@ public class Ability : ISerializable
 		_cooldownCurr = cooldownMax;
 
 		effectName = effect;
-		this.effect = (UseEffect)Delegate.CreateDelegate(typeof(Ability), typeof(Ability).GetMethod (effectName));
+		this.effect = (UseEffect)Delegate.CreateDelegate(typeof(UseEffect), this, typeof(Ability).GetMethod (effectName));
 
 		checkName = prereq;
 		if (checkName != "")
-			check = (PrereqCheck)Delegate.CreateDelegate(typeof(Ability), typeof(Ability).GetMethod (checkName));
+			check = (PrereqCheck)Delegate.CreateDelegate(typeof(PrereqCheck), this, typeof(Ability).GetMethod (checkName));
 		
 		this.preAnim = preAnim;
 		this.postAnim = postAnim;
@@ -85,11 +86,11 @@ public class Ability : ISerializable
 		_cooldownCurr = info.GetSingle ("cooldownCurr");
 
 		effectName = info.GetString ("effect");
-		effect = (UseEffect)Delegate.CreateDelegate(typeof(Ability), typeof(Ability).GetMethod (effectName));
+		effect = (UseEffect)Delegate.CreateDelegate(typeof(UseEffect), this, typeof(Ability).GetMethod (effectName));
 
 		checkName = info.GetString ("prereq");
 		if (checkName != "")
-			check = (PrereqCheck)Delegate.CreateDelegate(typeof(Ability), typeof(Ability).GetMethod (checkName));
+			check = (PrereqCheck)Delegate.CreateDelegate(typeof(PrereqCheck), this, typeof(Ability).GetMethod (checkName));
 		
 		preAnim = info.GetString ("preAnim");
 		postAnim = info.GetString ("postAnim");
@@ -179,13 +180,26 @@ public class Ability : ISerializable
 	}
 
 	/* Use Effects */
-
-	//TODO add ability effects here
 	//apply each with [Preserve] to prevent linker from removing methods
 
-	/* Prereq Checks */
+	// Just a basic bullet-shooting ability
+	private bool basicShoot(Entity subject, Vector2 targetPosition, params object[] args)
+	{
+		try
+		{
+			Bullet.create ("Prefabs/Bullets/Basic", subject, (DamageType)args [0], subject.getFaction ());
+			return true;
+		}
+		#pragma warning disable 0168
+		catch(InvalidCastException ice)
+		#pragma warning restore 0168
+		{ 
+			Debug.LogError ("Passed invalid argument to basicShoot");
+		}
+		return false;
+	}
 
-	//TODO add custom prerequisite checks here
+	/* Prereq Checks */
 	//apply each with [Preserve] to prevent linker from removing methods
 
 	/* Delegates and Events */
