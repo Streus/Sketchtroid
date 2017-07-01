@@ -10,6 +10,10 @@ using System;
 public class SceneStateManager : ISerializable
 {
 	/* Static Vars */
+
+	// The time it takes to reset an unvisted scene
+	private const float RESET_TIMER_MAX = 900f;
+
 	private static SceneStateManager _instance;
 	public static SceneStateManager instance()
 	{
@@ -19,10 +23,16 @@ public class SceneStateManager : ISerializable
 	}
 
 	/* Instance Vars */
-	private Dictionary<string, Dictionary<uint, ISerializable>> scenes;
+
+	// Holds all the data save from scenes that have been visited
+	private Dictionary<string, Dictionary<uint, SeedBase>> scenes;
+
+	// Tracks the time since a scene was last visited
 	private Dictionary<string, float> resetTimers;
 
-	private const float RESET_TIMER_MAX = 900f;
+	// Scenes that the SSM should ignore
+	// Ignored scenes do not save data or load data
+	private HashSet<string> ignoreSet;
 
 	/* Static Methods */
 
@@ -31,16 +41,22 @@ public class SceneStateManager : ISerializable
 	private SceneStateManager()
 	{
 		// First time instantiation
-		scenes = new Dictionary<string, Dictionary<uint, ISerializable>>();
+		scenes = new Dictionary<string, Dictionary<uint, SeedBase>>();
 		resetTimers = new Dictionary<string, float> ();
+		ignoreSet = new HashSet<string> ();
+
 		SceneManager.activeSceneChanged += activeSceneTransitioned;
 	}
 	public SceneStateManager(SerializationInfo info, StreamingContext context)
 	{
-		Type scene_type = typeof(Dictionary<string, Dictionary<uint, ISerializable>>);
+		Type scene_type = typeof(Dictionary<string, Dictionary<uint, SeedBase>>);
 		Type rt_type = typeof(Dictionary<string, float>);
-		scenes = (Dictionary<string, Dictionary<uint, ISerializable>>)info.GetValue ("scenes", scene_type);
+
+		scenes = (Dictionary<string, Dictionary<uint, SeedBase>>)info.GetValue ("scenes", scene_type);
 		resetTimers = (Dictionary<string, float>)info.GetValue ("resetTimers", rt_type);
+		ignoreSet = (HashSet<string>)info.GetValue ("ignoreSet", typeof(HashSet<string>));
+
+		_instance = this;
 	}
 
 	/* Destructor */
@@ -52,24 +68,66 @@ public class SceneStateManager : ISerializable
 	/* Instance Methods */
 
 	// Save the data for the current scene
-	public void transitionTo(string nextName, LoadSceneMode mode)
+	public void transitionTo(string nextName)
 	{
-		SceneManager.LoadScene(nextName, mode);
+		//decrement timers based on time spent in current scene
+		float timeSpent = GameManager.instance.startScene();
+		Dictionary<string, float> updatedTimers = new Dictionary<string, float> ();
+		foreach (KeyValuePair<string, float> timer in resetTimers)
+		{
+			float updatedTimer = timer.Value - timeSpent;
 
-		Debug.Log ("Saving current Scene."); //DEBUG
+			//remove entries if the timer duration is expended
+			if (updatedTimer <= 0f)
+			{
+				Dictionary<uint, SeedBase> sceneData;
+				Dictionary<uint, SeedBase> updatedSD = new Dictionary<uint, SeedBase> ();
+				scenes.TryGetValue (timer.Key, out sceneData);
 
-		//create a dictionary for the incoming data
-		Dictionary<uint, ISerializable> currData = new Dictionary<uint, ISerializable>();
+				//check for objects that ignore reset and add them to a repo
+				foreach (KeyValuePair<uint, SeedBase> entry in sceneData)
+				{
+					if (entry.Value.ignoreReset)
+						updatedSD.Add (entry.Key, entry.Value);
+				}
 
-		//add each ROs data to the dictionary
-		foreach (RegisteredObject ro in RegisteredObject.getObjects())
-			currData.Add (ro.rID, ro.reap ());
+				//if the new repo has entries, save it in place of the old one
+				scenes.Remove (timer.Key);
+				if (updatedSD.Count >= 0)
+					scenes.Add (timer.Key, updatedSD);
 
-		//replace any old data with the new data
-		scenes.Remove (SceneManager.GetActiveScene().name);
-		resetTimers.Remove (SceneManager.GetActiveScene ().name);
-		scenes.Add (SceneManager.GetActiveScene().name, currData);
-		resetTimers.Add (SceneManager.GetActiveScene ().name, RESET_TIMER_MAX);
+				//remove this scene from the list of scenes waiting for reset
+				resetTimers.Remove (timer.Key);
+			}
+			else
+				updatedTimers.Add (timer.Key, updatedTimer);
+		}
+		//update all timers
+		resetTimers = updatedTimers;
+
+		SceneManager.LoadScene(nextName, LoadSceneMode.Single);
+
+		//if the current scene is not ignored, save data from it
+		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
+		{
+			Debug.Log ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + "."); //DEBUG
+
+			//create a dictionary for the incoming data
+			Dictionary<uint, SeedBase> currData = new Dictionary<uint, SeedBase> ();
+
+			//add each ROs data to the dictionary
+			foreach (RegisteredObject ro in RegisteredObject.getObjects())
+				currData.Add (ro.rID, ro.reap ());
+
+			//replace any old data with the new data (including resetTimer data)
+			string currName = SceneManager.GetActiveScene ().name;
+			scenes.Remove (currName);
+			resetTimers.Remove (currName);
+			scenes.Add (currName, currData);
+			resetTimers.Add (currName, RESET_TIMER_MAX);
+		}
+		else
+			Debug.Log ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored."); //DEBUG
 
 		//Do the scene transition
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -78,31 +136,47 @@ public class SceneStateManager : ISerializable
 	// Load saved data into ROs in the new scene
 	private void activeSceneTransitioned(Scene prev, Scene curr)
 	{
-		Debug.Log ("Loading values for new Scene."); //DEBUG
+		Debug.Log ("[SceneStateManager] Loading values for " + curr.name + "."); //DEBUG
 
 		if (prev.name != null && !scenes.ContainsKey (prev.name))
-			Debug.LogError ("Leaving a scene (" + prev.name + ") that did not save any data!"); //DEBUG
+			Debug.LogError ("[SceneStateManager] Leaving a Scene (" + prev.name + ") that did not save any data!"); //DEBUG
 
-		Dictionary<uint, ISerializable> currData;
+		Dictionary<uint, SeedBase> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
+		{
+			Debug.Log ("[SceneStateManager] No data to load for " + curr.name + "."); //DEBUG
 			return;
+		}
 
 		//iterate over the list of ROs and pass them data
 		foreach (RegisteredObject ro in RegisteredObject.getObjects())
 		{
-			ISerializable data;
+			SeedBase data;
 			if (currData.TryGetValue (ro.rID, out data))
 				ro.sow (data);
-			else
-				Debug.LogError ("RO (" + ro.rID + ") failed to save data!"); //DEBUG
 		}
+	}
+
+	// Adds the current scene to the ignore list. Returns false if it already was in the
+	//ignore list (Also clears out existing data, ifex).
+	public bool ignoreCurrentScene()
+	{
+		string currName = SceneManager.GetActiveScene ().name;
+		scenes.Remove (currName);
+
+		bool newIgnore = ignoreSet.Add (currName);
+		if(newIgnore)
+			Debug.Log ("[SceneStateManager] Ignoring " + SceneManager.GetActiveScene ().name + "."); //DEBUG
+
+		return newIgnore;
 	}
 
 	public void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
 		info.AddValue ("scenes", scenes);
 		info.AddValue ("resetTimers", resetTimers);
+		info.AddValue ("ignoreSet", ignoreSet);
 	}
 }

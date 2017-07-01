@@ -58,7 +58,7 @@ public class Extension : ISerializable
 
 		IReapable plot = inst.GetComponent<IReapable>();
 		if (plot != null)
-			plot.sow ((ISerializable)info.GetValue ("instSeed", typeof(SeedBase)));
+			plot.sow ((SeedBase)info.GetValue ("instSeed", typeof(SeedBase)));
 	}
 
 	/* Instance Methods */

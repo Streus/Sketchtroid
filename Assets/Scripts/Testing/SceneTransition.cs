@@ -15,9 +15,6 @@ public class SceneTransition : MonoBehaviour
 		}
 		else
 			Destroy (gameObject);
-
-		//create a SSM if it doesn't exist
-		SceneStateManager.instance();
 	}
 
 	public void transition()
@@ -30,6 +27,6 @@ public class SceneTransition : MonoBehaviour
 		else if (curr.name.Equals("test2"))
 			nextRoom = "test1";
 
-		SceneStateManager.instance().transitionTo (nextRoom, LoadSceneMode.Single);
+		SceneStateManager.instance().transitionTo (nextRoom);
 	}
 }

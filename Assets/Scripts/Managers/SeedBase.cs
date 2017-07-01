@@ -14,6 +14,9 @@ public class SeedBase: ISerializable
 	// The destroyed state of the subject
 	public bool destroyed;
 
+	// Whether the subject will allow itself to be reset by the SSM
+	public bool ignoreReset;
+
 	// Values for filling a transform
 	public Vector3 tPosition;
 	public Quaternion tRotation;
@@ -51,6 +54,9 @@ public class SeedBase: ISerializable
 		//load destroyed state
 		destroyed = info.GetBoolean ("destroyed");
 
+		//load ignoreReset state
+		ignoreReset = info.GetBoolean ("ignoreReset");
+
 		//load position
 		tPosition = new Vector3 (
 			info.GetSingle ("t.p.x"),
@@ -79,6 +85,9 @@ public class SeedBase: ISerializable
 	{
 		//save destroyed state
 		info.AddValue("destroyed", subject.GetComponent<IReapable>().destroyed);
+
+		//save ignoreReset state
+		info.AddValue("ignoreReset", subject.GetComponent<IReapable>().ignoreReset());
 
 		//save transform values
 		info.AddValue ("t.p.x", tPosition.x);

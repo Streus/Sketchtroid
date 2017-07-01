@@ -15,6 +15,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	[SerializeField]
 	private Faction faction;
 
+	[SerializeField]
+	private bool allowReset = true;
+
 	// A resource pool that is deducted from when taking damage. Death occurs when it reaches 0.
 	private float health;
 	public float healthMax = 75f;
@@ -187,7 +190,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// --- IReapable Methods ---
-	public ISerializable reap()
+	public SeedBase reap()
 	{
 		Seed seed = new Seed (gameObject);
 
@@ -195,7 +198,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		return seed;
 	}
-	public void sow(ISerializable s)
+	public void sow(SeedBase s)
 	{
 		Seed seed = (Seed)s;
 		destroyed = seed.destroyed;
@@ -210,6 +213,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		//TODO Entity sow
 	}
 	public bool destroyed { get; set; }
+	public bool ignoreReset() { return !allowReset; }
 
 	// --- Monobehavior Stuff ---
 	public void Start()

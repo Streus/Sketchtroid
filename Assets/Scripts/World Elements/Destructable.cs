@@ -6,6 +6,9 @@ public class Destructable : MonoBehaviour, IReapable
 {
 	/* Instance Vars */
 	[SerializeField]
+	private bool allowReset = true;
+
+	[SerializeField]
 	private float health;
 
 	/* Instance Methods */
@@ -18,12 +21,12 @@ public class Destructable : MonoBehaviour, IReapable
 			OnDestroy ();
 	}
 
-	public ISerializable reap()
+	public SeedBase reap()
 	{
 		Seed seed = new Seed (gameObject);
 		return seed;
 	}
-	public void sow(ISerializable s)
+	public void sow(SeedBase s)
 	{
 		Seed seed = (Seed)s;
 		destroyed = seed.destroyed;
@@ -50,6 +53,7 @@ public class Destructable : MonoBehaviour, IReapable
 		}
 	}
 	public bool destroyed { get; set; }
+	public bool ignoreReset() { return !allowReset; }
 
 	protected virtual void OnHit(float damage)
 	{

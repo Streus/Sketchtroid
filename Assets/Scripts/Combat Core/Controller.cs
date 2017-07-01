@@ -17,7 +17,7 @@ public class Controller : MonoBehaviour
 	protected Rigidbody2D physbody;
 
 	// The states this Controller can transition in and out of
-	protected BehaviorState[] states;
+	private BehaviorState activeState;
 
 	/* Static Methods */
 
@@ -35,22 +35,39 @@ public class Controller : MonoBehaviour
 		return physbody.simulated && !self.isStunned () && !self.frozen();
 	}
 
-	public virtual void Update()
+	public void Update()
 	{
 		if (!isUpdating())
 			return;
+
+		// Call currently active behavior
+		if(activeState.update != null)
+			activeState.update ();
 	}
 
-	public virtual void FixedUpdate()
+	public void FixedUpdate()
 	{
 		if (!isUpdating())
 			return;
+
+		// Call currently active behavior
+		if(activeState.fixedUpdate != null)
+			activeState.fixedUpdate ();
 	}
 
-	public virtual void LateUpdate()
+	public void LateUpdate()
 	{
 		if (!isUpdating ())
 			return;
+
+		// Call currently active behavior
+		if(activeState.lateUpdate != null)
+			activeState.lateUpdate ();
+	}
+
+	protected void setState(BehaviorState state)
+	{
+		activeState = state;
 	}
 
 	protected void facePoint(Vector2 point)
@@ -88,6 +105,39 @@ public class Controller : MonoBehaviour
 		#pragma warning restore 0168
 		{
 			return false;
+		}
+	}
+
+	/* Delegates */
+
+	// Used for Update, FixedUpdate, and LateUpdate
+	protected delegate void UpdateBehavior();
+
+	/* Private Inner Class */
+	protected struct BehaviorState
+	{
+		public string name;
+
+		public UpdateBehavior update;
+		public UpdateBehavior fixedUpdate;
+		public UpdateBehavior lateUpdate;
+
+		public BehaviorState(string name, UpdateBehavior update, UpdateBehavior fixedUpdate, UpdateBehavior lateUpdate)
+		{
+			this.name = name;
+
+			this.update = update;
+			this.fixedUpdate = fixedUpdate;
+			this.lateUpdate = lateUpdate;
+		}
+
+		public override bool Equals (object obj)
+		{
+			return ((BehaviorState)obj).name == name;
+		}
+		public override int GetHashCode ()
+		{
+			return name.GetHashCode ();
 		}
 	}
 }

@@ -45,7 +45,7 @@ public class RegisteredObject : MonoBehaviour
 	}
 
 	// Get the reapable script attached to this GO and return its seed
-	public ISerializable reap()
+	public SeedBase reap()
 	{
 		IReapable blade = GetComponent<IReapable> ();
 		if (blade == null)
@@ -55,7 +55,7 @@ public class RegisteredObject : MonoBehaviour
 	}
 
 	// Take a seed and pass it along to the reapable script attached to this GO
-	public void sow(ISerializable seed)
+	public void sow(SeedBase seed)
 	{
 		IReapable hole = GetComponent<IReapable> ();
 		if (hole == null)
