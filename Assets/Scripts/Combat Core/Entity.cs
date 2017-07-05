@@ -552,26 +552,159 @@ public sealed class Entity : MonoBehaviour, IReapable
 	public event EntityHealed healed;
 
 	/* Inner Classes */
-	private class Seed : SeedBase //TODO Entity.Seed class
+	private class Seed : SeedBase
 	{
 		/* Instance Vars */
+		public Faction faction;
 
+		public float health;
+		public float healthMax;
+
+		public float shields;
+		public float shieldsMax;
+		public float shieldRegen;
+		public float shieldDelay;
+		public float shieldDelayMax;
+
+		public Stat physResist;
+		public Stat elecResist;
+		public Stat biolResist;
+		public Stat cryoResist;
+		public Stat pyroResist;
+		public Stat voidResist;
+
+		public Stat movespeed;
+
+		public Stat invincible;
+		public Stat stunned;
+		public Stat rooted;
+
+		public float freezeProgress;
+
+		public List<Status> statuses;
+		public List<Extension> extensions;
+		public List<Ability> abilities;
 
 		/* Constructors */
 		public Seed(GameObject subject) : base(subject)
 		{
+			Entity subInfo = subject.GetComponent<Entity>();
 
+			faction = subInfo.faction;
+
+			health = subInfo.health;
+			healthMax = subInfo.healthMax;
+
+			shields = subInfo.shields;
+			shieldsMax = subInfo.shieldsMax;
+			shieldRegen = subInfo.shieldRegen;
+			shieldDelay = subInfo.shieldDelay;
+			shieldDelayMax = subInfo.shieldDelayMax;
+
+			physResist = subInfo.physResist;
+			elecResist = subInfo.elecResist;
+			biolResist = subInfo.biolResist;
+			cryoResist = subInfo.cryoResist;
+			pyroResist = subInfo.pyroResist;
+			voidResist = subInfo.voidResist;
+
+			movespeed = subInfo.movespeed;
+
+			invincible = subInfo.movespeed;
+			stunned = subInfo.stunned;
+			rooted = subInfo.rooted;
+
+			freezeProgress = subInfo.freezeProgress;
+
+			statuses = subInfo.statuses;
+			extensions = subInfo.extensions;
+			abilities = subInfo.abilities;
 		}
 		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
+			faction = (Faction)info.GetInt32("faction");
 
+			health = info.GetSingle("health");
+			healthMax = info.GetSingle("healthMax");
+
+			shields = info.GetSingle("shields");
+			shieldsMax = info.GetSingle("shieldsMax");
+			shieldRegen = info.GetSingle("shieldRegen");
+			shieldDelay = info.GetSingle("shieldDelay");
+			shieldDelayMax = info.GetSingle("shieldDelayMax");
+
+			physResist = (Stat)info.GetValue("physResist", typeof(Stat));
+			elecResist = (Stat)info.GetValue("elecResist", typeof(Stat));
+			biolResist = (Stat)info.GetValue("biolResist", typeof(Stat));
+			cryoResist = (Stat)info.GetValue("cryoResist", typeof(Stat));
+			pyroResist = (Stat)info.GetValue("pyroResist", typeof(Stat));
+			voidResist = (Stat)info.GetValue("voidResist", typeof(Stat));
+
+			movespeed = (Stat)info.GetValue("movespeed", typeof(Stat));
+
+			invincible = (Stat)info.GetValue("invincible", typeof(Stat));
+			stunned = (Stat)info.GetValue("stunned", typeof(Stat));
+			rooted = (Stat)info.GetValue("rooted", typeof(Stat));
+
+			freezeProgress = info.GetSingle("freezeProgress");
+
+			int statusSize = info.GetInt32("statusSize");
+			statuses =  new List<Status>();
+			for(int i = 0; i < statusSize; i++)
+				statuses.Add((Status)info.GetValue("status" + i, typeof(Status)));
+
+			int extSize = info.GetInt32("extSize");
+			statuses =  new List<Extension>();
+			for(int i = 0; i < extSize; i++)
+				statuses.Add((Extension)info.GetValue("ext" + i, typeof(Extension)));
+
+			int abilSize = info.GetInt32("abilSize");
+			statuses =  new List<Ability>();
+			for(int i = 0; i < abilSize; i++)
+				statuses.Add((Ability)info.GetValue("abil" + i, typeof(Ability)));
 		}
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData (info, context);
 
+			info.AddValue ("faction", (int)faction);
 
+			info.AddValue ("health", health);
+			info.AddValue ("healthMax", healthMax);
+
+			info.AddValue ("shields", shields);
+			info.AddValue ("shieldsMax", shieldsMax);
+			info.AddValue ("shieldRegen", shieldRegen);
+			info.AddValue ("shieldDelay", shieldDelay);
+			info.AddValue ("shieldDelayMax", shieldDelayMax);
+
+			info.AddValue ("physResist", physResist);
+			info.AddValue ("elecResist", elecResist);
+			info.AddValue ("biolResist", biolResist);
+			info.AddValue ("cryoResist", cryoResist);
+			info.AddValue ("pyroResist", pyroResist);
+			info.AddValue ("voidResist", voidResist);
+
+			info.AddValue ("movespeed", movespeed);
+
+			info.AddValue ("invincible", invincible);
+			info.AddValue ("stunned", stunned);
+			info.AddValue ("rooted", rooted);
+
+			info.AddValue ("freezeProgress", freezeProgress);
+
+			info.AddValue ("statusSize", statuses.Count);
+			for (int i = 0; i < statuses.Count; i++)
+				info.AddValue ("status" + i, statuses [i]);
+
+			info.AddValue ("extSize", extensions.Count);
+			for (int i = 0; i < extensions.Count; i++)
+				info.AddValue ("ext" + i, extensions [i]);
+
+			info.AddValue ("abilSize", abilities.Count);
+			for (int i = 0; i < abilities.Count; i++)
+				info.AddValue ("abil" + i, abilities [i]);
 		}
 	}
 }
