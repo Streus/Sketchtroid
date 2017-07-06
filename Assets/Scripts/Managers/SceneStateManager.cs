@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 using System.Runtime.Serialization;
 using System;
 
-//TODO set up a way to update reset timers using Unity's deltaTime
 [Serializable]
 public class SceneStateManager : ISerializable
 {
@@ -25,7 +24,7 @@ public class SceneStateManager : ISerializable
 	/* Instance Vars */
 
 	// Holds all the data save from scenes that have been visited
-	private Dictionary<string, Dictionary<uint, SeedBase>> scenes;
+	private Dictionary<string, Dictionary<string, SeedBase>> scenes;
 
 	// Tracks the time since a scene was last visited
 	private Dictionary<string, float> resetTimers;
@@ -41,7 +40,7 @@ public class SceneStateManager : ISerializable
 	private SceneStateManager()
 	{
 		// First time instantiation
-		scenes = new Dictionary<string, Dictionary<uint, SeedBase>>();
+		scenes = new Dictionary<string, Dictionary<string, SeedBase>>();
 		resetTimers = new Dictionary<string, float> ();
 		ignoreSet = new HashSet<string> ();
 
@@ -49,10 +48,10 @@ public class SceneStateManager : ISerializable
 	}
 	public SceneStateManager(SerializationInfo info, StreamingContext context)
 	{
-		Type scene_type = typeof(Dictionary<string, Dictionary<uint, SeedBase>>);
+		Type scene_type = typeof(Dictionary<string, Dictionary<string, SeedBase>>);
 		Type rt_type = typeof(Dictionary<string, float>);
 
-		scenes = (Dictionary<string, Dictionary<uint, SeedBase>>)info.GetValue ("scenes", scene_type);
+		scenes = (Dictionary<string, Dictionary<string, SeedBase>>)info.GetValue ("scenes", scene_type);
 		resetTimers = (Dictionary<string, float>)info.GetValue ("resetTimers", rt_type);
 		ignoreSet = (HashSet<string>)info.GetValue ("ignoreSet", typeof(HashSet<string>));
 
@@ -80,12 +79,12 @@ public class SceneStateManager : ISerializable
 			//remove entries if the timer duration is expended
 			if (updatedTimer <= 0f)
 			{
-				Dictionary<uint, SeedBase> sceneData;
-				Dictionary<uint, SeedBase> updatedSD = new Dictionary<uint, SeedBase> ();
+				Dictionary<string, SeedBase> sceneData;
+				Dictionary<string, SeedBase> updatedSD = new Dictionary<string, SeedBase> ();
 				scenes.TryGetValue (timer.Key, out sceneData);
 
 				//check for objects that ignore reset and add them to a repo
-				foreach (KeyValuePair<uint, SeedBase> entry in sceneData)
+				foreach (KeyValuePair<string, SeedBase> entry in sceneData)
 				{
 					if (entry.Value.ignoreReset)
 						updatedSD.Add (entry.Key, entry.Value);
@@ -113,7 +112,7 @@ public class SceneStateManager : ISerializable
 			Debug.Log ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + "."); //DEBUG
 
 			//create a dictionary for the incoming data
-			Dictionary<uint, SeedBase> currData = new Dictionary<uint, SeedBase> ();
+			Dictionary<string, SeedBase> currData = new Dictionary<string, SeedBase> ();
 
 			//add each ROs data to the dictionary
 			foreach (RegisteredObject ro in RegisteredObject.getObjects())
@@ -141,13 +140,23 @@ public class SceneStateManager : ISerializable
 		if (prev.name != null && !scenes.ContainsKey (prev.name))
 			Debug.LogError ("[SceneStateManager] Leaving a Scene (" + prev.name + ") that did not save any data!"); //DEBUG
 
-		Dictionary<uint, SeedBase> currData;
+		Dictionary<string, SeedBase> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
 			Debug.Log ("[SceneStateManager] No data to load for " + curr.name + "."); //DEBUG
 			return;
+		}
+
+		//spawn prefabs before starting sow cycle
+		foreach (SeedBase sb in currData.Values)
+		{
+			if (sb.prefabPath != "")
+			{
+				RegisteredObject.recreate (sb.prefabPath, sb.registeredID);
+				Debug.Log ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + "."); //DEBUG
+			}
 		}
 
 		//iterate over the list of ROs and pass them data

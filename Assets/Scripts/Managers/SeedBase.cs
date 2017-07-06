@@ -27,6 +27,12 @@ public class SeedBase: ISerializable
 	public Vector2 rbVelocity;
 	public float rbAngVelocity;
 
+	// Path for a prefab that this seed should spawn
+	public string prefabPath;
+
+	// In the case of prefab saving, the Registered ID is saved here
+	public string registeredID;
+
 	/* Constructors */
 
 	// Create a new Seed that will pull transform and rigidbody info when serialized
@@ -44,6 +50,9 @@ public class SeedBase: ISerializable
 			rbVelocity = rb2d.velocity;
 			rbAngVelocity = rb2d.angularVelocity;
 		}
+
+		prefabPath = "";
+		registeredID = "";
 	}
 
 	// Create a Seed from serialized data that contains a transform and rigidbody state
@@ -79,6 +88,10 @@ public class SeedBase: ISerializable
 			info.GetSingle("rb.v.x"),
 			info.GetSingle("rb.v.y"));
 		rbAngVelocity = info.GetSingle("rb.av");
+
+		//load misc
+		prefabPath = info.GetString("prefabPath");
+		registeredID = info.GetString ("rID");
 	}
 
 	public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -104,5 +117,8 @@ public class SeedBase: ISerializable
 		info.AddValue ("rb.v.x", rbVelocity.x);
 		info.AddValue ("rb.v.x", rbVelocity.y);
 		info.AddValue ("rb.av", rbAngVelocity);
+
+		info.AddValue ("prefabPath", prefabPath);
+		info.AddValue ("rID", registeredID);
 	}
 }

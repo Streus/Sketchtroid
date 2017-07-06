@@ -24,7 +24,7 @@ public class ROProperty : Editor
 	{
 		tar.Update ();
 
-		EditorGUILayout.LabelField ("ID: " + ro.rID.ToString("0000000000"));
+		EditorGUILayout.LabelField ("ID: " + ro.rID);
 
 		if (GUI.changed)
 			EditorUtility.SetDirty (ro);

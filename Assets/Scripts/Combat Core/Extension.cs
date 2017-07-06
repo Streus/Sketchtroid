@@ -6,13 +6,19 @@ using System;
 
 #pragma warning disable 0168
 [Serializable]
-public class Extension : ISerializable
+public class Extension : ISerializable, IEquatable<Extension>
 {
 	/* Instance Vars */
+
+	// An ID derived from the root parent's ID
+	[SerializeField]
+	private string extensionID;
+	public string eID { get { return extensionID; } }
 
 	// The name of the prefab this Extension should create
 	[SerializeField]
 	private string prefabName;
+	public string prefName { get { return prefabName; } }
 
 	// The position a prefab will be placed when inst
 	[SerializeField]
@@ -33,14 +39,25 @@ public class Extension : ISerializable
 	// The Entity that handles this Extension
 	private Entity parent;
 
+	// The Seed taken from parent
+	private SeedBase _seed;
+	public SeedBase seed { get { return _seed; } set { _seed = value; } } 
+
+	// Whether detach is in a event subcriber list
+	private bool detachSubscribed;
+
 	/* Constructors */
 	public Extension()
 	{
 		prefabName = "";
-		inst = null;
-		parent = null;
+		detachSubscribed = false;
 	}
-
+	public Extension(string prefabName, Vector3 position, Quaternion rotation, Entity parent)
+	{
+		this.prefabName = prefabName;
+		this.parent = parent;
+		initGO (prefabName, position, rotation);
+	}
 	public Extension(SerializationInfo info, StreamingContext context)
 	{
 		prefabName = info.GetString ("prefabName");
@@ -50,15 +67,13 @@ public class Extension : ISerializable
 			info.GetSingle ("prefabPY"),
 			info.GetSingle ("prefabPZ"));
 
-
 		prefabRot = new Vector3 (
 			info.GetSingle ("prefabRX"),
 			info.GetSingle ("prefabRY"),
 			info.GetSingle ("prefabRZ"));
 
-		IReapable plot = inst.GetComponent<IReapable>();
-		if (plot != null)
-			plot.sow ((SeedBase)info.GetValue ("instSeed", typeof(SeedBase)));
+		_seed = (SeedBase)info.GetValue ("instSeed", typeof(SeedBase));
+		extensionID = _seed.registeredID;
 	}
 
 	/* Instance Methods */
@@ -68,8 +83,15 @@ public class Extension : ISerializable
 	{
 		this.parent = parent;
 
-		if (prefabName != "")
+		if (prefabName != "" && inst == null)
 			inst = initGO (prefabName, prefabPos, Quaternion.Euler(prefabRot));
+
+		//this is a dead extension, remove it
+		if (inst == null)
+		{
+			detach ();
+			return;
+		}
 
 		//if the target instance has a CollisonRelay, add it to the parent's network
 		relay = inst.GetComponent<CollisionRelay> ();
@@ -79,12 +101,28 @@ public class Extension : ISerializable
 		//if the target is an Entity, listen to its destruction for detachment
 		subEnt = inst.GetComponent<Entity>();
 		if (subEnt != null)
-			subEnt.died += detach;
+		{
+			if (!detachSubscribed)
+			{
+				subEnt.died += detach;
+				detachSubscribed = true;
+			}
+			if (seed != null)
+				subEnt.sow (_seed);
+		}
 
 		//if the target is destructable, listen to its destruction for detachment
 		dest = inst.GetComponent<Destructable>();
 		if (dest != null)
-			dest.destructed += detach;
+		{
+			if (!detachSubscribed)
+			{
+				dest.destructed += detach;
+				detachSubscribed = true;
+			}
+			if (seed != null)
+				dest.sow (_seed);
+		}
 	}
 
 	// Remove this Extension from its parent
@@ -106,6 +144,7 @@ public class Extension : ISerializable
 		{
 			//don't auto-remove, this is called in a foreach
 			subEnt.died -= detach;
+			detachSubscribed = false;
 
 			//let Entity handle its own cleanup
 			subEnt.OnDeath ();
@@ -114,6 +153,7 @@ public class Extension : ISerializable
 		{
 			//don't auto-remove, this is called in a foreach
 			dest.destructed -= detach;
+			detachSubscribed = false;
 
 			//let Destructable handle its own cleanup
 			dest.OnDestroy();
@@ -135,16 +175,28 @@ public class Extension : ISerializable
 	{
 		info.AddValue ("prefabName", prefabName);
 
-		info.AddValue ("prefabPX", prefabPos.x);
-		info.AddValue ("prefabPY", prefabPos.y);
-		info.AddValue ("prefabPZ", prefabPos.z);
+		info.AddValue ("prefabPX", inst.transform.position.x);
+		info.AddValue ("prefabPY", inst.transform.position.y);
+		info.AddValue ("prefabPZ", inst.transform.position.z);
 
-		info.AddValue ("prefabRX", prefabRot.x);
-		info.AddValue ("prefabRY", prefabRot.y);
-		info.AddValue ("prefabRZ", prefabRot.z);
+		info.AddValue ("prefabRX", inst.transform.rotation.x);
+		info.AddValue ("prefabRY", inst.transform.rotation.y);
+		info.AddValue ("prefabRZ", inst.transform.rotation.z);
 
 		IReapable blade = inst.GetComponent<IReapable> ();
+		SeedBase seed = new SeedBase (inst);
 		if (blade != null)
-			info.AddValue ("instSeed", blade.reap ());
+		{
+			seed = blade.reap ();
+			seed.registeredID = extensionID;
+			info.AddValue ("instSeed", seed);
+		}
+	}
+
+	public bool Equals (Extension other)
+	{
+		if (other == null)
+			return false;
+		return other.extensionID == extensionID;
 	}
 }

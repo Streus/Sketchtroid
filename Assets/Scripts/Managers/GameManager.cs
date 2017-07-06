@@ -69,6 +69,8 @@ public class GameManager : MonoBehaviour
 		float timeSave = sceneTime;
 		totalTime += (double)sceneTime;
 		sceneTime = 0f;
+
+		Debug.Log ("[GameManger] Time spent in scene: " + timeSave + ".");
 		return timeSave;
 	}
 

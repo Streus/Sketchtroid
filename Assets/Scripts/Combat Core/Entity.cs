@@ -194,8 +194,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 	{
 		Seed seed = new Seed (gameObject);
 
-		//TODO Entity reap
-
 		return seed;
 	}
 	public void sow(SeedBase s)
@@ -209,18 +207,80 @@ public sealed class Entity : MonoBehaviour, IReapable
 			return;
 		}
 
-		//Entity is not destroyed, load up values
-		//TODO Entity sow
+		//-SeedBase values-
+		transform.position = seed.tPosition;
+		transform.rotation = seed.tRotation;
+
+		Rigidbody2D body = GetComponent<Rigidbody2D> ();
+		if (body != null)
+		{
+			body.position = seed.rbPosition;
+			body.rotation = seed.rbRotation;
+			body.velocity = seed.rbVelocity;
+			body.angularVelocity = seed.rbAngVelocity;
+		}
+
+		//-Entity-specific values-
+		faction = seed.faction;
+
+		//resource pools
+		health = seed.health;
+		healthMax = seed.healthMax;
+
+		shields = seed.shields;
+		shieldsMax = seed.shieldsMax;
+		shieldRegen = seed.shieldRegen;
+		shieldDelay = seed.shieldDelay;
+		shieldDelayMax = seed.shieldDelayMax;
+
+		//stats
+		physResist = seed.physResist;
+		elecResist = seed.elecResist;
+		biolResist = seed.biolResist;
+		cryoResist = seed.cryoResist;
+		pyroResist = seed.pyroResist;
+		voidResist = seed.voidResist;
+
+		movespeed = seed.movespeed;
+
+		//built-in statuses
+		invincible = seed.invincible;
+		stunned = seed.stunned;
+		rooted = seed.rooted;
+
+		freezeProgress = seed.freezeProgress;
+
+		//status list
+		statuses = seed.statuses;
+		foreach(Status st in statuses)
+		{
+			st.durationCompleted += removeStatus;
+			if (statusAdded != null)
+				statusAdded (st);
+		}
+
+		//extension list
+		foreach (Extension e in seed.extensions)
+		{
+			Extension original = extensions.Find (delegate(Extension other) { return e.Equals (other); });
+			if (original != null)
+				original.seed = e.seed;
+			else
+				extensions.Add (e);
+		}
+		foreach (Extension e in extensions.ToArray())
+			e.init (this);
+		
+		//ability list
+		abilities = seed.abilities;
+		foreach (Ability a in abilities)
+			if (abilityAdded != null)
+				abilityAdded (a);
 	}
 	public bool destroyed { get; set; }
 	public bool ignoreReset() { return !allowReset; }
 
 	// --- Monobehavior Stuff ---
-	public void Start()
-	{
-		
-	}
-
 	public void Update()
 	{
 		//update all statuses
@@ -524,8 +584,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			shieldsRecharged ();
 	}
 
-	//TODO add the rest of the hook callers, delegates, and events
-
 	/* Delegates and Events */
 	public delegate void StatusChanged(Status s);
 	public event StatusChanged statusAdded;
@@ -654,14 +712,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 				statuses.Add((Status)info.GetValue("status" + i, typeof(Status)));
 
 			int extSize = info.GetInt32("extSize");
-			statuses =  new List<Extension>();
+			extensions =  new List<Extension>();
 			for(int i = 0; i < extSize; i++)
-				statuses.Add((Extension)info.GetValue("ext" + i, typeof(Extension)));
+				extensions.Add((Extension)info.GetValue("ext" + i, typeof(Extension)));
 
 			int abilSize = info.GetInt32("abilSize");
-			statuses =  new List<Ability>();
+			abilities =  new List<Ability>();
 			for(int i = 0; i < abilSize; i++)
-				statuses.Add((Ability)info.GetValue("abil" + i, typeof(Ability)));
+				abilities.Add((Ability)info.GetValue("abil" + i, typeof(Ability)));
 		}
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
