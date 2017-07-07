@@ -62,13 +62,17 @@ public class SceneStateManager : ISerializable
 		for(int i = 0; i < igSize; i++)
 			ignoreSet.Add((string)info.GetValue ("ignoreSet" + i, typeof(string)));
 
+		//replace existing SSM
+		SceneManager.activeSceneChanged -= _instance.activeSceneTransitioned;
+		SceneManager.activeSceneChanged += activeSceneTransitioned;
+
 		_instance = this;
 	}
 
 	/* Destructor */
 	~SceneStateManager()
 	{
-		SceneManager.activeSceneChanged -= activeSceneTransitioned;
+		Debug.Log ("[SceneStateManager] Replaced SSM instance."); //DEBUG SSM destruction
 	}
 
 	/* Instance Methods */
@@ -140,13 +144,18 @@ public class SceneStateManager : ISerializable
 		GameManager.instance.currentScene = nextName;
 	}
 
+	// Go to a new scene without saving anything from the current scene
+	public void jumpTo(string sceneName)
+	{
+		SceneManager.LoadScene (sceneName, LoadSceneMode.Single);
+		SceneManager.SetActiveScene (SceneManager.GetSceneByName (sceneName));
+		GameManager.instance.currentScene = sceneName;
+	}
+
 	// Load saved data into ROs in the new scene
 	private void activeSceneTransitioned(Scene prev, Scene curr)
 	{
 		Debug.Log ("[SceneStateManager] Loading values for " + curr.name + "."); //DEBUG
-
-		if (prev.name != null && !scenes.ContainsKey (prev.name))
-			Debug.LogError ("[SceneStateManager] Leaving a Scene (" + prev.name + ") that did not save any data!"); //DEBUG
 
 		Dictionary<string, SeedBase> currData;
 
@@ -162,8 +171,10 @@ public class SceneStateManager : ISerializable
 		{
 			if (sb.prefabPath != "")
 			{
-				RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID);
-				Debug.Log ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + "."); //DEBUG
+				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
+					Debug.Log ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + "."); //DEBUG
+				else
+					Debug.LogError ("[SceneStateManager] Failed to respawn prefab object: " + sb.registeredID + "."); //DEBUG
 			}
 		}
 

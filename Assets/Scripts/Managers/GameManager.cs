@@ -162,7 +162,7 @@ public class GameManager : MonoBehaviour
 
 		loadData (gameName);
 
-		SceneStateManager.instance ().transitionTo (save.lastScene);
+		SceneStateManager.instance ().jumpTo (save.lastScene);
 	}
 
 	/* Delegates and Events */
