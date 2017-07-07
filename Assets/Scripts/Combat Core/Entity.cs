@@ -58,10 +58,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// The Statuses currently affecting this Entity
 	private List<Status> statuses;
 
-	// The Extensions currently applied to this Entity
-	[SerializeField]
-	private List<Extension> extensions;
-
 	// The Abilities that this Entity
 	[SerializeField]
 	private List<Ability> abilities;
@@ -178,10 +174,17 @@ public sealed class Entity : MonoBehaviour, IReapable
 		statuses = new List<Status> ();
 
 		collisonLog = new HashSet<Bullet> ();
+	}
 
-		//initialize Extensions
-		foreach (Extension e in extensions)
-			e.init (this);
+	public void Start()
+	{
+		Entity parEnt = GetComponentInParent<Entity> ();
+		Destructable parDes = GetComponentInParent<Destructable> ();
+
+		if (parEnt != null)
+			parEnt.died += OnDeath;
+		else if (parDes != null)
+			parDes.destructed += OnDeath;
 	}
 
 	public Faction getFaction()
@@ -258,18 +261,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			if (statusAdded != null)
 				statusAdded (st);
 		}
-
-		//extension list
-		foreach (Extension e in seed.extensions)
-		{
-			Extension original = extensions.Find (delegate(Extension other) { return e.Equals (other); });
-			if (original != null)
-				original.seed = e.seed;
-			else
-				extensions.Add (e);
-		}
-		foreach (Extension e in extensions.ToArray())
-			e.init (this);
 		
 		//ability list
 		abilities = seed.abilities;
@@ -343,21 +334,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 		//notify listeners
 		if (statusAdded != null)
 			statusRemoved (s);
-	}
-
-	// --- Extension Handling ---
-
-	// Add an extension to this Entity
-	public void addExtension(Extension e)
-	{
-		extensions.Add (e);
-		e.init (this);
-	}
-
-	// Remove an extension from this Entity
-	public void removeExtension(Extension e)
-	{
-		extensions.Remove (e);
 	}
 
 	// --- Ability Handling ---
@@ -553,10 +529,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		foreach (Status s in statuses)
 			s.OnDeath (this);
-
-		foreach (Extension e in extensions)
-			e.cleanup ();
-		extensions.Clear ();
 		
 		if (died != null)
 			died ();
@@ -610,6 +582,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	public event EntityHealed healed;
 
 	/* Inner Classes */
+	[Serializable]
 	private class Seed : SeedBase
 	{
 		/* Instance Vars */
@@ -640,7 +613,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 		public float freezeProgress;
 
 		public List<Status> statuses;
-		public List<Extension> extensions;
 		public List<Ability> abilities;
 
 		/* Constructors */
@@ -675,7 +647,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			freezeProgress = subInfo.freezeProgress;
 
 			statuses = subInfo.statuses;
-			extensions = subInfo.extensions;
 			abilities = subInfo.abilities;
 		}
 		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -710,11 +681,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			statuses =  new List<Status>();
 			for(int i = 0; i < statusSize; i++)
 				statuses.Add((Status)info.GetValue("status" + i, typeof(Status)));
-
-			int extSize = info.GetInt32("extSize");
-			extensions =  new List<Extension>();
-			for(int i = 0; i < extSize; i++)
-				extensions.Add((Extension)info.GetValue("ext" + i, typeof(Extension)));
 
 			int abilSize = info.GetInt32("abilSize");
 			abilities =  new List<Ability>();
@@ -755,10 +721,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			info.AddValue ("statusSize", statuses.Count);
 			for (int i = 0; i < statuses.Count; i++)
 				info.AddValue ("status" + i, statuses [i]);
-
-			info.AddValue ("extSize", extensions.Count);
-			for (int i = 0; i < extensions.Count; i++)
-				info.AddValue ("ext" + i, extensions [i]);
 
 			info.AddValue ("abilSize", abilities.Count);
 			for (int i = 0; i < abilities.Count; i++)

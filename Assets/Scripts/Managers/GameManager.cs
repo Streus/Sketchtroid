@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy (gameObject);
 
-		SceneStateManager.instance ().ignoreCurrentScene ();
+		//SceneStateManager.instance ().ignoreCurrentScene (); //TODO uncomment this
 
 		saveName = "";
 		gameName = "";
@@ -62,6 +62,16 @@ public class GameManager : MonoBehaviour
 		//track the time spent in the current scene
 		sceneTime += Time.unscaledDeltaTime;
 	}
+
+	//Getters/Setters
+	public void setSaveName(string saveName)
+	{
+		this.saveName = saveName;
+	}
+
+	public string currentScene { get { return lastScene; } set { lastScene = value; } }
+
+	public string gameTitle { get { return gameName; } set { gameName = value; } }
 
 	// Called by the SSM for time-keeping purposes
 	public float startScene()

@@ -33,6 +33,9 @@ public class SeedBase: ISerializable
 	// In the case of prefab saving, the Registered ID is saved here
 	public string registeredID;
 
+	// In the case of saving a prefab that is a child GO, the parent's rID is saved here
+	public string parentID;
+
 	/* Constructors */
 
 	// Create a new Seed that will pull transform and rigidbody info when serialized
@@ -51,8 +54,12 @@ public class SeedBase: ISerializable
 			rbAngVelocity = rb2d.angularVelocity;
 		}
 
+		destroyed = subject.GetComponent<IReapable> ().destroyed;
+		ignoreReset = subject.GetComponent<IReapable> ().ignoreReset ();
+
 		prefabPath = "";
 		registeredID = "";
+		parentID = "";
 	}
 
 	// Create a Seed from serialized data that contains a transform and rigidbody state
@@ -92,15 +99,16 @@ public class SeedBase: ISerializable
 		//load misc
 		prefabPath = info.GetString("prefabPath");
 		registeredID = info.GetString ("rID");
+		parentID = info.GetString ("parentID");
 	}
 
 	public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
 		//save destroyed state
-		info.AddValue("destroyed", subject.GetComponent<IReapable>().destroyed);
+		info.AddValue("destroyed", destroyed);
 
 		//save ignoreReset state
-		info.AddValue("ignoreReset", subject.GetComponent<IReapable>().ignoreReset());
+		info.AddValue("ignoreReset", ignoreReset);
 
 		//save transform values
 		info.AddValue ("t.p.x", tPosition.x);
@@ -115,10 +123,11 @@ public class SeedBase: ISerializable
 		info.AddValue ("rb.p.y", rbPosition.y);
 		info.AddValue ("rb.r", rbRotation);
 		info.AddValue ("rb.v.x", rbVelocity.x);
-		info.AddValue ("rb.v.x", rbVelocity.y);
+		info.AddValue ("rb.v.y", rbVelocity.y);
 		info.AddValue ("rb.av", rbAngVelocity);
 
 		info.AddValue ("prefabPath", prefabPath);
 		info.AddValue ("rID", registeredID);
+		info.AddValue ("parentID", parentID);
 	}
 }

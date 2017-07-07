@@ -17,7 +17,10 @@ public class SceneStateManager : ISerializable
 	public static SceneStateManager instance()
 	{
 		if (_instance == null)
+		{
 			_instance = new SceneStateManager ();
+			GameManager.instance.currentScene = SceneManager.GetActiveScene ().name;
+		}
 		return _instance;
 	}
 
@@ -53,7 +56,11 @@ public class SceneStateManager : ISerializable
 
 		scenes = (Dictionary<string, Dictionary<string, SeedBase>>)info.GetValue ("scenes", scene_type);
 		resetTimers = (Dictionary<string, float>)info.GetValue ("resetTimers", rt_type);
-		ignoreSet = (HashSet<string>)info.GetValue ("ignoreSet", typeof(HashSet<string>));
+
+		ignoreSet = new HashSet<string> ();
+		int igSize = info.GetInt32 ("ignoreSetSize");
+		for(int i = 0; i < igSize; i++)
+			ignoreSet.Add((string)info.GetValue ("ignoreSet" + i, typeof(string)));
 
 		_instance = this;
 	}
@@ -128,8 +135,9 @@ public class SceneStateManager : ISerializable
 		else
 			Debug.Log ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored."); //DEBUG
 
-		//Do the scene transition
+		//Do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
+		GameManager.instance.currentScene = nextName;
 	}
 
 	// Load saved data into ROs in the new scene
@@ -154,7 +162,7 @@ public class SceneStateManager : ISerializable
 		{
 			if (sb.prefabPath != "")
 			{
-				RegisteredObject.recreate (sb.prefabPath, sb.registeredID);
+				RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID);
 				Debug.Log ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + "."); //DEBUG
 			}
 		}
@@ -186,6 +194,36 @@ public class SceneStateManager : ISerializable
 	{
 		info.AddValue ("scenes", scenes);
 		info.AddValue ("resetTimers", resetTimers);
-		info.AddValue ("ignoreSet", ignoreSet);
+
+		string[] igset =  new string[ignoreSet.Count];
+		ignoreSet.CopyTo (igset);
+		info.AddValue ("ignoreSetSize", igset.Length);
+		for(int i = 0; i < igset.Length; i++)
+			info.AddValue ("ignoreSet" + i, igset[i]);
+	}
+
+	public override string ToString ()
+	{
+		string str = "[SceneStateManager]\n";
+		str += "Currently Managing " + scenes.Count + " scenes.\n";
+		foreach (string sceneName in scenes.Keys)
+		{
+			str += "  " + sceneName;
+			if (ignoreSet.Contains (sceneName))
+				str += " (ignored)";
+			else
+			{
+				float timerValue = 0f;
+				resetTimers.TryGetValue (sceneName, out timerValue);
+				str += " " + timerValue.ToString ("###.00") + " seconds to reset.";
+			}
+			str += "\n";
+
+			Dictionary<string, SeedBase> sceneData;
+			scenes.TryGetValue (sceneName, out sceneData);
+			foreach (string regObj in sceneData.Keys)
+				str += "    " + regObj + "\n";
+		}
+		return str;
 	}
 }

@@ -29,4 +29,43 @@ public class SceneTransition : MonoBehaviour
 
 		SceneStateManager.instance().transitionTo (nextRoom);
 	}
+
+	public void spawnRegisteredPrefabs(int amount)
+	{
+		for (int i = 0; i < amount; i++)
+		{
+			RegisteredObject.create (
+				"TestEntityPrefab", 
+				(Vector3)Random.insideUnitCircle, 
+				Quaternion.identity);
+		}
+	}
+
+	public void spawnRegisteredChildPrefab(RegisteredObject obj)
+	{
+		RegisteredObject.create ("TestEntityPrefab",
+			Vector3.zero,
+			Quaternion.identity,
+			obj.transform);
+	}
+
+	public void performSave(string gameName)
+	{
+		GameManager.instance.setSaveName ("testSave");
+		GameManager.instance.gameTitle = gameName;
+		GameManager.instance.saveGame ();
+		GameManager.instance.saveData ();
+	}
+
+	public void performLoad(string saveName)
+	{
+		GameManager.Save save = GameManager.instance.loadSave (saveName);
+		GameManager.instance.loadGame (save);
+		GameManager.instance.loadData (saveName);
+	}
+
+	public void debugSSM()
+	{
+		Debug.Log (SceneStateManager.instance ().ToString ());
+	}
 }

@@ -5,7 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class CollisionRelay : MonoBehaviour
 {
+	[SerializeField]
 	private Entity relayTarget;
+
+	public void Start()
+	{
+		Entity target = GetComponentInParent<Entity> ();
+		if (target != null && relayTarget == null)
+			addToNetwork (target);
+	}
 
 	public void addToNetwork(Entity target)
 	{
