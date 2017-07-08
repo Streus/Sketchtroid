@@ -85,7 +85,7 @@ public class Bullet : MonoBehaviour
 		duration -= Time.deltaTime;
 		if (duration <= 0f)
 		{
-
+			OnDeath ();
 		}
 	}
 

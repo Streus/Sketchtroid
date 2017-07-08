@@ -10,7 +10,10 @@ using UnityEngine.Scripting;
 public class Ability : ISerializable
 {
 	/* Static Vars */
-
+	public static readonly Ability[] repository = new Ability[]
+	{
+		new Ability("Basic Fire", "Fire a bullet", "", 1f, "basicShoot")
+	};
 
 	/* Instance Vars */
 
@@ -59,20 +62,34 @@ public class Ability : ISerializable
 		this.name = name;
 		this.desc = desc;
 		this.iconPath = iconPath;
-		icon = Resources.Load<Sprite>(iconPath);
+		if (iconPath != "")
+			icon = Resources.Load<Sprite> (iconPath);
+		else
+			icon = null;
 
 		this.cooldownMax = cooldownMax;
 		_cooldownCurr = cooldownMax;
 
 		effectName = effect;
-		this.effect = (UseEffect)Delegate.CreateDelegate(typeof(UseEffect), this, typeof(Ability).GetMethod (effectName));
+		this.effect = (UseEffect)Delegate.CreateDelegate (
+			typeof(UseEffect),
+			this,
+			typeof(Ability).GetMethod (effectName, BindingFlags.NonPublic | BindingFlags.Instance));
 
 		checkName = prereq;
 		if (checkName != "")
-			check = (PrereqCheck)Delegate.CreateDelegate(typeof(PrereqCheck), this, typeof(Ability).GetMethod (checkName));
+			check = (PrereqCheck)Delegate.CreateDelegate (
+				typeof(PrereqCheck),
+				this,
+				typeof(Ability).GetMethod (checkName, BindingFlags.NonPublic | BindingFlags.Instance));
+		else
+			check = null;
 		
 		this.preAnim = preAnim;
 		this.postAnim = postAnim;
+
+		active = false;
+		available = true;
 	}
 	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ }
 	public Ability(SerializationInfo info, StreamingContext context)
@@ -86,11 +103,19 @@ public class Ability : ISerializable
 		_cooldownCurr = info.GetSingle ("cooldownCurr");
 
 		effectName = info.GetString ("effect");
-		effect = (UseEffect)Delegate.CreateDelegate(typeof(UseEffect), this, typeof(Ability).GetMethod (effectName));
+		effect = (UseEffect)Delegate.CreateDelegate (
+			typeof(UseEffect),
+			this,
+			typeof(Ability).GetMethod (effectName, BindingFlags.NonPublic | BindingFlags.Instance));
 
 		checkName = info.GetString ("prereq");
 		if (checkName != "")
-			check = (PrereqCheck)Delegate.CreateDelegate(typeof(PrereqCheck), this, typeof(Ability).GetMethod (checkName));
+			check = (PrereqCheck)Delegate.CreateDelegate (
+				typeof(PrereqCheck),
+				this,
+				typeof(Ability).GetMethod (checkName, BindingFlags.NonPublic | BindingFlags.Instance));
+		else
+			check = null;
 		
 		preAnim = info.GetString ("preAnim");
 		postAnim = info.GetString ("postAnim");
@@ -129,9 +154,10 @@ public class Ability : ISerializable
 		if (!isReady ())
 			return false;
 
-		if (!check (subject))
+		if (check != null && !check (subject))
 			return false;
 
+		_cooldownCurr = cooldownMax;
 		return effect (subject, targetPosition, args);
 	}
 
@@ -170,13 +196,13 @@ public class Ability : ISerializable
 	public override string ToString ()
 	{
 		return name + "\n" +
-		desc + "\n" +
-		"Icon: " + iconPath + "\n" +
-		"Cooldown: " + cooldownCurr.ToString ("#00.0") + " / " + cooldownMax.ToString ("#00.0") + "\n" +
-		"Effect: " + effectName + "\n" +
-		"Prereq: " + checkName + "\n" +
-		"PreAnim: " + preAnim + "\n" +
-		"PostAnim: " + postAnim + "\n";
+			desc + "\n" +
+			"Icon: " + iconPath + "\n" +
+			"Cooldown: " + cooldownCurr.ToString ("##0.0") + " / " + cooldownMax.ToString ("##0.0") + "\n" +
+			"Effect: " + effect.Method.ToString() + "\n" +
+			"Prereq: " + checkName + "\n" +
+			"PreAnim: " + preAnim + "\n" +
+			"PostAnim: " + postAnim + "\n";
 	}
 
 	/* Use Effects */
@@ -187,7 +213,7 @@ public class Ability : ISerializable
 	{
 		try
 		{
-			Bullet.create ("Prefabs/Bullets/Basic", subject, (DamageType)args [0], subject.getFaction ());
+			Bullet.create ("Basic", subject, (DamageType)args [0], subject.getFaction ());
 			return true;
 		}
 		#pragma warning disable 0168

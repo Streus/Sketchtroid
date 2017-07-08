@@ -69,7 +69,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	public static void damageEntity(Entity victim, Entity attacker, float damage, DamageType dt, bool ignoreShields = false, params Status[] s)
 	{
 		//everyone is in combat
-		victim.combatTimer = attacker.combatTimer = COMBAT_TIMER_MAX;
+		victim.combatTimer = COMBAT_TIMER_MAX;
+		if (attacker != null)
+			attacker.combatTimer = COMBAT_TIMER_MAX;
 
 		//don't deal negative damage; that's healing
 		if (damage < 0)
@@ -136,7 +138,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		//combat event hooks
 		victim.OnDamageTaken (attacker, damage, calcDamage, dt, hitShields);
-		attacker.OnDamageDealt (victim, damage, calcDamage, dt, hitShields);
+		if(attacker != null)
+			attacker.OnDamageDealt (victim, damage, calcDamage, dt, hitShields);
 	}
 
 	public static void healEntity(Entity e, float healAmount)

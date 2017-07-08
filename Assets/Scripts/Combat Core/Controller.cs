@@ -72,7 +72,7 @@ public class Controller : MonoBehaviour
 
 	protected void facePoint(Vector2 point)
 	{
-		Quaternion rot = Quaternion.LookRotation (transform.position - (Vector3)point, Vector3.back);
+		Quaternion rot = Quaternion.LookRotation (transform.position - new Vector3(point.x, point.y, -100f), Vector3.forward);
 		transform.rotation = rot;
 		transform.eulerAngles = new Vector3 (0f, 0f, transform.eulerAngles.z);
 	}
@@ -104,6 +104,7 @@ public class Controller : MonoBehaviour
 		catch(IndexOutOfRangeException ioore)
 		#pragma warning restore 0168
 		{
+			Console.log.println (ioore.Message, Console.LogTag.error);
 			return false;
 		}
 	}

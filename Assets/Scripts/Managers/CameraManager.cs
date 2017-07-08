@@ -18,6 +18,7 @@ public class CameraManager : MonoBehaviour
 	// Target stuff
 	public Transform target;
 	public bool isFollowingTarget;
+	public bool freeFollow;
 
 	// Shake stuff
 	private float shakeDur = 0f;
@@ -30,14 +31,11 @@ public class CameraManager : MonoBehaviour
 		if (scene_cam == null)
 			scene_cam = this;
 		else
-			throw new UnityException ("More than one rig in the scene, dummy");
+			Debug.LogError ("More than one rig in the scene, dummy"); //DEBUG
 
 		cam = transform.GetChild (0);
 
 		path = new Queue<PathNode> ();
-
-		target = null;
-		isFollowingTarget = false;
 	}
 
 	public void Update()
@@ -63,13 +61,23 @@ public class CameraManager : MonoBehaviour
 		}
 
 		//follow a target or transition through a path
-		if (isFollowingTarget && target != null)
-			transform.position = Vector3.Lerp (transform.position, target.position, Time.deltaTime);
+		if (isFollowingTarget && target != null && freeFollow)
+		{
+			Vector3 tarPos = new Vector3 (target.position.x, target.position.y, transform.position.z);
+			transform.position = Vector3.Lerp (transform.position, tarPos, Time.deltaTime);
+		}
 		else if(path.Count > 0)
 		{
 			StartCoroutine (transitionToPathNode (path.Peek (), 1f));
 			StartCoroutine (waitForNode (path.Dequeue ()));
 		}
+	}
+
+	public void LateUpdate()
+	{
+		//stay locked to the target's position
+		if (isFollowingTarget && target != null && !freeFollow)
+			transform.position = new Vector3 (target.position.x, target.position.y, transform.position.z);
 	}
 
 	// Assigns the target and toggles target following
