@@ -98,7 +98,7 @@ public class RegisteredObject : MonoBehaviour
 		IReapable blade = GetComponent<IReapable> ();
 		if (blade == null)
 			throw new ReapException (ToString() + " has no values to reap");
-		Debug.Log (ToString () + " reaped values."); //DEBUG
+		Console.log.println (ToString () + " reaped values.", Console.LogTag.info); //DEBUG
 
 		SeedBase seed = blade.reap();
 
@@ -115,7 +115,7 @@ public class RegisteredObject : MonoBehaviour
 			if (parentRO != null)
 				seed.parentID = parentRO.registeredID;
 			else
-				Debug.LogError (ToString () + " is under a non-RO. Make its parent an RO to save its data properly."); //DEBUG
+				Console.log.println (ToString () + " is under a non-RO. Make its parent an RO to save its data properly.", Console.LogTag.error); //DEBUG
 		}
 		else
 			seed.parentID = "";
@@ -129,7 +129,7 @@ public class RegisteredObject : MonoBehaviour
 		IReapable hole = GetComponent<IReapable> ();
 		if (hole == null)
 			throw new ReapException (ToString() + " has nowhere to sow values");
-		Debug.Log (ToString () + " sowed values."); //DEBUG
+		Console.log.println (ToString () + " sowed values.", Console.LogTag.info); //DEBUG
 
 		//intercept and save prefabPath
 		prefabPath = seed.prefabPath;

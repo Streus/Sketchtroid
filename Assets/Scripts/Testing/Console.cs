@@ -32,6 +32,10 @@ public class Console : MonoBehaviour
 	[SerializeField]
 	private Text output;
 
+	// The base RectTransform of the Console
+	[SerializeField]
+	private RectTransform root;
+
 	// The Console's Canvas Group
 	[SerializeField]
 	private CanvasGroup _canvas;
@@ -59,6 +63,13 @@ public class Console : MonoBehaviour
 		{
 			_enabled = _canvas.interactable = _canvas.blocksRaycasts = value;
 			_canvas.alpha = _enabled ? 1f : 0f;
+			if (!_enabled)
+			{
+				input.text = "";
+				input.DeactivateInputField ();
+			}
+			else
+				input.ActivateInputField ();
 		}
 	}
 
@@ -115,7 +126,10 @@ public class Console : MonoBehaviour
 	public void Update()
 	{
 		if (Input.GetKeyDown (KeyCode.BackQuote)) //TODO replace with dynamic keybinding
+		{
 			isEnabled = !isEnabled;
+			return;
+		}
 
 		if (!isEnabled)
 			return;
@@ -173,7 +187,10 @@ public class Console : MonoBehaviour
 			}
 		}
 		if (found)
-			println (commOut, LogTag.command_out);
+		{
+			if (commOut != "")
+				println (commOut, LogTag.command_out);
+		}
 		else
 			println ("Command not found.  Try \"help\" for a list of commands", LogTag.error);
 
@@ -181,21 +198,19 @@ public class Console : MonoBehaviour
 		input.text = "";
 	}
 
+	// Print a message to the console
 	public void println(string message)
 	{
 		print (message + "\n");
 	}
-
 	public void println(string message, LogTag tag)
 	{
 		print (message + "\n", tag);
 	}
-
 	public void print(string message)
 	{
 		print (message, LogTag.none);
 	}
-
 	public void print(string message, LogTag tag)
 	{
 		output.text += tags [(int)tag] + " " + message;
@@ -205,6 +220,28 @@ public class Console : MonoBehaviour
 			string currOutput = output.text;
 			output.text = currOutput.Substring (output.cachedTextGenerator.lines [1].startCharIdx);
 		}
+	}
+
+	// Clear the console output window
+	public void clear()
+	{
+		output.text = "";
+	}
+
+	// Maximize the console window
+	public void maximize()
+	{
+		root.anchorMin = new Vector2 (0f, 0f);
+		root.pivot = new Vector2 (0.5f, 0.5f);
+		root.sizeDelta = new Vector2 (0f, 0f);
+	}
+
+	// Minimize the console window
+	public void minimize()
+	{
+		root.anchorMin = new Vector2 (0f, 1f);
+		root.pivot = new Vector2 (0.5f, 1f);
+		root.sizeDelta = new Vector2 (0f, 100f);
 	}
 
 	// Used to tag output with appending strings and colors

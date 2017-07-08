@@ -120,7 +120,7 @@ public class SceneStateManager : ISerializable
 		//if the current scene is not ignored, save data from it
 		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
 		{
-			Debug.Log ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + "."); //DEBUG
+			Console.log.println ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info); //DEBUG
 
 			//create a dictionary for the incoming data
 			Dictionary<string, SeedBase> currData = new Dictionary<string, SeedBase> ();
@@ -137,7 +137,7 @@ public class SceneStateManager : ISerializable
 			resetTimers.Add (currName, RESET_TIMER_MAX);
 		}
 		else
-			Debug.Log ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored."); //DEBUG
+			Console.log.println ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info); //DEBUG
 
 		//Do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -155,14 +155,14 @@ public class SceneStateManager : ISerializable
 	// Load saved data into ROs in the new scene
 	private void activeSceneTransitioned(Scene prev, Scene curr)
 	{
-		Debug.Log ("[SceneStateManager] Loading values for " + curr.name + "."); //DEBUG
+		Console.log.println ("[SceneStateManager] Loading values for " + curr.name + ".", Console.LogTag.info); //DEBUG
 
 		Dictionary<string, SeedBase> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
-			Debug.Log ("[SceneStateManager] No data to load for " + curr.name + "."); //DEBUG
+			Console.log.println ("[SceneStateManager] No data to load for " + curr.name + ".", Console.LogTag.info); //DEBUG
 			return;
 		}
 
@@ -172,9 +172,9 @@ public class SceneStateManager : ISerializable
 			if (sb.prefabPath != "")
 			{
 				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
-					Debug.Log ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + "."); //DEBUG
+					Console.log.println ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + ".", Console.LogTag.info); //DEBUG
 				else
-					Debug.LogError ("[SceneStateManager] Failed to respawn prefab object: " + sb.registeredID + "."); //DEBUG
+					Console.log.println ("[SceneStateManager] Failed to respawn prefab object: " + sb.registeredID + ".", Console.LogTag.error); //DEBUG
 			}
 		}
 
@@ -196,7 +196,7 @@ public class SceneStateManager : ISerializable
 
 		bool newIgnore = ignoreSet.Add (currName);
 		if(newIgnore)
-			Debug.Log ("[SceneStateManager] Ignoring " + SceneManager.GetActiveScene ().name + "."); //DEBUG
+			Console.log.println ("[SceneStateManager] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info); //DEBUG
 
 		return newIgnore;
 	}
