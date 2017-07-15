@@ -24,6 +24,9 @@ public class Player : Controller
 
 	private void updatePrime()
 	{
+		if (Console.log.isEnabled)
+			return;
+
 		//invoke abilities
 		if (Input.GetKey (KeyCode.Mouse0)) //TODO swap for proper bindings later
 			useAbility (0, Vector2.zero, DamageType.PHYSICAL);
@@ -31,7 +34,7 @@ public class Player : Controller
 
 	private void fixedUpdatePrime()
 	{
-		if (Console.log.isFocused)
+		if (Console.log.isEnabled)
 			return;
 
 		//face the mouse

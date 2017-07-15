@@ -46,6 +46,12 @@ public class Console : MonoBehaviour
 	// A list of all available commands
 	private List<Command> commands;
 
+	// A list of all active variables
+	private Dictionary<string, Variable> variables;
+
+	// The current scope
+	private int currScope;
+
 	public Command[] getCommandList()
 	{
 		return commands.ToArray ();
@@ -88,6 +94,9 @@ public class Console : MonoBehaviour
 
 			commands = new List<Command> ();
 			buildCommandList ();
+
+			variables = new Dictionary<string, Variable> ();
+			currScope = -1;
 
 			history = new List<string> ();
 			historyIndex = -1;
@@ -165,28 +174,11 @@ public class Console : MonoBehaviour
 		string commOut = "";
 
 		//parse input
-		string[] args = input.text.Split(' ', ',');
+		string[] args = parseLine(input.text);
 		args [0] = args [0].ToLower ();
 
-		//search for a command that matches args[0]
-		bool found = false;
-		foreach (Command c in commands)
-		{
-			if(c.getInvocation().Equals(args[0]))
-			{
-				try
-				{
-					commOut = c.execute (args);
-				}
-				catch(Command.ExecutionException ee)
-				{
-					println (ee.Message, LogTag.error);
-				}
-				found = true;
-				break;
-			}
-		}
-		if (found)
+		//search for a command that matches args[0] and exec it
+		if (execute(args, out commOut))
 		{
 			if (commOut != "")
 				println (commOut, LogTag.command_out);
@@ -196,6 +188,161 @@ public class Console : MonoBehaviour
 
 		history.Insert (0, input.text);
 		input.text = "";
+	}
+
+	// Parse an individual input line and return an array of args
+	private string[] parseLine(string line)
+	{
+		string[] args = line.Split (' ');
+		List<string> mergeList = new List<string> ();
+		string mergeString = "";
+		bool merging = false;
+		for (int i = 0; i < args.Length; i++)
+		{
+			//argument merging
+			bool endsWith = args [i].EndsWith ("\"");
+			if (endsWith && merging)
+			{
+				mergeString += args [i];
+				mergeList.Add (resolveVariable(mergeString.Replace("\"", "")));
+				mergeString = "";
+				merging = false;
+			}
+			else if (args [i].StartsWith ("\"") || merging)
+			{
+				if (endsWith)
+				{
+					mergeString = "";
+					mergeList.Add(resolveVariable(args[i].Replace("\"", "")));
+				}
+				else
+					mergeString += args [i] + " ";
+				merging = !endsWith;
+			}
+			else
+			{
+				mergeList.Add (resolveVariable(args [i]));
+			}
+		}
+		return mergeList.ToArray ();
+	}
+	private string resolveVariable(string str)
+	{
+		int startInd = 0, endInd = 0;
+		string resultStr = "";
+		while (true)
+		{
+			startInd = str.IndexOf ('%', endInd);
+			endInd = Mathf.Min (str.IndexOf (' '), str.IndexOf ('\"'), str.Length - 1);
+			string resolution = getVariableValue(str.Substring (startInd, endInd - startInd));
+		}
+
+		return str;
+	}
+
+	// Attempt to execute a command. Fills output with the result of a successful command
+	private bool execute(string[] command, out string output)
+	{
+		output = "";
+		foreach (Command c in commands)
+		{
+			if(c.getInvocation().Equals(command[0]))
+			{
+				try
+				{
+					output = c.execute (command);
+				}
+				catch(Command.ExecutionException ee)
+				{
+					println (ee.Message, LogTag.error);
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Create a variable and store it in the console's dictionary
+	public bool declareVariable(string name, string value, bool globalVar = false)
+	{
+		int scope = globalVar ? -1 : currScope;
+		if (!variables.ContainsKey (scope.ToString() + name))
+			variables.Add (scope.ToString() + name, new Variable (name, value, scope));
+		else
+			return false;
+		return true;
+	}
+
+	// Set the value of a variable currently managed by the console
+	public bool setVariableValue(string name, string value, bool globalVar = false)
+	{
+		Variable v = null;
+		if (globalVar && variables.TryGetValue ("-1" + name, out v))
+		{
+			v.value = value;
+			return true;
+		}
+
+		for(int i = currScope; i >= -1; i--)
+		{
+			if(variables.TryGetValue (i.ToString() + name, out v))
+			{
+				v.value = value;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Get the value of a variable via its name
+	private string getVariableValue(string name, bool globalVar = false)
+	{
+		Variable v = null;
+
+		if (globalVar && variables.TryGetValue ("-1" + name, out v))
+			return v.value;
+		
+		for(int i = currScope; i >= -1; i--)
+			if(variables.TryGetValue (i.ToString() + name, out v))
+				return v.value;
+		
+		println (name + " does not exist in the current context.", LogTag.error);
+		return name;
+	}
+
+	// Open new scope
+	public void openScope()
+	{
+		currScope++;
+	}
+
+	// Close the current scope, if it's not the global scope
+	public bool closeScope()
+	{
+		if (currScope == -1)
+		{
+			println ("Cannot close global scope.", LogTag.error);
+			return false;
+		}
+
+		// Remove all variables in the current scope
+		foreach (Variable v in variables.Values)
+		{
+			if (v.scope == currScope)
+				variables.Remove (v.name);
+		}
+
+		currScope--;
+		return true;
+	}
+
+	// Return a summary string for the console's variable dictionary
+	public string dumpVariables()
+	{
+		string str = "Current;y managing " + variables.Count + " variables";
+		foreach (Variable v in variables.Values)
+			str += "\n[" + v.scope + "] " + v.name + " = " + v.value;
+		return str;
 	}
 
 	// Print a message to the console
@@ -244,9 +391,32 @@ public class Console : MonoBehaviour
 		root.sizeDelta = new Vector2 (0f, 100f);
 	}
 
+	/* Inner Classes */
+
 	// Used to tag output with appending strings and colors
 	public enum LogTag
 	{
 		none, error, warning, info, command_out
+	}
+
+	// To be used to save and retrive values in commands and .cser files
+	private class Variable
+	{
+		// The name used to reference the variable
+		public readonly string name;
+
+		// The value the variable holds
+		public string value;
+
+		// The scope this variable is part of. when this scope ends, the variable is discarded
+		// A value of -1 makes it global
+		public readonly int scope;
+
+		public Variable(string name, string value, int scope = -1)
+		{
+			this.name = name;
+			this.value = value;
+			this.scope = scope;
+		}
 	}
 }
