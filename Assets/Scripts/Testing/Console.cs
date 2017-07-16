@@ -52,6 +52,9 @@ public class Console : MonoBehaviour
 	// The current scope
 	private int currScope;
 
+	// When true, command output will be suppressed
+	private bool quietMode;
+
 	public Command[] getCommandList()
 	{
 		return commands.ToArray ();
@@ -102,6 +105,8 @@ public class Console : MonoBehaviour
 			historyIndex = -1;
 
 			isEnabled = false;
+
+			quietMode = false;
 		}
 		else
 			Destroy (gameObject);
@@ -166,100 +171,178 @@ public class Console : MonoBehaviour
 		}
 	}
 
+	// Invoked when the user presses enter and the console is active
 	private void inputEntered()
 	{
 		if (!isEnabled || input.text == "")
 			return;
-
-		string commOut = "";
-
-		//parse input
-		string[] args = parseLine(input.text);
-		args [0] = args [0].ToLower ();
-
-		//search for a command that matches args[0] and exec it
-		if (execute(args, out commOut))
-		{
-			if (commOut != "")
-				println (commOut, LogTag.command_out);
-		}
-		else
-			println ("Command not found.  Try \"help\" for a list of commands", LogTag.error);
-
-		history.Insert (0, input.text);
-		input.text = "";
+		
+		//use the text from input to execute a command
+		execute(input.text);
 	}
 
-	// Parse an individual input line and return an array of args
-	private string[] parseLine(string line)
+	// Execute a file of prepared commands, treating each line as an indiv. command
+	public bool executeFile(string fileName)
 	{
-		string[] args = line.Split (' ');
-		List<string> mergeList = new List<string> ();
-		string mergeString = "";
-		bool merging = false;
-		for (int i = 0; i < args.Length; i++)
+		string[] commSer = new string[0];
+
+		//load file into a string array
+		try
 		{
-			//argument merging
-			bool endsWith = args [i].EndsWith ("\"");
-			if (endsWith && merging)
+			commSer = File.ReadAllLines (fileName);
+		}
+		#pragma warning disable 0168
+		catch(IOException ioe)
+		#pragma warning restore 0168
+		{
+			println ("Could not load CSER file: " + fileName, LogTag.error);
+			return false;
+		}
+
+		//parse for line markers
+		Dictionary<string, int> lineMarkers = new Dictionary<string, int> ();
+		for (int i = 0; i < commSer.Length; i++)
+		{
+			if(commSer[i].StartsWith(":"))
 			{
-				mergeString += args [i];
-				mergeList.Add (resolveVariable(mergeString.Replace("\"", "")));
-				mergeString = "";
-				merging = false;
-			}
-			else if (args [i].StartsWith ("\"") || merging)
+				int endTag = commSer [i].IndexOf (' ');
+				if (endTag == -1)
+					endTag = commSer [i].Length - 1;
+				string tag = commSer [i].Substring (1, endTag - 1);
+				if(tag != "")
+					lineMarkers.Add (tag, i);
+			}	
+		}
+
+		//save current option statuses for reset later
+		bool quietMode_store = quietMode;
+
+		string[] optionsLine = parseLine (commSer [0]);
+		foreach (string option in optionsLine)
+		{
+			if (option == "-q")
+				quietMode = true;
+		}
+
+		//execute the file
+		for (int i = 0; ++i < commSer.Length;)
+		{
+			//goto handling
+			if (commSer [i].StartsWith ("goto", false, System.Globalization.CultureInfo.CurrentCulture))
 			{
-				if (endsWith)
+				string tag;
+				try
 				{
-					mergeString = "";
-					mergeList.Add(resolveVariable(args[i].Replace("\"", "")));
+					tag = commSer [i].Split (' ') [1];
 				}
-				else
-					mergeString += args [i] + " ";
-				merging = !endsWith;
+				#pragma warning disable 0168
+				catch (System.IndexOutOfRangeException ioobe)
+				#pragma warning restore 0168
+				{
+					println ("Malformed goto on line " + i, LogTag.error);
+					return false;
+				}
+				int line = 0;
+				if (lineMarkers.TryGetValue (tag, out line))
+					i = line;
 			}
-			else
-			{
-				mergeList.Add (resolveVariable(args [i]));
-			}
-		}
-		return mergeList.ToArray ();
-	}
-	private string resolveVariable(string str)
-	{
-		int startInd = 0, endInd = 0;
-		string resultStr = "";
-		while (true)
-		{
-			startInd = str.IndexOf ('%', endInd);
-			endInd = Mathf.Min (str.IndexOf (' '), str.IndexOf ('\"'), str.Length - 1);
-			string resolution = getVariableValue(str.Substring (startInd, endInd - startInd));
+			else //execute the command on the current line
+				execute (commSer [i]);
 		}
 
-		return str;
+		//reset any toggled options
+		quietMode = quietMode_store;
+
+		return true;
 	}
 
 	// Attempt to execute a command. Fills output with the result of a successful command
-	private bool execute(string[] command, out string output)
+	public bool execute(string command)
 	{
-		output = "";
+		string commOut = "";
+		bool success = false;
+
+		//parse input
+		string[] args = parseLine(command);
+		args [0] = args [0].ToLower ();
+
 		foreach (Command c in commands)
 		{
-			if(c.getInvocation().Equals(command[0]))
+			if(c.getInvocation().Equals(args[0]))
 			{
 				try
 				{
-					output = c.execute (command);
+					commOut = c.execute (args);
 				}
 				catch(Command.ExecutionException ee)
 				{
 					println (ee.Message, LogTag.error);
 				}
-				return true;
+				#pragma warning disable 0168
+				catch(System.IndexOutOfRangeException ioore)
+				#pragma warning restore 0168
+				{
+					println ("Provided too few arguments.\n" + c.getHelp(), LogTag.error);
+				}
+
+				if (commOut != "")
+					println (commOut, LogTag.command_out);
+
+				success = true;
 			}
 		}
-		return false;
+		if(!success)
+			println ("Command not found.  Try \"help\" for a list of commands", LogTag.error);
+		history.Insert (0, input.text);
+
+		return success;
+	}
+
+	// Parse an individual input line and return an array of args
+	private string[] parseLine(string line)
+	{
+		List<string> argsList = new List<string> ();
+		string mergeString = "";
+		bool merging = false;
+
+		for (int i = 0; i < line.Length; i++)
+		{
+			if (line [i] == '\"') //start or end space-ignoring group
+			{
+				merging = !merging;
+				if (!merging)
+				{
+					argsList.Add (mergeString);
+					mergeString = "";
+				}
+			}
+			else if (line [i] == '%' || line [i] == '!') //try to resolve a variable
+			{
+				char delim = line [i] == '%' ? '%' : '!';
+				int start = i + 1;
+				int end = line.IndexOf (delim, start);
+				if (end != -1)
+				{
+					mergeString += getVariableValue (line.Substring (start, end - start), line [i] == '!');
+					i = end;
+				}
+			}
+			else if (line [i] == ' ' && !merging) //end of a regular term
+			{
+				if(mergeString != "")
+					argsList.Add (mergeString);
+				mergeString = "";
+			}
+			else //add any other character to the mergeString
+				mergeString += line [i];
+		}
+
+		//if the merge string is not empty, add it the the args list
+		if(mergeString != "")
+			argsList.Add (mergeString);
+
+		//return the parsed result
+		return argsList.ToArray ();
 	}
 
 	// Create a variable and store it in the console's dictionary
@@ -360,6 +443,9 @@ public class Console : MonoBehaviour
 	}
 	public void print(string message, LogTag tag)
 	{
+		if (quietMode && tag == LogTag.command_out)
+			return;
+		
 		output.text += tags [(int)tag] + " " + message;
 
 		if (output.cachedTextGenerator.lineCount > linesMax)
