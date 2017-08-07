@@ -41,13 +41,6 @@ public class Destructable : MonoBehaviour, IReapable
 	public void sow(SeedBase s)
 	{
 		Seed seed = (Seed)s;
-		destroyed = seed.destroyed;
-		if (destroyed)
-		{
-			//should be destroyed
-			Destroy (gameObject);
-			return;
-		}
 
 		//sow values
 		health = seed.health;
@@ -64,7 +57,6 @@ public class Destructable : MonoBehaviour, IReapable
 			rb.angularVelocity = seed.rbAngVelocity;
 		}
 	}
-	public bool destroyed { get; set; }
 	public bool ignoreReset() { return !allowReset; }
 
 	protected virtual void OnHit(float damage)
@@ -76,6 +68,8 @@ public class Destructable : MonoBehaviour, IReapable
 	{
 		if (destructed != null)
 			destructed ();
+
+		GetComponent<RegisteredObject> ().saveDestruction ();
 
 		Destroy (gameObject);
 	}

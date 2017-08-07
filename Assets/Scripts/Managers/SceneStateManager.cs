@@ -120,14 +120,20 @@ public class SceneStateManager : ISerializable
 		//if the current scene is not ignored, save data from it
 		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
 		{
-			Console.log.println ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info); //DEBUG
+			Console.log.println ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
 
 			//create a dictionary for the incoming data
-			Dictionary<string, SeedBase> currData = new Dictionary<string, SeedBase> ();
+			Dictionary<string, SeedBase> currData;
+			if (!scenes.TryGetValue (SceneManager.GetActiveScene ().name, out currData))
+				currData = new Dictionary<string, SeedBase> ();
 
 			//add each ROs data to the dictionary
 			foreach (RegisteredObject ro in RegisteredObject.getObjects())
+			{
+				if (currData.ContainsKey (ro.rID))
+					currData.Remove (ro.rID);
 				currData.Add (ro.rID, ro.reap ());
+			}
 
 			//replace any old data with the new data (including resetTimer data)
 			string currName = SceneManager.GetActiveScene ().name;
@@ -137,7 +143,7 @@ public class SceneStateManager : ISerializable
 			resetTimers.Add (currName, RESET_TIMER_MAX);
 		}
 		else
-			Console.log.println ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info); //DEBUG
+			Console.log.println ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info);
 
 		//Do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -201,6 +207,25 @@ public class SceneStateManager : ISerializable
 		return newIgnore;
 	}
 
+	// Called by RegisteredObjects when their client components are destroyed in gameplay.
+	// Places the passed seed into the current scene's dictionary
+	public void store(string ID, SeedBase seed)
+	{
+		//get the data for the current scene. if none exists, create a container
+		Dictionary<string, SeedBase> currData;
+		if (!scenes.TryGetValue (SceneManager.GetActiveScene ().name, out currData))
+		{
+			currData = new Dictionary<string, SeedBase> ();
+			scenes.Add (SceneManager.GetActiveScene ().name, currData);
+		}
+
+		//add the entry to the current scene dictionary
+		if (currData.ContainsKey (ID))
+			currData.Remove (ID);
+		currData.Add (ID, seed);
+	}
+
+	// For serialization
 	public void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
 		info.AddValue ("scenes", scenes);
@@ -212,7 +237,8 @@ public class SceneStateManager : ISerializable
 		for(int i = 0; i < igset.Length; i++)
 			info.AddValue ("ignoreSet" + i, igset[i]);
 	}
-
+		
+	// Resolve the current SSM instance to a string
 	public override string ToString ()
 	{
 		string str = "[SceneStateManager]\n";

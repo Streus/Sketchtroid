@@ -16,10 +16,10 @@ public class Console : MonoBehaviour
 	private static string[] tags = new string[]
 	{
 		"",
-		"<color=#ff1111ff><b>[ERROR]</b></color>",
-		"<color=#ffff11ff><b>[WARN]</b></color>",
-		"<color=#11ffffff><b>[INFO]</b></color>",
-		"<color=#11ff11ff><b>[OUT]</b></color>"
+		"<color=#ff1111ff><b>[ERROR]</b></color>", //red
+		"<color=#ffff11ff><b>[WARN]</b></color>", //yellow
+		"<color=#11ffffff><b>[INFO]</b></color>", //cyan
+		"<color=#11ff11ff><b>[OUT]</b></color>" //green
 	};
 
 	/* Instance Vars */
@@ -422,7 +422,7 @@ public class Console : MonoBehaviour
 	// Return a summary string for the console's variable dictionary
 	public string dumpVariables()
 	{
-		string str = "Current;y managing " + variables.Count + " variables";
+		string str = "Currently managing " + variables.Count + " variables";
 		foreach (Variable v in variables.Values)
 			str += "\n[" + v.scope + "] " + v.name + " = " + v.value;
 		return str;

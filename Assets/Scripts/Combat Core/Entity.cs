@@ -184,7 +184,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		Entity parEnt = GetComponentInParent<Entity> ();
 		Destructable parDes = GetComponentInParent<Destructable> ();
 
-		if (parEnt != null)
+		if (parEnt != null && parEnt != this)
 			parEnt.died += OnDeath;
 		else if (parDes != null)
 			parDes.destructed += OnDeath;
@@ -528,13 +528,13 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// This Entity has died
 	public void OnDeath()
 	{
-		destroyed = true;
-
 		foreach (Status s in statuses)
 			s.OnDeath (this);
 		
 		if (died != null)
 			died ();
+
+		GetComponent<RegisteredObject> ().saveDestruction ();
 		
 		Destroy(gameObject);
 	}

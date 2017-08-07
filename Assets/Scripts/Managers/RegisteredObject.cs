@@ -134,7 +134,20 @@ public class RegisteredObject : MonoBehaviour
 		//intercept and save prefabPath
 		prefabPath = seed.prefabPath;
 
-		hole.sow (seed);
+		//destroy object if it saved a destroyed state
+		if (seed.destroyed)
+			Destroy (gameObject);
+		else
+			hole.sow (seed);
+	}
+
+	// Called by client components when they are destroyed via gameplay
+	public void saveDestruction()
+	{
+		SeedBase seed = reap ();
+		seed.destroyed = true;
+
+		SceneStateManager.instance ().store (rID, seed);
 	}
 
 	public override string ToString ()

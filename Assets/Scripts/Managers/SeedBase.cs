@@ -54,7 +54,7 @@ public class SeedBase: ISerializable
 			rbAngVelocity = rb2d.angularVelocity;
 		}
 
-		destroyed = subject.GetComponent<IReapable> ().destroyed;
+		destroyed = false;
 		ignoreReset = subject.GetComponent<IReapable> ().ignoreReset ();
 
 		prefabPath = "";
