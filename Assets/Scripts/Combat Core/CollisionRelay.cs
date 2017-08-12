@@ -5,7 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class CollisionRelay : MonoBehaviour
 {
-	[SerializeField]
 	private Entity relayTarget;
 
 	public void Start()
