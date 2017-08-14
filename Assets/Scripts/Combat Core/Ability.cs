@@ -10,10 +10,14 @@ using UnityEngine.Scripting;
 public class Ability : ISerializable
 {
 	/* Static Vars */
-	public static readonly Ability[] repository = new Ability[]
+	private static Dictionary<string, Ability> repository;
+
+	static Ability()
 	{
-		new Ability("Basic Fire", "Fire a bullet", "", 1f, "basicShoot")
-	};
+		repository = new Dictionary<string, Ability> ();
+		repository.Add ("Basic Fire", new Ability ("Basic Fire", "Fire a bullet", "", 1f, "basicShoot"));
+		repository.Add ("Spray", new Ability ("Spray", "Shoot a continuous stream of bullets", "", 0.1f, "sprayShoot"));
+	}
 
 	/* Instance Vars */
 
@@ -55,6 +59,14 @@ public class Ability : ISerializable
 
 	/* Static Methods */
 
+	// Get an ability from the ability repository, ifex
+	public static Ability get(string name)
+	{
+		Ability a;
+		if (repository.TryGetValue (name, out a))
+			return a;
+		return null;
+	}
 
 	/* Constructors */
 	public Ability(string name, string desc, string iconPath, float cooldownMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
@@ -221,6 +233,24 @@ public class Ability : ISerializable
 		#pragma warning restore 0168
 		{ 
 			Debug.LogError ("Passed invalid argument to basicShoot");
+		}
+		return false;
+	}
+
+	// The Player's first basic ability
+	private bool sprayShoot(Entity subject, Vector2 targetPosition, params object[] args)
+	{
+		try
+		{
+			Bullet b = Bullet.create ("Basic", subject, (DamageType)args [0], subject.getFaction ());
+			b.transform.position += (Vector3)UnityEngine.Random.insideUnitCircle * 0.3f;
+			return true;
+		}
+		#pragma warning disable 0168
+		catch(InvalidCastException ice)
+		#pragma warning restore 0168
+		{ 
+			Debug.LogError ("Passed invalid argument to sprayShoot");
 		}
 		return false;
 	}

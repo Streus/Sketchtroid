@@ -19,7 +19,7 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
-		self.addAbility (Ability.repository [0]);
+		self.addAbility (Ability.get("Spray"));
 	}
 
 	private void updatePrime()
