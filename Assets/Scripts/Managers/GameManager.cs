@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,6 +32,10 @@ public class GameManager : MonoBehaviour
 	// The Scene of the last save
 	private string lastScene;
 
+	// Used for scene transitions
+	private string prevScene;
+	private string destinationName;
+
 	// The game difficulty level
 	private Difficulty _difficulty;
 	public Difficulty difficulty { get { return _difficulty; } }
@@ -49,7 +54,7 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy (gameObject);
 
-		//SceneStateManager.instance ().ignoreCurrentScene (); //TODO uncomment this
+		//SceneStateManager.instance ().ignoreCurrentScene (); //TODO uncomment this eventually
 
 		saveName = "";
 		gameName = "";
@@ -69,7 +74,7 @@ public class GameManager : MonoBehaviour
 		this.saveName = saveName;
 	}
 
-	public string currentScene { get { return lastScene; } set { lastScene = value; } }
+	public string currentScene { get { return lastScene; } set { prevScene = lastScene; lastScene = value; } }
 
 	public string gameTitle { get { return gameName; } set { gameName = value; } }
 
@@ -163,6 +168,22 @@ public class GameManager : MonoBehaviour
 		loadData (gameName);
 
 		SceneStateManager.instance ().jumpTo (save.lastScene);
+	}
+
+	public GameObject createPlayer(SeedBase data, Vector2 savePosition)
+	{
+		GameObject player = createPlayer (data);
+		player.transform.position = (Vector3)savePosition;
+	}
+	public GameObject createPlayer(SeedBase data)
+	{
+		//find destination
+		SceneDoor door = SceneDoor.getDoor(prevScene);
+
+		GameObject pref = Resources.Load<GameObject> ("Prefabs/Entities/Player");
+		GameObject inst = Instantiate<GameObject> (pref);
+
+		door.startTransitionIn (inst);
 	}
 
 	/* Delegates and Events */

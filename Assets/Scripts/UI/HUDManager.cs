@@ -48,8 +48,18 @@ public class HUDManager : MonoBehaviour
 		//TODO other clearing and resetting of elements?
 	}
 
-	public Image getFadeMask()
+	//screen fade coroutine
+	public void fade(int scalar)
 	{
-		return fadeMask;
+		StartCoroutine (fadeScreen(fadeMask, scalar));
+	}
+	private IEnumerator fadeScreen(Image fade, int scalar)
+	{
+		while (fade.color.a < 1f)
+		{
+			float alpha = fade.color.a + (Time.deltaTime * scalar);
+			fade.color = new Color (fade.color.r, fade.color.g, fade.color.b, alpha);
+			yield return null;
+		}
 	}
 }
