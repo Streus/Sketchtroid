@@ -54,24 +54,23 @@ public class SceneDoor : MonoBehaviour
 			//accelerate off screen, triggering a transition when fully off screen
 			target.GetComponent<Rigidbody2D> ().AddForce (target.transform.up * 2f, ForceMode2D.Impulse);
 
+			StartCoroutine (fadeScreenOut(HUDManager.instance.getFadeMask ()));
+
 			Vector2 screenPos = Camera.main.WorldToScreenPoint (target.transform.position);
 			if (screenPos.x > Screen.width + borderPadding || screenPos.x < -borderPadding
-			   || screenPos.y > Screen.height + borderPadding || screenPos.y < -borderPadding)
-				StartCoroutine ("fadeScreenOut");
+			    || screenPos.y > Screen.height + borderPadding || screenPos.y < -borderPadding)
+				SceneStateManager.instance ().transitionTo (targetRoom);
 		}
 	}
 
 	//screen fade coroutine
-	IEnumerable fadeScreenOut()
+	private IEnumerator fadeScreenOut(Image fade)
 	{
-		Image fade = HUDManager.instance.getFadeMask ();
-		while (fade.color.a > 0f)
+		while (fade.color.a < 1f)
 		{
-			float alpha = fade.color.a - Time.deltaTime;
-			fade.color = new Color (fade.color.a, fade.color.g, fade.color.b, alpha);
+			float alpha = fade.color.a + Time.deltaTime / 2f;
+			fade.color = new Color (fade.color.r, fade.color.g, fade.color.b, alpha);
 			yield return null;
 		}
-
-		SceneStateManager.instance().transitionTo (targetRoom);
 	}
 }

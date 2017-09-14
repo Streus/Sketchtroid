@@ -190,6 +190,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 			parDes.destructed += OnDeath;
 	}
 
+	public float healthPerc { get { return health / healthMax; } }
+	public float shieldPerc { get { return shields / shieldsMax; } }
+
+
 	public Faction getFaction()
 	{
 		return faction;

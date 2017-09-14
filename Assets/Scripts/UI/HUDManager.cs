@@ -11,6 +11,17 @@ public class HUDManager : MonoBehaviour
 
 	/* Instance Vars */
 
+	// The Entity from which the HUD will pull values.
+	[SerializeField] //DEBUG
+	private Entity subject;
+
+	// Various UI elements that correspond to data in the subject entity
+	[SerializeField]
+	private Image healthBar;
+	[SerializeField]
+	private Image shieldBar;
+	//TODO add more fields to the HUDManager
+
 	// An element that overlays the entire screen. Is used for fade transitions.
 	[SerializeField]
 	private Image fadeMask;
@@ -22,6 +33,19 @@ public class HUDManager : MonoBehaviour
 			_instance = this;
 		else
 			Debug.LogError ("More than one HUDManager in the scene");
+	}
+
+	public void Update()
+	{
+		healthBar.fillAmount = subject.healthPerc;
+		shieldBar.fillAmount = subject.shieldPerc;
+	}
+
+	public void setSubject(Entity subject)
+	{
+		this.subject = subject;
+
+		//TODO other clearing and resetting of elements?
 	}
 
 	public Image getFadeMask()
