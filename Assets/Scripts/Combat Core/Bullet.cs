@@ -134,6 +134,11 @@ public class Bullet : MonoBehaviour
 			OnHit (col);
 			d.damage (damage);
 		}
+		else if (col.tag == "Indes")
+		{
+			OnHit (col);
+			OnDeath ();
+		}
 	}
 
 	// Collision with an indestructable target
