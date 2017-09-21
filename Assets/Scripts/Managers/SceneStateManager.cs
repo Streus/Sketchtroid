@@ -163,6 +163,10 @@ public class SceneStateManager : ISerializable
 	// Load saved data into ROs in the new scene
 	private void activeSceneTransitioned(Scene prev, Scene curr)
 	{
+		//create a player object from saved data
+		if(curr.name != "main") //TODO sse if there's a better way to do this
+			GameManager.instance.createPlayer();
+
 		Console.log.println ("[SceneStateManager] Loading values for " + curr.name + ".", Console.LogTag.info); //DEBUG
 
 		Dictionary<string, SeedBase> currData;
@@ -193,9 +197,6 @@ public class SceneStateManager : ISerializable
 			if (currData.TryGetValue (ro.rID, out data))
 				ro.sow (data);
 		}
-
-		//create a player object from saved data
-		GameManager.instance.createPlayer();
 	}
 
 	// Adds the current scene to the ignore list. Returns false if it already was in the

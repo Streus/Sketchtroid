@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy (gameObject);
 
-		//SceneStateManager.instance ().ignoreCurrentScene (); //TODO uncomment this eventually
+		SceneStateManager.instance ().ignoreCurrentScene ();
 
 		saveName = "";
 		gameName = "";
@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
 
 	public void Start()
 	{
-		SceneStateManager.instance ().jumpTo ("test1");
+		
 	}
 
 	public void Update()

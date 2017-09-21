@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class SceneDoor : MonoBehaviour
 {
 	/* Static Vars */
@@ -119,17 +120,27 @@ public class SceneDoor : MonoBehaviour
 	{
 		transitioningIn = true;
 		player.GetComponent<Controller> ().enabled = false;
-		CameraManager.scene_cam.transform.position = transform.position;
+		Transform ct = CameraManager.scene_cam.transform;
+		ct.position = new Vector3 (transform.position.x, transform.position.y, ct.position.z);
 
 		//calculate the position to place the player for the transition in
-		Vector2 screenBound = Camera.main.ScreenToWorldPoint(new Vector2 (Screen.width, Screen.height));
-		float maximumDistance = screenBound.magnitude;
-		//Vector2 spawnPos_uc = TODO finish this
+		Vector2 screenBound = new Vector2 (Screen.width, Screen.height);
+		Vector2 spawnPos = transform.up * screenBound.magnitude;
+		if (spawnPos.x > Screen.width/2)
+			spawnPos = new Vector2 (Screen.width/2, spawnPos.y);
+		else if (spawnPos.x < -Screen.width/2)
+			spawnPos = new Vector2 (-Screen.width/2, spawnPos.y);
+		if (spawnPos.y > Screen.height/2)
+			spawnPos = new Vector2 (spawnPos.x, Screen.height/2);
+		else if (spawnPos.y < -Screen.height/2)
+			spawnPos = new Vector2 (spawnPos.x, -Screen.height/2);
+
+		player.transform.position = (Vector2)(transform.position + Camera.main.ScreenToWorldPoint (spawnPos));
 
 		player.transform.rotation = Quaternion.Euler (0f, 0f, transform.rotation.eulerAngles.z - 180f);
 		player.GetComponent<Controller> ().enabled = false;
 
-		target.GetComponent<Rigidbody2D> ().AddForce (target.transform.up * 8f, ForceMode2D.Impulse);
+		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 35f, ForceMode2D.Impulse);
 
 		HUDManager.instance.fade (-0.5f);
 	}

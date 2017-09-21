@@ -32,10 +32,9 @@ public class HUDManager : MonoBehaviour
 		if (_instance == null)
 		{
 			_instance = this;
-			DontDestroyOnLoad (gameObject);
 		}
 		else
-			Debug.LogError ("More than one HUDManager in the scene");
+			Destroy (gameObject);
 	}
 
 	public void Update()
