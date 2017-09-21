@@ -6,7 +6,11 @@ using UnityEngine.UI;
 public class SceneDoor : MonoBehaviour
 {
 	/* Static Vars */
-	private List<SceneDoor> doors;
+	private static List<SceneDoor> doors;
+	static SceneDoor()
+	{
+		doors = new List<SceneDoor>();
+	}
 
 	/* Instance Vars */
 	private Collider2D target;
@@ -18,8 +22,6 @@ public class SceneDoor : MonoBehaviour
 	[SerializeField]
 	private string destination;
 
-	[SerializeField]
-	private GameObject spawnPosition;
 	private bool transitioningIn = false;
 
 	/* Static Methods */
@@ -60,13 +62,21 @@ public class SceneDoor : MonoBehaviour
 		else
 		{
 			CameraManager.scene_cam.setTarget (col.transform);
-			CameraManager.scene_cam.isFollowingTarget = true;
 			col.GetComponent<Controller> ().enabled = true;
 		}
 	}
 
 	public void OnTriggerExit2D(Collider2D col)
 	{
+		if (destination == "")
+		{
+			Entity e = col.GetComponent<Entity> ();
+			if (e == null)
+				return;
+			int scalar = e.movespeed.value;
+			col.GetComponent<Rigidbody2D> ().AddForce (transform.up * -scalar);
+		}
+
 		if (transitioningIn)
 			transitioningIn = false;
 	}
@@ -96,7 +106,7 @@ public class SceneDoor : MonoBehaviour
 			//accelerate off screen, triggering a transition when fully off screen
 			target.GetComponent<Rigidbody2D> ().AddForce (target.transform.up * 2f, ForceMode2D.Impulse);
 
-			HUDManager.instance.fade (0.5);
+			HUDManager.instance.fade (0.5f);
 
 			Vector2 screenPos = Camera.main.WorldToScreenPoint (target.transform.position);
 			if (screenPos.x > Screen.width + borderPadding || screenPos.x < -borderPadding
@@ -108,12 +118,19 @@ public class SceneDoor : MonoBehaviour
 	public void startTransitionIn(GameObject player)
 	{
 		transitioningIn = true;
-		player.transform.position = spawnPosition.transform.position;
+		player.GetComponent<Controller> ().enabled = false;
+		CameraManager.scene_cam.transform.position = transform.position;
+
+		//calculate the position to place the player for the transition in
+		Vector2 screenBound = Camera.main.ScreenToWorldPoint(new Vector2 (Screen.width, Screen.height));
+		float maximumDistance = screenBound.magnitude;
+		//Vector2 spawnPos_uc = TODO finish this
+
 		player.transform.rotation = Quaternion.Euler (0f, 0f, transform.rotation.eulerAngles.z - 180f);
 		player.GetComponent<Controller> ().enabled = false;
 
 		target.GetComponent<Rigidbody2D> ().AddForce (target.transform.up * 8f, ForceMode2D.Impulse);
 
-		HUDManager.instance.fade (-0.5);
+		HUDManager.instance.fade (-0.5f);
 	}
 }

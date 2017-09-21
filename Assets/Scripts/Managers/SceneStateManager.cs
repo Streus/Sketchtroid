@@ -145,9 +145,10 @@ public class SceneStateManager : ISerializable
 		else
 			Console.log.println ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info);
 
-		//Do the scene transition and tell the GM what scene was entered
+		//do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
 		GameManager.instance.currentScene = nextName;
+		GameManager.instance.savePlayer ();
 	}
 
 	// Go to a new scene without saving anything from the current scene
@@ -156,6 +157,7 @@ public class SceneStateManager : ISerializable
 		SceneManager.LoadScene (sceneName, LoadSceneMode.Single);
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (sceneName));
 		GameManager.instance.currentScene = sceneName;
+		GameManager.instance.savePlayer ();
 	}
 
 	// Load saved data into ROs in the new scene
@@ -191,6 +193,9 @@ public class SceneStateManager : ISerializable
 			if (currData.TryGetValue (ro.rID, out data))
 				ro.sow (data);
 		}
+
+		//create a player object from saved data
+		GameManager.instance.createPlayer();
 	}
 
 	// Adds the current scene to the ignore list. Returns false if it already was in the

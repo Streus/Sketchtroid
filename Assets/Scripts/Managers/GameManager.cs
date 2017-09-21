@@ -30,15 +30,21 @@ public class GameManager : MonoBehaviour
 	private double totalTime;
 
 	// The Scene of the last save
-	private string lastScene;
+	private string currScene;
 
 	// Used for scene transitions
 	private string prevScene;
-	private string destinationName;
 
 	// The game difficulty level
 	private Difficulty _difficulty;
 	public Difficulty difficulty { get { return _difficulty; } }
+
+	// The currently active player object
+	private GameObject _player;
+	public GameObject player { get { return _player; } }
+
+	// Data describing the player object when it is not instantiated
+	private SeedBase playerData;
 
 	/* Static Methods */
 
@@ -60,6 +66,16 @@ public class GameManager : MonoBehaviour
 		gameName = "";
 		sceneTime = 0f;
 		totalTime = 0.0;
+		currScene = "";
+		prevScene = "";
+		_difficulty = Difficulty.easy;
+		_player = null;
+		playerData = null;
+	}
+
+	public void Start()
+	{
+		SceneStateManager.instance ().jumpTo ("test1");
 	}
 
 	public void Update()
@@ -74,7 +90,7 @@ public class GameManager : MonoBehaviour
 		this.saveName = saveName;
 	}
 
-	public string currentScene { get { return lastScene; } set { prevScene = lastScene; lastScene = value; } }
+	public string currentScene { get { return currScene; } set { prevScene = currScene; currScene = value; } }
 
 	public string gameTitle { get { return gameName; } set { gameName = value; } }
 
@@ -109,8 +125,10 @@ public class GameManager : MonoBehaviour
 		save.saveName = saveName;
 		save.sceneTime = sceneTime;
 		save.gameTime = totalTime;
-		save.lastScene = lastScene;
+		save.currScene = currScene;
+		save.prevScene = prevScene;
 		save.difficulty = _difficulty;
+		save.playerData = playerData;
 
 		return save;
 	}
@@ -162,28 +180,38 @@ public class GameManager : MonoBehaviour
 		gameName = save.gameName;
 		sceneTime = save.sceneTime;
 		totalTime = save.gameTime;
-		lastScene = save.lastScene;
+		currScene = save.currScene;
+		prevScene = save.prevScene;
 		_difficulty = save.difficulty;
+		playerData = save.playerData;
 
 		loadData (gameName);
 
-		SceneStateManager.instance ().jumpTo (save.lastScene);
+		SceneStateManager.instance ().jumpTo (save.currScene);
 	}
 
-	public GameObject createPlayer(SeedBase data, Vector2 savePosition)
+	// Create a player object
+	public GameObject createPlayer()
 	{
-		GameObject player = createPlayer (data);
-		player.transform.position = (Vector3)savePosition;
-	}
-	public GameObject createPlayer(SeedBase data)
-	{
-		//find destination
-		SceneDoor door = SceneDoor.getDoor(prevScene);
-
 		GameObject pref = Resources.Load<GameObject> ("Prefabs/Entities/Player");
 		GameObject inst = Instantiate<GameObject> (pref);
+		_player = inst;
+		Entity e = _player.GetComponent<Entity> ();
+		e.sow (playerData);
+		HUDManager.instance.setSubject (e);
 
+		//find destination and spawn there
+		SceneDoor door = SceneDoor.getDoor(prevScene);
 		door.startTransitionIn (inst);
+
+		return inst;
+	}
+
+	// Save the player's data at the end of a scene
+	public void savePlayer()
+	{
+		if(_player != null)
+			playerData = _player.GetComponent<Entity> ().reap ();
 	}
 
 	/* Delegates and Events */
@@ -197,15 +225,20 @@ public class GameManager : MonoBehaviour
 		public string gameName;
 		public float sceneTime;
 		public double gameTime;
-		public string lastScene;
+		public string currScene;
+		public string prevScene;
 		public Difficulty difficulty;
+		public SeedBase playerData;
 
 		public Save()
 		{
-			saveName = gameName = lastScene = "";
+			saveName = gameName = currScene = "";
 			sceneTime = 0f;
 			gameTime = 0.0;
+			currScene = "";
+			prevScene = "";
 			difficulty = Difficulty.easy;
+			playerData = null;
 		}
 
 		public Save(SerializationInfo info, StreamingContext context)
@@ -214,8 +247,10 @@ public class GameManager : MonoBehaviour
 			gameName = info.GetString("gameName");
 			sceneTime = info.GetSingle("sceneTime");
 			gameTime = info.GetDouble("gameTime");
-			lastScene = info.GetString("lastScene");
+			currScene = info.GetString("currScene");
+			prevScene = info.GetString("prevScene");
 			difficulty = (Difficulty)info.GetInt32("difficulty");
+			playerData = (SeedBase)info.GetValue("playerData", typeof(SeedBase));
 		}
 
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -224,8 +259,10 @@ public class GameManager : MonoBehaviour
 			info.AddValue ("gameName", gameName);
 			info.AddValue ("sceneTime", sceneTime);
 			info.AddValue ("gameTime", gameTime);
-			info.AddValue ("lastScene", lastScene);
+			info.AddValue ("currScene", currScene);
+			info.AddValue ("prevScene", prevScene);
 			info.AddValue ("difficulty", (int)difficulty);
+			info.AddValue("playerData", playerData);
 		}
 	}
 }

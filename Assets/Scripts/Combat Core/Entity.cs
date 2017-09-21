@@ -208,6 +208,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 	public void sow(SeedBase s)
 	{
+		if (s == null)
+			return;
+
 		Seed seed = (Seed)s;
 		destroyed = seed.destroyed;
 		if (destroyed)

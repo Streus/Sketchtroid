@@ -30,13 +30,19 @@ public class HUDManager : MonoBehaviour
 	public void Awake()
 	{
 		if (_instance == null)
+		{
 			_instance = this;
+			DontDestroyOnLoad (gameObject);
+		}
 		else
 			Debug.LogError ("More than one HUDManager in the scene");
 	}
 
 	public void Update()
 	{
+		if (subject == null)
+			return;
+
 		healthBar.fillAmount = subject.healthPerc;
 		shieldBar.fillAmount = subject.shieldPerc;
 	}
@@ -48,12 +54,12 @@ public class HUDManager : MonoBehaviour
 		//TODO other clearing and resetting of elements?
 	}
 
-	//screen fade coroutine
-	public void fade(int scalar)
+	//screen fade coroutine TODO this won't work both ways
+	public void fade(float scalar)
 	{
 		StartCoroutine (fadeScreen(fadeMask, scalar));
 	}
-	private IEnumerator fadeScreen(Image fade, int scalar)
+	private IEnumerator fadeScreen(Image fade, float scalar)
 	{
 		while (fade.color.a < 1f)
 		{
