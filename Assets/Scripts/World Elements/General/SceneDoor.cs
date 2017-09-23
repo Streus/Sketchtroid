@@ -107,8 +107,6 @@ public class SceneDoor : MonoBehaviour
 			//accelerate off screen, triggering a transition when fully off screen
 			target.GetComponent<Rigidbody2D> ().AddForce (target.transform.up * 2f, ForceMode2D.Impulse);
 
-			HUDManager.instance.fade (0.5f);
-
 			Vector2 screenPos = Camera.main.WorldToScreenPoint (target.transform.position);
 			if (screenPos.x > Screen.width + borderPadding || screenPos.x < -borderPadding
 			    || screenPos.y > Screen.height + borderPadding || screenPos.y < -borderPadding)
@@ -124,24 +122,14 @@ public class SceneDoor : MonoBehaviour
 		ct.position = new Vector3 (transform.position.x, transform.position.y, ct.position.z);
 
 		//calculate the position to place the player for the transition in
-		Vector2 screenBound = new Vector2 (Screen.width, Screen.height);
-		Vector2 spawnPos = transform.up * screenBound.magnitude;
-		if (spawnPos.x > Screen.width/2)
-			spawnPos = new Vector2 (Screen.width/2, spawnPos.y);
-		else if (spawnPos.x < -Screen.width/2)
-			spawnPos = new Vector2 (-Screen.width/2, spawnPos.y);
-		if (spawnPos.y > Screen.height/2)
-			spawnPos = new Vector2 (spawnPos.x, Screen.height/2);
-		else if (spawnPos.y < -Screen.height/2)
-			spawnPos = new Vector2 (spawnPos.x, -Screen.height/2);
-
-		player.transform.position = (Vector2)(transform.position + Camera.main.ScreenToWorldPoint (spawnPos));
+		Vector3 spawnPos = Camera.main.WorldToScreenPoint (transform.position);
+		spawnPos += transform.up * new Vector3 (Screen.width, Screen.height/2f, 0f).magnitude;
+		player.transform.position = Camera.main.ScreenToWorldPoint (spawnPos);
 
 		player.transform.rotation = Quaternion.Euler (0f, 0f, transform.rotation.eulerAngles.z - 180f);
 		player.GetComponent<Controller> ().enabled = false;
 
-		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 35f, ForceMode2D.Impulse);
-
-		HUDManager.instance.fade (-0.5f);
+		Debug.Break (); //DEBUG break
+		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 55f, ForceMode2D.Impulse);
 	}
 }
