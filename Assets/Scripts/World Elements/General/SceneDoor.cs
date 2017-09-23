@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
+//TODO fix first door edge case (can exit through first door)
 public class SceneDoor : MonoBehaviour
 {
 	/* Static Vars */
@@ -44,9 +44,9 @@ public class SceneDoor : MonoBehaviour
 		doors.Remove (this);
 	}
 
-	public void OnTriggerEnter2D(Collider2D col)
+	public void OnTriggerStay2D(Collider2D col)
 	{
-		if (col.tag != "Player")
+		if (col.GetComponent<Player>() == null)
 			return;
 
 		if (!transitioningIn)
@@ -60,7 +60,14 @@ public class SceneDoor : MonoBehaviour
 			//save values to instrument player velocity
 			target = col;
 		}
-		else
+	}
+
+	public void OnTriggerEnter2D(Collider2D col)
+	{
+		if (col.GetComponent<Player>() == null)
+			return;
+
+		if (transitioningIn)
 		{
 			CameraManager.scene_cam.setTarget (col.transform);
 			col.GetComponent<Controller> ().enabled = true;
@@ -69,15 +76,6 @@ public class SceneDoor : MonoBehaviour
 
 	public void OnTriggerExit2D(Collider2D col)
 	{
-		if (destination == "")
-		{
-			Entity e = col.GetComponent<Entity> ();
-			if (e == null)
-				return;
-			int scalar = e.movespeed.value;
-			col.GetComponent<Rigidbody2D> ().AddForce (transform.up * -scalar);
-		}
-
 		if (transitioningIn)
 			transitioningIn = false;
 	}
@@ -126,10 +124,10 @@ public class SceneDoor : MonoBehaviour
 		spawnPos += transform.up * new Vector3 (Screen.width, Screen.height/2f, 0f).magnitude;
 		player.transform.position = Camera.main.ScreenToWorldPoint (spawnPos);
 
+		//rotate to face door, disable player control, and propell them to the door
 		player.transform.rotation = Quaternion.Euler (0f, 0f, transform.rotation.eulerAngles.z - 180f);
 		player.GetComponent<Controller> ().enabled = false;
 
-		Debug.Break (); //DEBUG break
 		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 55f, ForceMode2D.Impulse);
 	}
 }

@@ -103,7 +103,7 @@ public class Bullet : MonoBehaviour
 	{
 		Entity e = col.GetComponent<Entity> ();
 		CollisionRelay relay = col.GetComponent<CollisionRelay> ();
-		IInteractable i = col.GetComponent<IInteractable> ();
+		Interactable i = col.GetComponent<Interactable> ();
 		Destructable d = col.GetComponent<Destructable> ();
 
 		if (relay != null && e == null)
@@ -124,10 +124,7 @@ public class Bullet : MonoBehaviour
 		else if (i != null)
 		{
 			OnHit (col);
-			if (i.getKeyType () == damageType && i.interactable)
-			{
-				i.OnInteract ();
-			}
+			i.OnInteract (damageType);
 		}
 		else if (d != null)
 		{
@@ -146,14 +143,9 @@ public class Bullet : MonoBehaviour
 	{
 		OnHit (col.collider);
 
-		IInteractable i = col.collider.GetComponent<IInteractable> ();
+		Interactable i = col.collider.GetComponent<Interactable> ();
 		if (i != null)
-		{
-			if (i.getKeyType () == damageType && i.interactable)
-			{
-				i.OnInteract ();
-			}
-		}
+			i.OnInteract (damageType);
 		OnDeath ();
 	}
 
