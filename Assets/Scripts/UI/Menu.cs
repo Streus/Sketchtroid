@@ -13,7 +13,7 @@ public class Menu : MonoBehaviour
 		set
 		{
 			animator.SetBool("IsOpen", value);
-			canvasGroup.blocksRaycasts = canvasGroup.interactable = value;
+//			canvasGroup.blocksRaycasts = canvasGroup.interactable = value;
 			OnFocusChanged (value);
 		}
 	}
@@ -26,6 +26,12 @@ public class Menu : MonoBehaviour
 		//move this menu onto the canvas
 		RectTransform rect = GetComponent<RectTransform>();
 		rect.offsetMax = rect.offsetMin = Vector2.zero;
+	}
+
+	//it's really dumb that this is the way it has to be done
+	public void Update()
+	{
+		canvasGroup.blocksRaycasts = canvasGroup.interactable = IsOpen;
 	}
 
 	public delegate void FocusChanged(bool inFocus);

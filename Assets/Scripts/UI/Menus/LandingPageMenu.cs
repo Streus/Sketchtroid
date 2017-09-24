@@ -11,9 +11,10 @@ public class LandingPageMenu : MonoBehaviour
 	{
 		if (Input.anyKeyDown)
 		{
-			SceneStateManager.instance().jumpTo ("test1"); //DEBUG
 			if (nextMenu != null)
 				MenuManager.menusys.showMenu (nextMenu);
+			else
+				SceneStateManager.instance().jumpTo ("test1");
 		}
 	}
 }

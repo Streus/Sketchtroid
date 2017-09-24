@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class MenuManager : MonoBehaviour
 {
-	public static MenuManager menusys;
+	public static MenuManager menusys { get; private set; }
 
 	public Menu currentMenu;
 	private Menu prevMenu;
@@ -61,5 +62,11 @@ public class MenuManager : MonoBehaviour
 			errDisplay.gameObject.SetActive (true);
 			errDisplay.displayError (errorText);
 		}
+	}
+
+	// Create a yes/no prompt.
+	public void displayYNPrompt(string desc, UnityAction accept, UnityAction decline)
+	{
+		Prompt.create (GetComponent<RectTransform> (), desc, new Prompt.Option ("Yes", accept), new Prompt.Option ("No", decline));
 	}
 }

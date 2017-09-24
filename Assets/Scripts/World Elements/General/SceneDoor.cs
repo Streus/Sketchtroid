@@ -51,6 +51,13 @@ public class SceneDoor : MonoBehaviour
 
 		if (!transitioningIn)
 		{
+			//handle edge case where this is the 'first' door
+			if (destination == "")
+			{
+				GetComponent<Collider2D> ().isTrigger = false;
+				return;
+			}
+
 			//unhook the camera
 			CameraManager.scene_cam.isFollowingTarget = false;
 
@@ -128,6 +135,6 @@ public class SceneDoor : MonoBehaviour
 		player.transform.rotation = Quaternion.Euler (0f, 0f, transform.rotation.eulerAngles.z - 180f);
 		player.GetComponent<Controller> ().enabled = false;
 
-		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 55f, ForceMode2D.Impulse);
+		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 60f, ForceMode2D.Impulse);
 	}
 }
