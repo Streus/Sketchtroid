@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 19dadff1cd7a5c742a3e55aa09d7d898
+timeCreated: 1506221586
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 12
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Sketchtroidproto
+  fontNames:
+  - Sketchtroidproto
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
