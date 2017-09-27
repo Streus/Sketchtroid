@@ -247,7 +247,7 @@ public class Ability : ISerializable
 		try
 		{
 			Bullet b = Bullet.create ("Basic", subject, (DamageType)args [0], subject.getFaction ());
-			b.transform.position += (Vector3)UnityEngine.Random.insideUnitCircle * 0.3f;
+			b.transform.position += subject.transform.up + (Vector3)UnityEngine.Random.insideUnitCircle * 0.3f;
 			return true;
 		}
 		#pragma warning disable 0168

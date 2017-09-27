@@ -284,6 +284,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// --- Monobehavior Stuff ---
 	public void Update()
 	{
+		//TODO add in pause check
+
 		//update all statuses
 		foreach (Status s in statuses)
 			s.updateDuration (this, Time.deltaTime);
