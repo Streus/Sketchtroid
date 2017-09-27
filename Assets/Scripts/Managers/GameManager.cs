@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviour
 	public void saveGame()
 	{
 		FileStream file = File.Open (Application.persistentDataPath + Path.DirectorySeparatorChar
-			+ saveName + ".save", FileMode.OpenOrCreate);
+			+ "saves" + Path.DirectorySeparatorChar + saveName + ".save", FileMode.OpenOrCreate);
 
 		BinaryFormatter formatter = new BinaryFormatter ();
 		formatter.Serialize (file, fillSave ());
@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviour
 	public void saveData()
 	{
 		FileStream file = File.Open (Application.persistentDataPath + Path.DirectorySeparatorChar
-			+ saveName + ".dat", FileMode.OpenOrCreate);
+			+ "data" + Path.DirectorySeparatorChar + saveName + ".dat", FileMode.OpenOrCreate);
 
 		BinaryFormatter formatter = new BinaryFormatter ();
 		formatter.Serialize (file, SceneStateManager.instance());
@@ -148,7 +148,7 @@ public class GameManager : MonoBehaviour
 	// Returns null if the given file does not exist
 	public Save loadSave(string filename)
 	{
-		string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + filename + ".save";
+		string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + "saves" + Path.DirectorySeparatorChar + filename + ".save";
 
 		if (File.Exists (filepath))
 		{
@@ -163,7 +163,7 @@ public class GameManager : MonoBehaviour
 	// Load a SceneStateManager from the file system
 	public void loadData(string filename)
 	{
-		string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + filename + ".dat";
+		string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + "data" + Path.DirectorySeparatorChar + filename + ".dat";
 
 		if (File.Exists (filepath))
 		{
@@ -185,7 +185,7 @@ public class GameManager : MonoBehaviour
 		_difficulty = save.difficulty;
 		playerData = save.playerData;
 
-		loadData (gameName);
+		loadData (saveName);
 
 		SceneStateManager.instance ().jumpTo (save.currScene);
 	}
