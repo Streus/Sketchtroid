@@ -13,6 +13,11 @@ public class GameManager : MonoBehaviour
 	private static GameManager _instance;
 	public static GameManager instance { get { return _instance; } }
 
+	// The full paths to the saves and data directories
+	private static string saveDirectory;
+	private static string dataDirectory;
+	public static string savePath { get { return saveDirectory; } }
+
 	/* Instance Vars */
 
 	// The system-defined name for the current game
@@ -22,6 +27,7 @@ public class GameManager : MonoBehaviour
 	// The user-provided name for the current game
 	// (Used in loading GUI)
 	private string gameName;
+	public string gameTitle { get { return gameName; } set { gameName = value; } }
 
 	// The time that the current scene started
 	private float sceneTime;
@@ -31,6 +37,11 @@ public class GameManager : MonoBehaviour
 
 	// The Scene of the last save
 	private string currScene;
+	public string currentScene
+	{
+		get { return currScene; }
+		set { prevScene = currScene; currScene = value; }
+	}
 
 	// Used for scene transitions
 	private string prevScene;
@@ -71,6 +82,11 @@ public class GameManager : MonoBehaviour
 		_difficulty = Difficulty.easy;
 		_player = null;
 		playerData = null;
+
+		saveDirectory = Application.persistentDataPath + Path.DirectorySeparatorChar
+						+ "saves" + Path.DirectorySeparatorChar;
+		dataDirectory = Application.persistentDataPath + Path.DirectorySeparatorChar
+						+ "data" + Path.DirectorySeparatorChar;
 	}
 
 	public void Start()
@@ -82,6 +98,14 @@ public class GameManager : MonoBehaviour
 	{
 		//track the time spent in the current scene
 		sceneTime += Time.unscaledDeltaTime;
+
+		//DEBUG saving test
+		if (Input.GetKeyDown (KeyCode.Space))
+		{
+			gameName = "TestGame";
+			saveGame ();
+			Debug.Log ("Saved as " + saveName);
+		}
 	}
 
 	//Getters/Setters
@@ -89,10 +113,6 @@ public class GameManager : MonoBehaviour
 	{
 		this.saveName = saveName;
 	}
-
-	public string currentScene { get { return currScene; } set { prevScene = currScene; currScene = value; } }
-
-	public string gameTitle { get { return gameName; } set { gameName = value; } }
 
 	// Called by the SSM for time-keeping purposes
 	public float startScene()
@@ -108,8 +128,13 @@ public class GameManager : MonoBehaviour
 	// Save the currently active game
 	public void saveGame()
 	{
-		FileStream file = File.Open (Application.persistentDataPath + Path.DirectorySeparatorChar
-			+ "saves" + Path.DirectorySeparatorChar + saveName + ".save", FileMode.OpenOrCreate);
+		if (saveName == "")
+			saveName = DateTime.Now.Ticks.ToString ("X").ToUpper ();
+
+		if (!Directory.Exists (saveDirectory))
+			Directory.CreateDirectory (saveDirectory);
+			
+		FileStream file = File.Open (saveDirectory + saveName + ".save", FileMode.OpenOrCreate);
 
 		BinaryFormatter formatter = new BinaryFormatter ();
 		formatter.Serialize (file, fillSave ());
@@ -136,8 +161,10 @@ public class GameManager : MonoBehaviour
 	// Save the SceneStateManager
 	public void saveData()
 	{
-		FileStream file = File.Open (Application.persistentDataPath + Path.DirectorySeparatorChar
-			+ "data" + Path.DirectorySeparatorChar + saveName + ".dat", FileMode.OpenOrCreate);
+		if (!Directory.Exists (dataDirectory))
+			Directory.CreateDirectory (dataDirectory);
+
+		FileStream file = File.Open (dataDirectory + saveName + ".dat", FileMode.OpenOrCreate);
 
 		BinaryFormatter formatter = new BinaryFormatter ();
 		formatter.Serialize (file, SceneStateManager.instance());
@@ -148,7 +175,7 @@ public class GameManager : MonoBehaviour
 	// Returns null if the given file does not exist
 	public Save loadSave(string filename)
 	{
-		string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + "saves" + Path.DirectorySeparatorChar + filename + ".save";
+		string filepath = saveDirectory + filename + ".save";
 
 		if (File.Exists (filepath))
 		{
@@ -163,7 +190,7 @@ public class GameManager : MonoBehaviour
 	// Load a SceneStateManager from the file system
 	public void loadData(string filename)
 	{
-		string filepath = Application.persistentDataPath + Path.DirectorySeparatorChar + "data" + Path.DirectorySeparatorChar + filename + ".dat";
+		string filepath = dataDirectory + filename + ".dat";
 
 		if (File.Exists (filepath))
 		{

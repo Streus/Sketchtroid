@@ -30,8 +30,14 @@ public class GameListPanel : MonoBehaviour
 		if (!building)
 				return;
 
-		string[] saves = Directory.GetFiles (Application.persistentDataPath + Path.DirectorySeparatorChar + "saves");
+		string[] saves = Directory.GetFiles (GameManager.savePath);
 		foreach (string save in saves)
-			GameSummary.create (GetComponent<RectTransform>(), GameManager.instance.loadSave (save));
+		{
+			int start = save.LastIndexOf (Path.DirectorySeparatorChar) + 1;
+			int end = save.LastIndexOf ('.');
+			string sani_save = save.Substring (start, end - start);
+			Debug.Log ("Loaded " + sani_save); //DEBUG
+			GameSummary.create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
+		}
 	}
 }

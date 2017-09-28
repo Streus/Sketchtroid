@@ -10,7 +10,7 @@ public class GameSummary : MonoBehaviour
 
 	/* Instance Vars */
 	[SerializeField]
-	private Text name;
+	private Text gameName;
 	[SerializeField]
 	private Image difficulty;
 	[SerializeField]
@@ -41,7 +41,7 @@ public class GameSummary : MonoBehaviour
 
 	public void setName(string name)
 	{
-		this.name.text = name;
+		gameName.text = name;
 	}
 
 	//TODO create sprites for each difficulty
