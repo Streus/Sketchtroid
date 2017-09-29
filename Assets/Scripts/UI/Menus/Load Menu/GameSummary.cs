@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class GameSummary : MonoBehaviour, IPointerEnterHandler
+public class GameSummary : MonoBehaviour
 {
 	/* Static Vars */
 
@@ -18,6 +18,10 @@ public class GameSummary : MonoBehaviour, IPointerEnterHandler
 	private Text time;
 	[SerializeField]
 	private Text area;
+	[SerializeField]
+	private Button loadButton;
+	[SerializeField]
+	private Button deleteButton;
 
 	private GameManager.Save data;
 
@@ -39,6 +43,11 @@ public class GameSummary : MonoBehaviour, IPointerEnterHandler
 	}
 
 	/* Instance Methods */
+	public void Start()
+	{
+		loadButton.onClick.AddListener (startGame);
+		deleteButton.onClick.AddListener (deleteSave);
+	}
 
 	public void setName(string name)
 	{
@@ -70,7 +79,7 @@ public class GameSummary : MonoBehaviour, IPointerEnterHandler
 
 	public void setTime(double time)
 	{
-		System.DateTime f_time = System.DateTime.FromOADate (time);
+		System.TimeSpan f_time = System.TimeSpan.FromSeconds (time);
 		this.time.text = "Game Time: " + f_time.ToString ();
 	}
 
@@ -79,13 +88,15 @@ public class GameSummary : MonoBehaviour, IPointerEnterHandler
 		this.area.text = "Location: " + areaName;
 	}
 
-	public void startGame()
+	private void startGame()
 	{
 		GameManager.instance.loadGame (data);
 	}
 
-	public void OnPointerEnter(PointerEventData data)
+	private void deleteSave()
 	{
-		Debug.Log ("Hovering over " + gameName); //DEBUG
+		GameManager.instance.deleteSave (data.saveName);
+		transform.parent.GetComponent<GameListPanel> ().calcTargetX ();
+		Destroy (gameObject);
 	}
 }

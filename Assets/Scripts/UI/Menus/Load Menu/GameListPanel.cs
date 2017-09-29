@@ -22,9 +22,6 @@ public class GameListPanel : MonoBehaviour
 		transform.parent.GetComponent<Menu> ().changedFocus += modifyList;
 		targetChild = 0;
 		targetX = 0f;
-
-		if (transform.childCount > 0)
-			calcTargetX ();
 	}
 
 	public void Update()
@@ -34,13 +31,6 @@ public class GameListPanel : MonoBehaviour
 		if (dC != 0 && transform.childCount > 0)
 		{
 			targetChild += dC;
-			if (targetChild < 0)
-				targetChild = 0;
-			else if (targetChild > transform.childCount - 1)
-				targetChild = transform.childCount - 1;
-
-			Debug.Log (targetChild);
-
 			calcTargetX ();
 		}
 
@@ -49,8 +39,13 @@ public class GameListPanel : MonoBehaviour
 		else
 			transform.position = new Vector2 (targetX, transform.position.y);
 	}
-	private void calcTargetX()
+	public void calcTargetX()
 	{
+		if (targetChild < 0)
+			targetChild = 0;
+		else if (targetChild > transform.childCount - 1)
+			targetChild = transform.childCount - 1;
+
 		float childPosX = transform.GetChild (targetChild).position.x;
 		float dX = childPosX - transform.parent.position.x;
 		targetX = transform.position.x - dX;
@@ -75,5 +70,10 @@ public class GameListPanel : MonoBehaviour
 			Debug.Log ("Loaded " + sani_save); //DEBUG
 			GameSummary.create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
 		}
+
+		// orient the window on the first save, ifex
+		targetChild = 0;
+		if(transform.childCount > 0)
+			calcTargetX ();
 	}
 }

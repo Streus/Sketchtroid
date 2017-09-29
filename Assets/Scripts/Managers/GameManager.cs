@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
 		//DEBUG saving test
 		if (Input.GetKeyDown (KeyCode.Space))
 		{
-			gameName = "TestGame";
+			gameName = "Streus's Debug Save";
 			saveGame ();
 			Debug.Log ("Saved as " + saveName);
 		}
@@ -218,6 +218,19 @@ public class GameManager : MonoBehaviour
 		loadData (saveName);
 
 		SceneStateManager.instance ().jumpTo (save.currScene);
+	}
+
+	// Delete all the data associated with a given save
+	public bool deleteSave(string saveName)
+	{
+		if (File.Exists (saveDirectory + saveName + ".save"))
+		{
+			File.Delete (saveDirectory + saveName + ".save");
+			if(File.Exists(dataDirectory + saveName + ".dat"))
+				File.Delete (dataDirectory + saveName + ".dat");
+			return true;
+		}
+		return false;
 	}
 
 	// Create a player object
