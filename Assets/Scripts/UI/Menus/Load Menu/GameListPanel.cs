@@ -9,7 +9,9 @@ public class GameListPanel : MonoBehaviour
 
 
 	/* Instance Vars */
-
+	[SerializeField]
+	private int targetChild;
+	private float targetX;
 
 	/* Static Methods */
 
@@ -18,6 +20,40 @@ public class GameListPanel : MonoBehaviour
 	public void Awake()
 	{
 		transform.parent.GetComponent<Menu> ().changedFocus += modifyList;
+		targetChild = 0;
+		targetX = 0f;
+
+		if (transform.childCount > 0)
+			calcTargetX ();
+	}
+
+	public void Update()
+	{
+		int dC = (int)Input.mouseScrollDelta.y;
+
+		if (dC != 0 && transform.childCount > 0)
+		{
+			targetChild += dC;
+			if (targetChild < 0)
+				targetChild = 0;
+			else if (targetChild > transform.childCount - 1)
+				targetChild = transform.childCount - 1;
+
+			Debug.Log (targetChild);
+
+			calcTargetX ();
+		}
+
+		if (Mathf.Abs (targetX - transform.position.x) > 0.01f)
+			transform.position = Vector2.Lerp (transform.position, new Vector2 (targetX, transform.position.y), Time.deltaTime * 5f);
+		else
+			transform.position = new Vector2 (targetX, transform.position.y);
+	}
+	private void calcTargetX()
+	{
+		float childPosX = transform.GetChild (targetChild).position.x;
+		float dX = childPosX - transform.parent.position.x;
+		targetX = transform.position.x - dX;
 	}
 
 	private void modifyList(bool building)
@@ -28,7 +64,7 @@ public class GameListPanel : MonoBehaviour
 
 		//done if leaving the menu
 		if (!building)
-				return;
+			return;
 
 		string[] saves = Directory.GetFiles (GameManager.savePath);
 		foreach (string save in saves)

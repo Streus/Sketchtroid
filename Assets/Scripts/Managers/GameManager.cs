@@ -181,7 +181,9 @@ public class GameManager : MonoBehaviour
 		{
 			FileStream file = File.Open (filepath, FileMode.Open);
 			BinaryFormatter formatter = new BinaryFormatter ();
-			return (Save)formatter.Deserialize (file);
+			Save save = (Save)formatter.Deserialize (file);
+			file.Close ();
+			return save;
 		}
 
 		return null;
@@ -197,6 +199,7 @@ public class GameManager : MonoBehaviour
 			FileStream file = File.Open (filepath, FileMode.Open);
 			BinaryFormatter formatter = new BinaryFormatter ();
 			formatter.Deserialize (file);
+			file.Close ();
 		}
 	}
 

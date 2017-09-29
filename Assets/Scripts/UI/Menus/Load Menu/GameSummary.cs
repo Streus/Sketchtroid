@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class GameSummary : MonoBehaviour
+public class GameSummary : MonoBehaviour, IPointerEnterHandler
 {
 	/* Static Vars */
 
@@ -81,5 +82,10 @@ public class GameSummary : MonoBehaviour
 	public void startGame()
 	{
 		GameManager.instance.loadGame (data);
+	}
+
+	public void OnPointerEnter(PointerEventData data)
+	{
+		Debug.Log ("Hovering over " + gameName); //DEBUG
 	}
 }
