@@ -9,6 +9,8 @@ public class Player : Controller
 	// A list of the states
 	private BehaviorState[] states;
 
+	public DamageType damageType = DamageType.NONE; //DEBUG ?
+
 	/* Instance Methods */
 	public override void Awake ()
 	{
@@ -29,7 +31,7 @@ public class Player : Controller
 
 		//invoke abilities
 		if (Input.GetKey (KeyCode.Mouse0)) //TODO swap for proper bindings later
-			useAbility (0, Vector2.zero, DamageType.PHYSICAL);
+			useAbility (0, Vector2.zero, damageType);
 	}
 
 	private void fixedUpdatePrime()

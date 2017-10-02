@@ -3,20 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D), typeof(Rigidbody2D))]
-public class Bullet : MonoBehaviour
+public sealed class Bullet : MonoBehaviour
 {
 	/* Static Vars */
-
+	public static Color damageTypeToColor(DamageType type)
+	{
+		switch (type)
+		{
+		case DamageType.NONE:
+			return Color.black;
+		case DamageType.ELECTRIC:
+			return new Color (1f, 0.92f, 0f);
+		case DamageType.BIO:
+			return new Color (0.06f, 0.8f, 0f);
+		case DamageType.CRYO:
+			return new Color (0f, 0.87f, 0.87f);
+		case DamageType.PYRO:
+			return new Color (1f, 0f, 0f);
+		case DamageType.VOID:
+			return new Color (0.39f, 0f, 1f);
+		default:
+			return Color.white;
+		}
+	}
 
 	/* Instance Vars */
+
+	[SerializeField]
+	private BulletBehavior behavior;
 
 	// The damage this bullet will do when it collides with an Entity of another faction
 	[SerializeField]
 	private float damage;
 
 	// The type of damage this bullet deals
-	[SerializeField]
-	private DamageType damageType;
+	private DamageType _dt;
+	public DamageType damageType
+	{
+		get { return _dt; }
+		set
+		{
+			_dt = value;
+			GetComponent<SpriteRenderer> ().color = damageTypeToColor (_dt);
+		}
+	}
 
 	// The speed at which this bullet will begin traveling at instantiation
 	[SerializeField]
@@ -66,37 +96,46 @@ public class Bullet : MonoBehaviour
 	}
 
 	/* Instance Methods */
-	public virtual void Awake()
+	public void Awake()
 	{
 		colbody = GetComponent<Collider2D> ();
 		physbody = GetComponent<Rigidbody2D> ();
+
+		if (behavior == null)
+			Debug.LogError (name + " has an unset behavior!"); //DEBUG unset bullet behavior
 
 		physbody.drag = 0f;
 		physbody.AddForce (transform.up * movespeed, ForceMode2D.Impulse);
 	}
 
-	public virtual void Start()
+	public void Start()
 	{
-
+		if (behavior != null)
+			behavior.start (this);
 	}
 
-	public virtual void Update()
+	public void Update()
 	{
 		duration -= Time.deltaTime;
 		if (duration <= 0f)
 		{
 			OnDeath ();
 		}
+
+		if (behavior != null)
+			behavior.update (this);
 	}
 
-	public virtual void FixedUpdate()
+	public void FixedUpdate()
 	{
-
+		if (behavior != null)
+			behavior.fixedUpdate (this);
 	}
 
-	public virtual void LateUpdate()
+	public void LateUpdate()
 	{
-
+		if (behavior != null)
+			behavior.lateUpdate (this);
 	}
 
 	public void OnTriggerEnter2D (Collider2D col)
@@ -116,7 +155,7 @@ public class Bullet : MonoBehaviour
 			if (faction != e.getFaction ())
 			{
 				Entity.damageEntity (e, source, damage, damageType);
-				OnEntHit (col, e);
+				OnHit (col, e);
 				if (destroyOnHit)
 					OnDeath ();
 			}
@@ -138,28 +177,21 @@ public class Bullet : MonoBehaviour
 		}
 	}
 
-	// Collision with an indestructable target
-	public void OnCollisionEnter2D(Collision2D col)
+	private void OnHit(Collider2D col, Entity hit)
 	{
-		OnHit (col.collider);
-
-		Interactable i = col.collider.GetComponent<Interactable> ();
-		if (i != null)
-			i.OnInteract (damageType);
-		OnDeath ();
+		if (behavior != null)
+			behavior.onHit (this, col, hit);
+	}
+	private void OnHit(Collider2D col)
+	{
+		OnHit (col, null);
 	}
 
-	protected virtual void OnEntHit(Collider2D col, Entity hit)
+	public void OnDeath()
 	{
+		if (behavior != null)
+			behavior.onDeath (this);
 
-	}
-	protected void OnHit(Collider2D col)
-	{
-		OnEntHit (col, null);
-	}
-
-	public virtual void OnDeath()
-	{
 		//finish up by destroying this bullet
 		Destroy(gameObject);
 	}
