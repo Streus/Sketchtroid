@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using AI;
 
 [RequireComponent(typeof(Entity))]
 [RequireComponent(typeof(Animator))]
@@ -16,8 +17,9 @@ public class Controller : MonoBehaviour
 	protected Animator anim;
 	protected Rigidbody2D physbody;
 
-	// The states this Controller can transition in and out of
-	private BehaviorState activeState;
+	// The initial state of this controller
+	[SerializeField]
+	private State activeState;
 
 	/* Static Methods */
 
@@ -35,38 +37,28 @@ public class Controller : MonoBehaviour
 		return physbody.simulated && !self.isStunned () && !self.frozen();
 	}
 
-	public void Update()
+	public virtual void Update()
 	{
 		if (!isUpdating())
 			return;
 
 		// Call currently active behavior
-		if(activeState.update != null)
-			activeState.update ();
+		if(activeState != null)
+			activeState.update(this);
 	}
 
-	public void FixedUpdate()
+	public virtual void FixedUpdate()
 	{
 		if (!isUpdating())
 			return;
-
-		// Call currently active behavior
-		if(activeState.fixedUpdate != null)
-			activeState.fixedUpdate ();
+		
+			//TODO manage movement ?
 	}
 
-	public void LateUpdate()
+	public void setState(State state)
 	{
-		if (!isUpdating ())
-			return;
-
-		// Call currently active behavior
-		if(activeState.lateUpdate != null)
-			activeState.lateUpdate ();
-	}
-
-	protected void setState(BehaviorState state)
-	{
+		state.enter (this);
+		activeState.exit (this);
 		activeState = state;
 	}
 
@@ -106,39 +98,6 @@ public class Controller : MonoBehaviour
 		{
 			Console.log.println (ioore.Message, Console.LogTag.error);
 			return false;
-		}
-	}
-
-	/* Delegates */
-
-	// Used for Update, FixedUpdate, and LateUpdate
-	protected delegate void UpdateBehavior();
-
-	/* Private Inner Class */
-	protected struct BehaviorState
-	{
-		public string name;
-
-		public UpdateBehavior update;
-		public UpdateBehavior fixedUpdate;
-		public UpdateBehavior lateUpdate;
-
-		public BehaviorState(string name, UpdateBehavior update, UpdateBehavior fixedUpdate, UpdateBehavior lateUpdate)
-		{
-			this.name = name;
-
-			this.update = update;
-			this.fixedUpdate = fixedUpdate;
-			this.lateUpdate = lateUpdate;
-		}
-
-		public override bool Equals (object obj)
-		{
-			return ((BehaviorState)obj).name == name;
-		}
-		public override int GetHashCode ()
-		{
-			return name.GetHashCode ();
 		}
 	}
 }

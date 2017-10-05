@@ -6,8 +6,6 @@ public class Player : Controller
 {
 	/* Instance Vars */
 
-	// A list of the states
-	private BehaviorState[] states;
 
 	public DamageType damageType = DamageType.NONE; //DEBUG ?
 
@@ -15,7 +13,6 @@ public class Player : Controller
 	public override void Awake ()
 	{
 		base.Awake ();
-		setState (new BehaviorState("prime", this.updatePrime, this.fixedUpdatePrime, this.lateUpdatePrime));
 	}
 
 	// Inject some test data into self
@@ -24,7 +21,7 @@ public class Player : Controller
 		self.addAbility (Ability.get("Spray"));
 	}
 
-	private void updatePrime()
+	public override void Update()
 	{
 		if (Console.log.isEnabled)
 			return;
@@ -34,7 +31,7 @@ public class Player : Controller
 			useAbility (0, Vector2.zero, damageType);
 	}
 
-	private void fixedUpdatePrime()
+	public override void FixedUpdate()
 	{
 		if (Console.log.isEnabled)
 			return;
@@ -61,10 +58,5 @@ public class Player : Controller
 			movementVector += Vector2.right;
 
 		physbody.AddForce (movementVector * self.movespeed.value);
-	}
-
-	private void lateUpdatePrime()
-	{
-
 	}
 }
