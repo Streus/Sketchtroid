@@ -8,9 +8,6 @@ public class SeedBase: ISerializable
 {
 	/* Instance Vars */
 
-	// The GameObject from which this seed will pull values
-	protected GameObject subject;
-
 	// The destroyed state of the subject
 	public bool destroyed;
 
@@ -41,7 +38,6 @@ public class SeedBase: ISerializable
 	// Create a new Seed that will pull transform and rigidbody info when serialized
 	public SeedBase(GameObject subject)
 	{
-		this.subject = subject;
 		destroyed = false;
 		tPosition = subject.transform.position;
 		tRotation = subject.transform.rotation;
@@ -65,8 +61,6 @@ public class SeedBase: ISerializable
 	// Create a Seed from serialized data that contains a transform and rigidbody state
 	public SeedBase(SerializationInfo info, StreamingContext context)
 	{
-		subject = null;
-
 		//load destroyed state
 		destroyed = info.GetBoolean ("destroyed");
 
