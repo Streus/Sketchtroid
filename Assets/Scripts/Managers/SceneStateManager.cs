@@ -164,7 +164,7 @@ public class SceneStateManager : ISerializable
 	private void activeSceneTransitioned(Scene prev, Scene curr)
 	{
 		//create a player object from saved data
-		if(curr.name != "main") //TODO sse if there's a better way to do this
+		if(curr.name != "main") //TODO see if there's a better way to do this
 			GameManager.instance.createPlayer();
 
 		Console.log.println ("[SceneStateManager] Loading values for " + curr.name + ".", Console.LogTag.info); //DEBUG

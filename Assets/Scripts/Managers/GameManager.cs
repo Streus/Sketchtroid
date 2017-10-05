@@ -9,6 +9,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+	/* Constants */
+	public const int SPAWN_AT_DOOR = 0;
+	public const int SPAWN_AT_SVPNT = 1;
+
 	/* Static Vars */
 	private static GameManager _instance;
 	public static GameManager instance { get { return _instance; } }
@@ -57,6 +61,9 @@ public class GameManager : MonoBehaviour
 	// Data describing the player object when it is not instantiated
 	private SeedBase playerData;
 
+	// Used to determine whether the player is spawned at a savepoint, or via a door
+	private int playerSpawnType;
+
 	/* Static Methods */
 
 
@@ -82,6 +89,7 @@ public class GameManager : MonoBehaviour
 		_difficulty = Difficulty.easy;
 		_player = null;
 		playerData = null;
+		playerSpawnType = 0;
 
 		saveDirectory = Application.persistentDataPath + Path.DirectorySeparatorChar
 						+ "saves" + Path.DirectorySeparatorChar;
@@ -117,6 +125,8 @@ public class GameManager : MonoBehaviour
 	// Called by the SSM for time-keeping purposes
 	public float startScene()
 	{
+		playerSpawnType = SPAWN_AT_DOOR;
+
 		float timeSave = sceneTime;
 		totalTime += (double)sceneTime;
 		sceneTime = 0f;
@@ -153,7 +163,7 @@ public class GameManager : MonoBehaviour
 		save.currScene = currScene;
 		save.prevScene = prevScene;
 		save.difficulty = _difficulty;
-		save.playerData = playerData;
+		save.playerData = playerData = player.GetComponent<Entity>().reap();
 
 		return save;
 	}
@@ -217,6 +227,7 @@ public class GameManager : MonoBehaviour
 
 		loadData (saveName);
 
+		playerSpawnType = SPAWN_AT_SVPNT;
 		SceneStateManager.instance ().jumpTo (save.currScene);
 	}
 
@@ -241,11 +252,22 @@ public class GameManager : MonoBehaviour
 		_player = inst;
 		Entity e = _player.GetComponent<Entity> ();
 		e.sow (playerData);
-		HUDManager.instance.setSubject (e);
+		//HUDManager.instance.setSubject (e); //TODO make HUDManager pers or spawnable
+		CameraManager.scene_cam.setTarget(inst.transform);
 
-		//find destination and spawn there
-		SceneDoor door = SceneDoor.getDoor(prevScene);
-		door.startTransitionIn (inst);
+		switch (playerSpawnType)
+		{
+		case SPAWN_AT_DOOR:
+			//find destination and spawn there
+			SceneDoor door = SceneDoor.getDoor (prevScene);
+			door.startTransitionIn (inst);
+			break;
+		case SPAWN_AT_SVPNT:
+			//TODO spawn at savepoint ?
+			break;
+		default:
+			throw new ArgumentException ("Invalid spawn type code: " + playerSpawnType);
+		}
 
 		return inst;
 	}
