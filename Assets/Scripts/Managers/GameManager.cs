@@ -52,7 +52,11 @@ public class GameManager : MonoBehaviour
 
 	// The game difficulty level
 	private Difficulty _difficulty;
-	public Difficulty difficulty { get { return _difficulty; } }
+	public Difficulty difficulty
+	{
+		get { return _difficulty; }
+		set { _difficulty = value; }
+	}
 
 	// The currently active player object
 	private GameObject _player;
@@ -108,7 +112,7 @@ public class GameManager : MonoBehaviour
 		sceneTime += Time.unscaledDeltaTime;
 
 		//DEBUG saving test
-		if (Input.GetKeyDown (KeyCode.Space))
+		if (Input.GetKeyDown (KeyCode.F5))
 		{
 			gameName = "Streus's Debug Save";
 			saveGame ();
@@ -253,7 +257,6 @@ public class GameManager : MonoBehaviour
 		Entity e = _player.GetComponent<Entity> ();
 		e.sow (playerData);
 		//HUDManager.instance.setSubject (e); //TODO make HUDManager pers or spawnable
-		CameraManager.scene_cam.setTarget(inst.transform);
 
 		switch (playerSpawnType)
 		{
@@ -263,6 +266,7 @@ public class GameManager : MonoBehaviour
 			door.startTransitionIn (inst);
 			break;
 		case SPAWN_AT_SVPNT:
+			CameraManager.scene_cam.setTarget(inst.transform);
 			//TODO spawn at savepoint ?
 			break;
 		default:

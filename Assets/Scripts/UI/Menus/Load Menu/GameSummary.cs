@@ -15,6 +15,8 @@ public class GameSummary : MonoBehaviour
 	[SerializeField]
 	private Image difficulty;
 	[SerializeField]
+	private Sprite[] difficultyInsignias;
+	[SerializeField]
 	private Text time;
 	[SerializeField]
 	private Text area;
@@ -57,24 +59,8 @@ public class GameSummary : MonoBehaviour
 	//TODO create sprites for each difficulty
 	public void setDifficulty(Difficulty difficulty)
 	{
-		switch (difficulty)
-		{
-		case Difficulty.easy:
-			this.difficulty.color = Color.cyan;
-			break;
-		case Difficulty.normal:
-			this.difficulty.color = Color.green;
-			break;
-		case Difficulty.hard:
-			this.difficulty.color = Color.yellow;
-			break;
-		case Difficulty.expert:
-			this.difficulty.color = Color.red;
-			break;
-		case Difficulty.master:
-			this.difficulty.color = Color.magenta;
-			break;
-		}
+		this.difficulty.color = Bullet.damageTypeToColor ((DamageType) ((int)difficulty + 2));
+		this.difficulty.sprite = difficultyInsignias [(int)difficulty];
 	}
 
 	public void setTime(double time)

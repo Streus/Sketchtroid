@@ -18,6 +18,7 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
+		//TODO remove this, causes duplication of abilities ?
 		self.addAbility (Ability.get("Spray"));
 	}
 
