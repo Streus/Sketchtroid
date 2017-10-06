@@ -51,7 +51,7 @@ public class SceneTransition : MonoBehaviour
 
 	public void performSave(string gameName)
 	{
-		GameManager.instance.setSaveName ("testSave");
+		GameManager.instance.setGameName ("testSave");
 		GameManager.instance.gameTitle = gameName;
 		GameManager.instance.saveGame ();
 		GameManager.instance.saveData ();

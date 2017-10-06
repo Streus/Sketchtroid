@@ -121,9 +121,9 @@ public class GameManager : MonoBehaviour
 	}
 
 	//Getters/Setters
-	public void setSaveName(string saveName)
+	public void setGameName(string gameName)
 	{
-		this.saveName = saveName;
+		this.gameName = gameName;
 	}
 
 	// Called by the SSM for time-keeping purposes

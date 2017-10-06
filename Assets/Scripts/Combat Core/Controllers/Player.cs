@@ -30,6 +30,20 @@ public class Player : Controller
 		//invoke abilities
 		if (Input.GetKey (KeyCode.Mouse0)) //TODO swap for proper bindings later
 			useAbility (0, Vector2.zero, damageType);
+
+		//TODO better way of interacting things?
+		if (Input.GetKeyDown (KeyCode.E))
+		{
+			RaycastHit2D[] hits;
+			hits = Physics2D.CircleCastAll (transform.position, 1f, Vector2.zero);
+
+			foreach(RaycastHit2D hit in hits)
+			{
+				Interactable i = hit.collider.GetComponent<Interactable> ();
+				if (i != null)
+					i.OnInteract ();
+			}
+		}
 	}
 
 	public override void FixedUpdate()

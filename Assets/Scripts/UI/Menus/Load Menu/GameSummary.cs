@@ -66,7 +66,13 @@ public class GameSummary : MonoBehaviour
 	public void setTime(double time)
 	{
 		System.TimeSpan f_time = System.TimeSpan.FromSeconds (time);
-		this.time.text = "Game Time: " + f_time.ToString ();
+		string timeString = f_time.ToString ();
+		try
+		{
+			timeString = timeString.Substring(0, timeString.LastIndexOf ('.'));
+		}
+		catch(System.ArgumentOutOfRangeException aoore) { }
+		this.time.text = "Game Time: " + timeString;
 	}
 
 	public void setArea(string areaName)
