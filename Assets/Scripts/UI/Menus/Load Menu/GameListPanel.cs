@@ -67,8 +67,8 @@ public class GameListPanel : MonoBehaviour
 			int start = save.LastIndexOf (Path.DirectorySeparatorChar) + 1;
 			int end = save.LastIndexOf ('.');
 			string sani_save = save.Substring (start, end - start);
-			Debug.Log ("Loaded " + sani_save); //DEBUG
 			GameSummary.create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
+			Debug.Log ("Loaded " + sani_save); //DEBUG
 		}
 
 		// orient the window on the first save, ifex
