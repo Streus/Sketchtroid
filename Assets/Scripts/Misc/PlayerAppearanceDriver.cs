@@ -25,8 +25,8 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		entity.abilitySwapped += partSwapped;
 		entity.damageTypeChanged += dtChanged;
 
-		cone.part.enabled = dtSymbol.part.enabled = leftWing.part.enabled = 
-			rightWing.part.enabled = engine.part.enabled = false;
+//		cone.part.enabled = dtSymbol.part.enabled = leftWing.part.enabled = 
+//			rightWing.part.enabled = engine.part.enabled = false;
 	}
 
 	public void Start()
@@ -75,6 +75,7 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	public struct VisualComponent
 	{
 		public SpriteRenderer part;
+		public PolygonCollider2D col; // col.Reset() ???
 		public Sprite[] skins;
 	}
 }
