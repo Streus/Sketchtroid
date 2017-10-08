@@ -64,7 +64,7 @@ public class Ability : ISerializable
 	{
 		Ability a;
 		if (repository.TryGetValue (name, out a))
-			return a;
+			return new Ability(a);
 		return null;
 	}
 

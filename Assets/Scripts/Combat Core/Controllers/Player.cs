@@ -44,7 +44,7 @@ public class Player : Controller
 			}
 		}
 
-		//TODO being up damage type selector a-la TE ?
+		//TODO bring up damage type selector a-la TE ?
 		if (Input.GetKeyDown (KeyCode.Q))
 		{
 			DamageType next = self.defaultDT;
