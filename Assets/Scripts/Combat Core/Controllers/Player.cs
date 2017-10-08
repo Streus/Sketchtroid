@@ -6,9 +6,6 @@ public class Player : Controller
 {
 	/* Instance Vars */
 
-
-	public DamageType damageType = DamageType.NONE; //DEBUG ?
-
 	/* Instance Methods */
 	public override void Awake ()
 	{
@@ -18,8 +15,10 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
-		//TODO remove this, causes duplication of abilities ?
+		//TODO remove this, causes duplication of abilities
 		self.addAbility (Ability.get("Spray"));
+
+
 	}
 
 	public override void Update()
@@ -29,7 +28,7 @@ public class Player : Controller
 
 		//invoke abilities
 		if (Input.GetKey (KeyCode.Mouse0)) //TODO swap for proper bindings later
-			useAbility (0, Vector2.zero, damageType);
+			useAbility (0, Vector2.zero, self.defaultDT);
 
 		//TODO better way of interacting things?
 		if (Input.GetKeyDown (KeyCode.E))
@@ -44,6 +43,35 @@ public class Player : Controller
 					i.OnInteract ();
 			}
 		}
+
+		//TODO being up damage type selector a-la TE ?
+		if (Input.GetKeyDown (KeyCode.Q))
+		{
+			DamageType next = self.defaultDT;
+			for (int i = 1; i < 7; i++)
+			{
+				next = (DamageType) (((int)self.defaultDT + i) % 7);
+
+				if (GameManager.instance.isDTUnlocked (next))
+					break;
+			}
+
+			if (next != DamageType.NONE)
+				self.defaultDT = next;
+		}
+
+		//DEBUG unlocking damage types
+		if (Input.GetKeyDown (KeyCode.Alpha1))
+			GameManager.instance.unlockDT (DamageType.ELECTRIC);
+		if (Input.GetKeyDown (KeyCode.Alpha2))
+			GameManager.instance.unlockDT (DamageType.BIO);
+		if (Input.GetKeyDown (KeyCode.Alpha3))
+			GameManager.instance.unlockDT (DamageType.CRYO);
+		if (Input.GetKeyDown (KeyCode.Alpha4))
+			GameManager.instance.unlockDT (DamageType.PYRO);
+		if (Input.GetKeyDown (KeyCode.Alpha5))
+			GameManager.instance.unlockDT (DamageType.VOID);
+			
 	}
 
 	public override void FixedUpdate()

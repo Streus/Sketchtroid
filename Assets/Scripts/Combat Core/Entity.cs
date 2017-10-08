@@ -37,6 +37,20 @@ public sealed class Entity : MonoBehaviour, IReapable
 	public Stat pyroResist = new Stat(0, 0, 100);
 	public Stat voidResist = new Stat(0, 0, 100);
 
+	// The default damage type this Entity will deal
+	[SerializeField]
+	private DamageType _defaultDT = DamageType.PHYSICAL;
+	public DamageType defaultDT
+	{
+		get { return _defaultDT; }
+		set
+		{
+			_defaultDT = value;
+			if (damageTypeChanged != null)
+				damageTypeChanged (value);
+		}
+	}
+
 	// The speed at which this Entity can move through the world
 	public Stat movespeed = new Stat(0, 0, 25);
 
@@ -254,6 +268,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 		pyroResist = seed.pyroResist;
 		voidResist = seed.voidResist;
 
+		defaultDT = seed.defaultDT;
+
 		movespeed = seed.movespeed;
 
 		//built-in statuses
@@ -428,6 +444,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 		return abilities [index];
 	}
 
+	// For externally looping through the ability list
+	public int abilityCount { get { return abilities.Count;} }
+
 	// --- Collision Log Handling ---
 
 	// Add an entry to the collision log
@@ -569,6 +588,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	/* Delegates and Events */
+	public delegate void ChangeDamageType(DamageType dt);
+	public event ChangeDamageType damageTypeChanged;
+
 	public delegate void StatusChanged(Status s);
 	public event StatusChanged statusAdded;
 	public event StatusChanged statusRemoved;
@@ -616,6 +638,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 		public Stat pyroResist;
 		public Stat voidResist;
 
+		public DamageType defaultDT;
+
 		public Stat movespeed;
 
 		public Stat invincible;
@@ -650,6 +674,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			pyroResist = subInfo.pyroResist;
 			voidResist = subInfo.voidResist;
 
+			defaultDT = subInfo._defaultDT;
+
 			movespeed = subInfo.movespeed;
 
 			invincible = subInfo.movespeed;
@@ -680,6 +706,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			cryoResist = (Stat)info.GetValue("cryoResist", typeof(Stat));
 			pyroResist = (Stat)info.GetValue("pyroResist", typeof(Stat));
 			voidResist = (Stat)info.GetValue("voidResist", typeof(Stat));
+
+			defaultDT = (DamageType)info.GetInt32("defaultDT");
 
 			movespeed = (Stat)info.GetValue("movespeed", typeof(Stat));
 
@@ -721,6 +749,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			info.AddValue ("cryoResist", cryoResist);
 			info.AddValue ("pyroResist", pyroResist);
 			info.AddValue ("voidResist", voidResist);
+
+			info.AddValue ("defaultDT", (int)defaultDT);
 
 			info.AddValue ("movespeed", movespeed);
 

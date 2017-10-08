@@ -68,6 +68,9 @@ public class GameManager : MonoBehaviour
 	// Used to determine whether the player is spawned at a savepoint, or via a door
 	private int playerSpawnType;
 
+	// The number of damage types unlocked by the player
+	private int _damageTypeUnlocks;
+
 	/* Static Methods */
 
 
@@ -91,9 +94,13 @@ public class GameManager : MonoBehaviour
 		currScene = "";
 		prevScene = "";
 		_difficulty = Difficulty.easy;
+
 		_player = null;
 		playerData = null;
 		playerSpawnType = 0;
+
+		_damageTypeUnlocks = 0;
+		unlockDT (DamageType.PHYSICAL);
 
 		saveDirectory = Application.persistentDataPath + Path.DirectorySeparatorChar
 						+ "saves" + Path.DirectorySeparatorChar;
@@ -110,14 +117,6 @@ public class GameManager : MonoBehaviour
 	{
 		//track the time spent in the current scene
 		sceneTime += Time.unscaledDeltaTime;
-
-		//DEBUG saving test
-		if (Input.GetKeyDown (KeyCode.F5))
-		{
-			gameName = "Streus's Debug Save";
-			saveGame ();
-			Debug.Log ("Saved as " + saveName);
-		}
 	}
 
 	//Getters/Setters
@@ -167,7 +166,10 @@ public class GameManager : MonoBehaviour
 		save.currScene = currScene;
 		save.prevScene = prevScene;
 		save.difficulty = _difficulty;
+
 		save.playerData = playerData = player.GetComponent<Entity>().reap();
+
+		save.dtUnlocks = _damageTypeUnlocks;
 
 		return save;
 	}
@@ -227,7 +229,10 @@ public class GameManager : MonoBehaviour
 		currScene = save.currScene;
 		prevScene = save.prevScene;
 		_difficulty = save.difficulty;
+
 		playerData = save.playerData;
+
+		_damageTypeUnlocks = save.dtUnlocks;
 
 		loadData (saveName);
 
@@ -283,6 +288,21 @@ public class GameManager : MonoBehaviour
 			playerData = _player.GetComponent<Entity> ().reap ();
 	}
 
+	// --- Unlock Management ---
+
+	// Check if a specific damage type has been unlocked
+	public bool isDTUnlocked(DamageType dt)
+	{
+		int check = 1 << (int)dt;
+		return (_damageTypeUnlocks & check) == check;
+	}
+
+	// Unlock a given damage type
+	public void unlockDT(DamageType dt)
+	{
+		_damageTypeUnlocks = _damageTypeUnlocks | (1 << (int)dt);
+	}
+
 	/* Delegates and Events */
 
 
@@ -297,7 +317,10 @@ public class GameManager : MonoBehaviour
 		public string currScene;
 		public string prevScene;
 		public Difficulty difficulty;
+
 		public SeedBase playerData;
+
+		public int dtUnlocks;
 
 		public Save()
 		{
@@ -307,7 +330,10 @@ public class GameManager : MonoBehaviour
 			currScene = "";
 			prevScene = "";
 			difficulty = Difficulty.easy;
+
 			playerData = null;
+
+			dtUnlocks = 0;
 		}
 
 		public Save(SerializationInfo info, StreamingContext context)
@@ -319,7 +345,10 @@ public class GameManager : MonoBehaviour
 			currScene = info.GetString("currScene");
 			prevScene = info.GetString("prevScene");
 			difficulty = (Difficulty)info.GetInt32("difficulty");
+
 			playerData = (SeedBase)info.GetValue("playerData", typeof(SeedBase));
+
+			dtUnlocks = info.GetInt32("dtUnlocks");
 		}
 
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -331,7 +360,10 @@ public class GameManager : MonoBehaviour
 			info.AddValue ("currScene", currScene);
 			info.AddValue ("prevScene", prevScene);
 			info.AddValue ("difficulty", (int)difficulty);
+
 			info.AddValue("playerData", playerData);
+
+			info.AddValue ("dtUnlocks", dtUnlocks);
 		}
 	}
 }

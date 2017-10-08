@@ -13,7 +13,7 @@ public sealed class Bullet : MonoBehaviour
 		case DamageType.PHYSICAL:
 			return Color.black;
 		case DamageType.ELECTRIC:
-			return new Color (1f, 0.92f, 0f);
+			return new Color (1f, 0.7f, 0f);
 		case DamageType.BIO:
 			return new Color (0.06f, 0.8f, 0f);
 		case DamageType.CRYO:
