@@ -8,15 +8,21 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	private Entity entity;
 
 	[SerializeField]
-	private VisualComponent cone;
+	private string partsPath = "Prefabs/Entities/Player Parts/";
+
 	[SerializeField]
-	private VisualComponent dtSymbol;
+	private GameObject cone;
 	[SerializeField]
-	private VisualComponent leftWing;
+	private GameObject leftWing;
 	[SerializeField]
-	private VisualComponent rightWing;
+	private GameObject rightWing;
 	[SerializeField]
-	private VisualComponent engine;
+	private GameObject engine;
+
+	[SerializeField]
+	private SpriteRenderer dtSymbol;
+	[SerializeField]
+	private Sprite[] symbols;
 
 	public void Awake()
 	{
@@ -24,29 +30,24 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		entity.abilityRemoved += partRemoved;
 		entity.abilitySwapped += partSwapped;
 		entity.damageTypeChanged += dtChanged;
-
-//		cone.part.enabled = dtSymbol.part.enabled = leftWing.part.enabled = 
-//			rightWing.part.enabled = engine.part.enabled = false;
 	}
 
 	public void Start()
-	{
-
-	}
-
-	void Player_damageTypeChanged (DamageType dt)
 	{
 		
 	}
 
 	private void init()
 	{
-		
+		for (int i = 0; i < entity.abilityCount; i++)
+		{
+
+		}
 	}
 
 	private void partAdded(Ability a)
 	{
-
+		
 	}
 
 	private void partRemoved(Ability a)
@@ -63,19 +64,16 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	{
 		if (dt == DamageType.NONE)
 		{
-			dtSymbol.part.sprite = null;
+			dtSymbol.sprite = null;
 			return;
 		}
 
-		dtSymbol.part.sprite = dtSymbol.skins [((int)dt) - 1];
-		dtSymbol.part.color = Bullet.damageTypeToColor (dt);
+		dtSymbol.sprite = symbols [((int)dt) - 1];
+		dtSymbol.color = Bullet.damageTypeToColor (dt);
 	}
 
-	[System.Serializable]
-	public struct VisualComponent
+	private void setCone(int skinIndex)
 	{
-		public SpriteRenderer part;
-		public PolygonCollider2D col; // col.Reset() ???
-		public Sprite[] skins;
+		
 	}
 }
