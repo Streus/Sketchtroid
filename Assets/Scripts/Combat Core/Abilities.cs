@@ -7,7 +7,7 @@ public partial class Ability
 {
 	static Ability()
 	{
-		//offensive
+		//player offensive
 		repository.Add ("Spray", new Ability (
 			"Spray",
 			"Shoot a continuous stream of bullets",
@@ -37,7 +37,7 @@ public partial class Ability
 			"ricShoot")
 		);
 
-		//mobility
+		//player mobility
 		repository.Add ("Overdrive", new Ability (
 			"Overdrive",
 			"Increase maximum movespeed for a short time",
@@ -67,11 +67,38 @@ public partial class Ability
 			"phaseMove")
 		);
 
-		//utility
-
+		//player utility
+		repository.Add ("Displace", new Ability (
+			"Displace",
+			"Fire off a wave that pushes objects away",
+			"",
+			2f,
+			"dispUtil")
+		);
+		repository.Add ("Grapple", new Ability (
+			"Grapple",
+			"Thow out a grapple that attaches to any solid object",
+			"",
+			4f,
+			"grappUtil")
+		);
+		repository.Add ("Flash", new Ability (
+			"Flash",
+			"Discharge shield energy to stun enemies",
+			"",
+			6f,
+			"flashUtil")
+		);
+		repository.Add ("Reflect", new Ability (
+			"Reflect",
+			"Empower the shield to reflect projectiles for a short time",
+			"",
+			10f,
+			"refUtil")
+		);
 	}
 
-	// --- Offensive Abilities ---
+	// --- Player Offensive Abilities ---
 
 	// Spray
 	private bool sprayShoot(Entity subject, Vector2 targetPosition, params object[] args)
@@ -94,70 +121,70 @@ public partial class Ability
 	// Refract
 	private bool refractShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Lay Waste
 	private bool lwShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Ricochet
 	private bool ricShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
-	// --- Mobility Abilities ---
+	// --- Player Mobility Abilities ---
 
 	// Overdrive
 	private bool overMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Propel
 	private bool propMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Shift
 	private bool shiftMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Phase
 	private bool phaseMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
-	// --- Utility Abilities ---
+	// --- Player Utility Abilities ---
 
 	// Displace
 	private bool dispUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Grapple
 	private bool grappUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Flash
 	private bool flashUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 
 	// Reflect
 	private bool refUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-
+		return false;
 	}
 }
