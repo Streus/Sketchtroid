@@ -144,6 +144,9 @@ public class RegisteredObject : MonoBehaviour
 	// Called by client components when they are destroyed via gameplay
 	public void saveDestruction()
 	{
+		if (prefabPath == "")
+			return;
+
 		SeedBase seed = reap ();
 		seed.destroyed = true;
 
