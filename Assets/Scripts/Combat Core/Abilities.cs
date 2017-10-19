@@ -7,6 +7,8 @@ public partial class Ability
 {
 	static Ability()
 	{
+		repository = new Dictionary<string, Ability> ();
+
 		//player offensive
 		repository.Add ("Spray", new Ability (
 			"Spray",
