@@ -20,11 +20,10 @@ public class HUDManager : MonoBehaviour
 	private Image healthBar;
 	[SerializeField]
 	private Image shieldBar;
+	[SerializeField]
+	private RectTransform abilListRoot;
 	//TODO add more fields to the HUDManager
 
-	// An element that overlays the entire screen. Is used for fade transitions.
-	[SerializeField]
-	private Image fadeMask;
 
 	/* Instance Methods */
 	public void Awake()
@@ -35,6 +34,8 @@ public class HUDManager : MonoBehaviour
 		}
 		else
 			Destroy (gameObject);
+
+		setSubject (null);
 	}
 
 	public void Update()
@@ -48,23 +49,52 @@ public class HUDManager : MonoBehaviour
 
 	public void setSubject(Entity subject)
 	{
+		//clear old subject data
+		if (subject != null)
+		{
+			//clear old ability list
+			subject.abilityAdded -= addAbility;
+			subject.abilityRemoved -= removeAbility;
+			subject.abilitySwapped -= swapAbilities;
+
+			for (int i = 0; i < abilListRoot.childCount; i++)
+				Destroy (abilListRoot.GetChild (i).gameObject);
+		}
+
+		//set up new subject
 		this.subject = subject;
+		if (subject == null)
+			return;
+
+		//setup ability list
+		for (int i = 0; i < subject.abilityCount; i++)
+			AbilityDisplay.create (abilListRoot, subject.getAbility (i));
+
+		subject.abilityAdded += addAbility;
+		subject.abilityRemoved += removeAbility;
+		subject.abilitySwapped += swapAbilities;
 
 		//TODO other clearing and resetting of elements?
 	}
 
-	//screen fade coroutine TODO this won't work both ways
-	public void fade(float scalar)
+	private void addAbility(Ability a)
 	{
-		StartCoroutine (fadeScreen(fadeMask, scalar));
+		AbilityDisplay.create (abilListRoot, a);
 	}
-	private IEnumerator fadeScreen(Image fade, float scalar)
+
+	private void removeAbility(Ability a)
 	{
-		while (fade.color.a < 1f)
+		AbilityDisplay ad;
+		for (int i = 0; i < abilListRoot.childCount; i++)
 		{
-			float alpha = fade.color.a + (Time.deltaTime * scalar);
-			fade.color = new Color (fade.color.r, fade.color.g, fade.color.b, alpha);
-			yield return null;
+			ad = abilListRoot.GetChild (i).GetComponent<AbilityDisplay> ();
+			if (ad.hasAbility (a))
+				Destroy (ad.gameObject);
 		}
+	}
+
+	private void swapAbilities(Ability a, Ability old, int index)
+	{
+		abilListRoot.GetChild (index).GetComponent<AbilityDisplay> ().setSubject (a);
 	}
 }

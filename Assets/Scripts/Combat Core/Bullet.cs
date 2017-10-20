@@ -11,7 +11,7 @@ public sealed class Bullet : MonoBehaviour
 		switch (type)
 		{
 		case DamageType.PHYSICAL:
-			return Color.black;
+			return Color.gray;
 		case DamageType.ELECTRIC:
 			return new Color (1f, 0.7f, 0f);
 		case DamageType.BIO:
