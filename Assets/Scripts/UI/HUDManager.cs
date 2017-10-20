@@ -52,6 +52,9 @@ public class HUDManager : MonoBehaviour
 		//clear old subject data
 		if (subject != null)
 		{
+			//clear old misc
+			subject.damageTypeChanged -= changeDamageType;
+
 			//clear old ability list
 			subject.abilityAdded -= addAbility;
 			subject.abilityRemoved -= removeAbility;
@@ -74,6 +77,10 @@ public class HUDManager : MonoBehaviour
 		subject.abilityRemoved += removeAbility;
 		subject.abilitySwapped += swapAbilities;
 
+		//misc
+		subject.damageTypeChanged += changeDamageType;
+		changeDamageType (subject.defaultDT);
+
 		//TODO other clearing and resetting of elements?
 	}
 	public Entity getSubject()
@@ -83,7 +90,7 @@ public class HUDManager : MonoBehaviour
 
 	private void addAbility(Ability a)
 	{
-		AbilityDisplay.create (abilListRoot, a);
+		AbilityDisplay.create (abilListRoot, a).changeCDColor(Bullet.damageTypeToColor(subject.defaultDT));
 	}
 
 	private void removeAbility(Ability a)
@@ -100,5 +107,15 @@ public class HUDManager : MonoBehaviour
 	private void swapAbilities(Ability a, Ability old, int index)
 	{
 		abilListRoot.GetChild (index).GetComponent<AbilityDisplay> ().setSubject (a);
+	}
+
+	private void changeDamageType(DamageType dt)
+	{
+		for (int i = 0; i < abilListRoot.childCount; i++)
+		{
+			AbilityDisplay ad = abilListRoot.GetChild (i).GetComponent<AbilityDisplay> ();
+			if (ad != null)
+				ad.changeCDColor (Bullet.damageTypeToColor (dt));
+		}
 	}
 }
