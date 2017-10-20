@@ -76,6 +76,10 @@ public class HUDManager : MonoBehaviour
 
 		//TODO other clearing and resetting of elements?
 	}
+	public Entity getSubject()
+	{
+		return subject;
+	}
 
 	private void addAbility(Ability a)
 	{

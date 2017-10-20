@@ -15,10 +15,7 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
-		//TODO remove this, causes duplication of abilities
-		self.addAbility (Ability.get("Spray"));
-
-
+		
 	}
 
 	public override void Update()
@@ -29,6 +26,10 @@ public class Player : Controller
 		//invoke abilities
 		if (Input.GetKey (KeyCode.Mouse0)) //TODO swap for proper bindings later
 			useAbility (0, Vector2.zero, self.defaultDT);
+		if (Input.GetKey (KeyCode.Mouse1)) //TODO swap for proper bindings later
+			useAbility (1, Vector2.zero);
+		if (Input.GetKey (KeyCode.Space)) //TODO swap for proper bindings later
+			useAbility (2, Vector2.zero);
 
 		//TODO better way of interacting things?
 		if (Input.GetKeyDown (KeyCode.E))

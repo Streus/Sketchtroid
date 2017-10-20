@@ -13,28 +13,28 @@ public partial class Ability
 		repository.Add ("Spray", new Ability (
 			"Spray",
 			"Shoot a continuous stream of bullets",
-			"",
+			"UI_Ability_Spray",
 			0.1f,
 			"sprayShoot")
 		);
 		repository.Add ("Refract", new Ability (
 			"Refract",
 			"Fire a wide spread of 3 lasers",
-			"",
+			"UI_Ability_Refract",
 			1f,
 			"refractShoot")
 		);
 		repository.Add ("Lay Waste", new Ability (
 			"Lay Waste",
 			"Fire a large, slow projectile that splits into eight smaller projectiles on impact",
-			"",
+			"UI_Ability_LayWaste",
 			2f,
 			"lwShoot")
 		);
 		repository.Add ("Ricochet", new Ability (
 			"Ricochet",
 			"Shoot a piercing bullet that bounces three times before expiring",
-			"",
+			"UI_Ability_Ricochet",
 			0.7f,
 			"ricShoot")
 		);
@@ -43,28 +43,28 @@ public partial class Ability
 		repository.Add ("Overdrive", new Ability (
 			"Overdrive",
 			"Increase maximum movespeed for a short time",
-			"",
+			"UI_Ability_Overdrive",
 			5f,
 			"overMove")
 		);
 		repository.Add ("Propel", new Ability (
 			"Propel",
 			"Gain a large burst of speed in one direction",
-			"",
+			"UI_Ability_Propel",
 			3f,
 			"propMove")
 		);
 		repository.Add ("Shift", new Ability (
 			"Shift",
 			"Teleport to a nearby location over 2 seconds",
-			"",
+			"UI_Ability_Shift",
 			7f,
 			"shiftMove")
 		);
 		repository.Add ("Phase", new Ability (
 			"Phase",
 			"Lose some movespeed, but gain the ability to pass through phase walls for a short time",
-			"",
+			"UI_Ability_Phase",
 			10f,
 			"phaseMove")
 		);
@@ -73,28 +73,28 @@ public partial class Ability
 		repository.Add ("Displace", new Ability (
 			"Displace",
 			"Fire off a wave that pushes objects away",
-			"",
+			"UI_Ability_Displace",
 			2f,
 			"dispUtil")
 		);
 		repository.Add ("Grapple", new Ability (
 			"Grapple",
 			"Thow out a grapple that attaches to any solid object",
-			"",
+			"UI_Ability_Grapple",
 			4f,
 			"grappUtil")
 		);
 		repository.Add ("Flash", new Ability (
 			"Flash",
 			"Discharge shield energy to stun enemies",
-			"",
+			"UI_Ability_Flash",
 			6f,
 			"flashUtil")
 		);
 		repository.Add ("Reflect", new Ability (
 			"Reflect",
 			"Empower the shield to reflect projectiles for a short time",
-			"",
+			"UI_Ability_Reflect",
 			10f,
 			"refUtil")
 		);

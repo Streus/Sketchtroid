@@ -12,6 +12,8 @@ public partial class Ability : ISerializable
 	/* Static Vars */
 	private static Dictionary<string, Ability> repository;
 
+	private const string ICON_DIR = "Sprites/HUD/Abilities/";
+
 	/* Instance Vars */
 
 	// The displayed name of this Ability
@@ -68,7 +70,7 @@ public partial class Ability : ISerializable
 		this.desc = desc;
 		this.iconPath = iconPath;
 		if (iconPath != "")
-			icon = Resources.Load<Sprite> (iconPath);
+			icon = Resources.Load<Sprite> (ICON_DIR + iconPath);
 		else
 			icon = null;
 
@@ -102,7 +104,7 @@ public partial class Ability : ISerializable
 		name = info.GetString ("name");
 		desc = info.GetString ("desc");
 		iconPath = info.GetString ("iconPath");
-		icon = Resources.Load<Sprite>(iconPath);
+		icon = Resources.Load<Sprite>(ICON_DIR + iconPath);
 
 		cooldownMax = info.GetSingle ("cooldownMax");
 		_cooldownCurr = info.GetSingle ("cooldownCurr");

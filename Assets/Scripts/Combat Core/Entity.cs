@@ -373,6 +373,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (inCombat())
 			return;
 
+		if (a == null)
+			return;
+
 		//add the ability and set it to active
 		abilities.Add (a);
 		a.active = true;
