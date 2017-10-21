@@ -123,19 +123,19 @@ public partial class Ability
 	// Refract
 	private bool refractShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Lay Waste
 	private bool lwShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Ricochet
 	private bool ricShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// --- Player Mobility Abilities ---
@@ -143,25 +143,25 @@ public partial class Ability
 	// Overdrive
 	private bool overMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Propel
 	private bool propMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Shift
 	private bool shiftMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Phase
 	private bool phaseMove(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// --- Player Utility Abilities ---
@@ -169,24 +169,24 @@ public partial class Ability
 	// Displace
 	private bool dispUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Grapple
 	private bool grappUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Flash
 	private bool flashUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 
 	// Reflect
 	private bool refUtil(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		return false;
+		return true;
 	}
 }

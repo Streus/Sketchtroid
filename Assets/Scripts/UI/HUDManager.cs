@@ -7,7 +7,18 @@ public class HUDManager : MonoBehaviour
 {
 	/* Static Vars */
 	private static HUDManager _instance;
-	public static HUDManager instance { get { return _instance; } }
+	public static HUDManager instance
+	{
+		get
+		{
+			if (_instance == null)
+			{
+				GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/HUD");
+				_instance = Instantiate<GameObject> (pref).GetComponent<HUDManager>();
+			}
+			return _instance;
+		}
+	}
 
 	/* Instance Vars */
 

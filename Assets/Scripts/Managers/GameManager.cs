@@ -261,7 +261,7 @@ public class GameManager : MonoBehaviour
 		_player = inst;
 		Entity e = _player.GetComponent<Entity> ();
 		e.sow (playerData);
-		//HUDManager.instance.setSubject (e); //TODO make HUDManager pers or spawnable
+		HUDManager.instance.setSubject (e);
 
 		switch (playerSpawnType)
 		{
