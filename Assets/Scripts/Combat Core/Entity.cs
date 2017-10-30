@@ -360,7 +360,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		s.durationCompleted -= removeStatus;
 
 		//notify listeners
-		if (statusAdded != null)
+		if (statusRemoved != null)
 			statusRemoved (s);
 	}
 
@@ -620,7 +620,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 	/* Inner Classes */
 	[Serializable]
-	private class Seed : SeedBase
+	public class Seed : SeedBase
 	{
 		/* Instance Vars */
 		public Faction faction;

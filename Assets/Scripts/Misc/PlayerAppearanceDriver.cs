@@ -7,18 +7,23 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	[SerializeField]
 	private Entity entity;
 
-	[SerializeField]
-	private string partsPath = "Prefabs/Entities/Player Parts/";
-
-	[SerializeField]
+	[Header("Parts")]
 	private GameObject cone;
-	[SerializeField]
 	private GameObject leftWing;
-	[SerializeField]
 	private GameObject rightWing;
-	[SerializeField]
 	private GameObject engine;
 
+	[SerializeField]
+	private Part defaultCone;
+	[SerializeField]
+	private Part defaultWings;
+	[SerializeField]
+	private Part defaultEngine;
+
+	[SerializeField]
+	private List<Part> parts;
+
+	[Header("Symbol")]
 	[SerializeField]
 	private SpriteRenderer dtSymbol;
 	[SerializeField]
@@ -26,52 +31,87 @@ public class PlayerAppearanceDriver : MonoBehaviour
 
 	public void Awake()
 	{
-		entity.abilityAdded += partAdded;
-		entity.abilityRemoved += partRemoved;
-		entity.abilitySwapped += partSwapped;
-		entity.damageTypeChanged += dtChanged;
-	}
-
-	public void Start()
-	{
-		
-	}
-
-	private void init()
-	{
-		for (int i = 0; i < entity.abilityCount; i++)
+		if (entity != null)
 		{
+			entity.abilityAdded += partAdded;
+			entity.abilityRemoved += partRemoved;
+			entity.abilitySwapped += partSwapped;
+			entity.damageTypeChanged += dtChanged;
+		}
 
+		cone = leftWing = rightWing = engine = null;
+	}
+
+	public void init(Entity.Seed data)
+	{
+		for (int i = 0; i < data.abilities.Count; i++)
+		{
+			partAdded (data.abilities [i]);
 		}
 	}
 
 	private void partAdded(Ability a)
 	{
-		partSwapped (a, a, 0);
+		Part newPart = abilityToPart (a);
+		if (newPart != null)
+			addPart (newPart);
 	}
 
 	private void partRemoved(Ability a)
 	{
-		GameObject[] existing = abilityToPart (a.name);
-		foreach (GameObject g in existing)
-		{
-			Destroy (g);
-		}
+		Part oldPart = abilityToPart (a);
+		if (oldPart != null)
+			removePart (oldPart);
 	}
 
 	private void partSwapped(Ability a, Ability b, int index)
 	{
-		GameObject pref = Resources.Load<GameObject> (partsPath + a.name);
-		GameObject[] existing = abilityToPart (b.name);
-		for (int i = 0; i < existing.Length; i++)
+		partRemoved (b);
+		partAdded (a);
+	}
+
+	private Part abilityToPart(Ability a)
+	{
+		return parts.Find (delegate(Part obj) {
+			return a.name == obj.abilityName;
+		});
+	}
+
+	private void removePart(Part p)
+	{
+		switch (p.section)
 		{
-			Destroy (existing [i]);
-			existing [i] = Instantiate (pref, entity.transform, false);
-			if (i == 1)
-				existing [i].transform.localScale = new Vector3 (
-					existing [i].transform.localScale.x,
-					existing [i].transform.localScale.y,
-					-existing [i].transform.localScale.z);
+		case Section.cone:
+			Destroy (cone);
+			break;
+		case Section.wings:
+			Destroy (leftWing);
+			Destroy (rightWing);
+			break;
+		case Section.engine:
+			Destroy (engine);
+			break;
+		}
+	}
+
+	private void addPart(Part p)
+	{
+		switch (p.section)
+		{
+		case Section.cone:
+			cone = Instantiate<GameObject> (p.prefab, transform, false);
+			break;
+		case Section.wings:
+			leftWing = Instantiate<GameObject> (p.prefab, transform, false);
+			rightWing = Instantiate<GameObject> (p.prefab, transform, false);
+			rightWing.transform.localScale = new Vector3 (
+				-rightWing.transform.localScale.x,
+				rightWing.transform.localScale.y,
+				rightWing.transform.localScale.z);
+			break;
+		case Section.engine:
+			engine = Instantiate<GameObject> (p.prefab, transform, false);
+			break;
 		}
 	}
 
@@ -87,21 +127,23 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		dtSymbol.color = Bullet.damageTypeToColor (dt);
 	}
 
-	private GameObject[] abilityToPart(string s)
+	[System.Serializable]
+	public class Part
 	{
-		if (s == "Spray" || s == "Refract" || s == "Lay Waste" || s == "Ricochet")
+		public string abilityName;
+		public GameObject prefab;
+		public Section section;
+
+		public Part(string a, GameObject p, Section s)
 		{
-			return new GameObject[]{ cone };
+			abilityName = a;
+			prefab = p;
+			section = s;
 		}
-		else if (s == "Overdrive" || s == "Propel" || s == "Shift" || s == "Phase")
-		{
-			return new GameObject[]{ leftWing, rightWing };
-		}
-		else if (s == "Displace" || s == "Grapple" || s == "Flash" || s == "Reflect")
-		{
-			return new GameObject[]{ engine };
-		}
-		else
-			return new GameObject[]{ };
+	}
+
+	public enum Section
+	{
+		cone, wings, engine
 	}
 }
