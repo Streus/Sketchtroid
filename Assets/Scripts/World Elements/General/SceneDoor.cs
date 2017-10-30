@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 //TODO fix first door edge case (can exit through first door)
 public class SceneDoor : MonoBehaviour
@@ -136,5 +137,8 @@ public class SceneDoor : MonoBehaviour
 		player.GetComponent<Controller> ().enabled = false;
 
 		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 60f, ForceMode2D.Impulse);
+
+		//show current scene name
+		HUDManager.instance.displayTextPrompt (SceneManager.GetActiveScene ().name, "");
 	}
 }

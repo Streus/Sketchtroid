@@ -145,7 +145,7 @@ public partial class Ability : ISerializable
 		available = info.GetBoolean ("available");
 		active = info.GetBoolean ("active");
 
-		persData = info.GetValue ("persData", typeof(ISerializable));
+		persData = (ISerializable)info.GetValue ("persData", typeof(ISerializable));
 	}
 
 	/* Instance Methods */

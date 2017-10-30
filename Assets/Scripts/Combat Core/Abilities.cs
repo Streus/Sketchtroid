@@ -107,19 +107,9 @@ public partial class Ability
 	// Spray
 	private bool sprayShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		try
-		{
-			Bullet b = Bullet.create ("Basic", subject, (DamageType)args [0], subject.getFaction ());
-			b.transform.position += subject.transform.up + (Vector3)UnityEngine.Random.insideUnitCircle * 0.3f;
-			return true;
-		}
-		#pragma warning disable 0168
-		catch(InvalidCastException ice)
-		#pragma warning restore 0168
-		{ 
-			Debug.LogError ("Passed invalid argument to sprayShoot");
-		}
-		return false;
+		Bullet b = Bullet.create ("Basic", subject, subject.defaultDT, subject.getFaction ());
+		b.transform.position += subject.transform.up + (Vector3)UnityEngine.Random.insideUnitCircle * 0.3f;
+		return true;
 	}
 
 	// Refract

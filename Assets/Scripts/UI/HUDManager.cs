@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HUDManager : MonoBehaviour
+public class HUDManager : MenuManager
 {
 	/* Static Vars */
 	private static HUDManager _instance;
@@ -58,6 +58,7 @@ public class HUDManager : MonoBehaviour
 		shieldBar.fillAmount = subject.shieldPerc;
 	}
 
+	// Change the Entity from which the HUD will pull values
 	public void setSubject(Entity subject)
 	{
 		//clear old subject data
@@ -97,6 +98,11 @@ public class HUDManager : MonoBehaviour
 	public Entity getSubject()
 	{
 		return subject;
+	}
+
+	public void displayTextPrompt(string title, string caption, float duration = 5f)
+	{
+		TextPrompt.create (GetComponent<RectTransform>(), title, caption, duration);
 	}
 
 	private void addAbility(Ability a)
