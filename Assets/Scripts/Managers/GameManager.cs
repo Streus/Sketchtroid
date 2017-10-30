@@ -71,6 +71,9 @@ public class GameManager : MonoBehaviour
 	// The number of damage types unlocked by the player
 	private int _damageTypeUnlocks;
 
+	// The abilities unlocked by the player
+	private int _abilities;
+
 	/* Static Methods */
 
 
@@ -101,6 +104,8 @@ public class GameManager : MonoBehaviour
 
 		_damageTypeUnlocks = 0;
 		unlockDT (DamageType.PHYSICAL);
+	
+		_abilities = 0;
 
 		saveDirectory = Application.persistentDataPath + Path.DirectorySeparatorChar
 						+ "saves" + Path.DirectorySeparatorChar;
@@ -170,6 +175,7 @@ public class GameManager : MonoBehaviour
 		save.playerData = playerData = player.GetComponent<Entity>().reap();
 
 		save.dtUnlocks = _damageTypeUnlocks;
+		save.abilities = _abilities;
 
 		return save;
 	}
@@ -233,6 +239,7 @@ public class GameManager : MonoBehaviour
 		playerData = save.playerData;
 
 		_damageTypeUnlocks = save.dtUnlocks;
+		_abilities = save.abilities;
 
 		loadData (saveName);
 
@@ -300,7 +307,24 @@ public class GameManager : MonoBehaviour
 	// Unlock a given damage type
 	public void unlockDT(DamageType dt)
 	{
-		_damageTypeUnlocks = _damageTypeUnlocks | (1 << (int)dt);
+		_damageTypeUnlocks |= (1 << (int)dt);
+	}
+
+	// Check if a specific ability is unlocked
+	public bool isAbilityUnlocked(Ability a)
+	{
+		int check = 1 << a.ID;
+		return (_abilities & check) == check;
+	}
+	public bool isAbilityUnlocked(string name)
+	{
+		return isAbilityUnlocked(Ability.get (name));
+	}
+
+	// Unlock an ability
+	public void unlockAbility(Ability a)
+	{
+		_abilities |= (1 << a.ID);
 	}
 
 	/* Delegates and Events */
@@ -321,6 +345,7 @@ public class GameManager : MonoBehaviour
 		public SeedBase playerData;
 
 		public int dtUnlocks;
+		public int abilities;
 
 		public Save()
 		{
@@ -334,6 +359,7 @@ public class GameManager : MonoBehaviour
 			playerData = null;
 
 			dtUnlocks = 0;
+			abilities = 0;
 		}
 
 		public Save(SerializationInfo info, StreamingContext context)
@@ -349,6 +375,7 @@ public class GameManager : MonoBehaviour
 			playerData = (SeedBase)info.GetValue("playerData", typeof(SeedBase));
 
 			dtUnlocks = info.GetInt32("dtUnlocks");
+			abilities = info.GetInt32("abilities");
 		}
 
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -364,6 +391,7 @@ public class GameManager : MonoBehaviour
 			info.AddValue("playerData", playerData);
 
 			info.AddValue ("dtUnlocks", dtUnlocks);
+			info.AddValue ("abilities", abilities);
 		}
 	}
 }

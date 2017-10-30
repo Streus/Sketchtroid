@@ -12,11 +12,20 @@ public partial class Ability : ISerializable
 	/* Static Vars */
 	private static Dictionary<string, Ability> repository;
 
+	// The resources directory that holds all ability icons
 	private const string ICON_DIR = "Sprites/HUD/Abilities/";
+
+	// The latest ID number not assigned to an ability
+	private static int latestID;
 
 	/* Instance Vars */
 
+	// The unique ID for this ability type
+	private int id;
+	public int ID { get { return id; } }
+
 	// The displayed name of this Ability
+	[SerializeField]
 	public readonly string name;
 
 	// The displayed description of this Ability
@@ -30,7 +39,7 @@ public partial class Ability : ISerializable
 
 	// The current cooldown value
 	private float _cooldownCurr;
-	public float cooldownCurr{ get; }
+	public float cooldownCurr{ get { return _cooldownCurr; } }
 
 	// The maximum possible cooldown value
 	public readonly float cooldownMax;
@@ -52,6 +61,9 @@ public partial class Ability : ISerializable
 	// Is this Ability's cooldown being updated?
 	public bool active;
 
+	// Persistent data intended to carry over between invokes of this Ability
+	private ISerializable persData;
+
 	/* Static Methods */
 
 	// Get an ability from the ability repository, ifex
@@ -66,6 +78,7 @@ public partial class Ability : ISerializable
 	/* Constructors */
 	public Ability(string name, string desc, string iconPath, float cooldownMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
 	{
+		this.id = -1;
 		this.name = name;
 		this.desc = desc;
 		this.iconPath = iconPath;
@@ -97,10 +110,13 @@ public partial class Ability : ISerializable
 
 		active = false;
 		available = true;
+
+		persData = null;
 	}
-	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ }
+	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ this.id = a.id; }
 	public Ability(SerializationInfo info, StreamingContext context)
 	{
+		id = info.GetInt32 ("id");
 		name = info.GetString ("name");
 		desc = info.GetString ("desc");
 		iconPath = info.GetString ("iconPath");
@@ -128,6 +144,8 @@ public partial class Ability : ISerializable
 		postAnim = info.GetString ("postAnim");
 		available = info.GetBoolean ("available");
 		active = info.GetBoolean ("active");
+
+		persData = info.GetValue ("persData", typeof(ISerializable));
 	}
 
 	/* Instance Methods */
@@ -155,6 +173,11 @@ public partial class Ability : ISerializable
 			_cooldownCurr = 0f;
 	}
 
+	public void initPersData(ISerializable data)
+	{
+		persData = data;
+	}
+
 	// Called to use the Ability
 	public bool use(Entity subject, Vector2 targetPosition, params object[] args)
 	{
@@ -175,6 +198,7 @@ public partial class Ability : ISerializable
 	// For serialization
 	public void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
+		info.AddValue ("id", id);
 		info.AddValue ("name", name);
 		info.AddValue ("desc", desc);
 		info.AddValue ("iconPath", iconPath);
@@ -191,16 +215,21 @@ public partial class Ability : ISerializable
 
 		info.AddValue ("available", available);
 		info.AddValue ("active", active);
+
+		info.AddValue ("persData", persData);
 	}
 
 	// Equiv checks
 	public override bool Equals (object obj)
 	{
-		return this.name.Equals (((Ability)obj).name);
+		Ability other = (Ability)obj;
+		if (other.id == -1 || this.id == -1)
+			return this.name == other.name;
+		return this.id == other.id;
 	}
 	public override int GetHashCode ()
 	{
-		return base.GetHashCode ();
+		return id;
 	}
 
 	// String representation
@@ -214,6 +243,13 @@ public partial class Ability : ISerializable
 			"Prereq: " + checkName + "\n" +
 			"PreAnim: " + preAnim + "\n" +
 			"PostAnim: " + postAnim + "\n";
+	}
+
+	// Setting of ID values
+	private Ability assignID()
+	{
+		id = Ability.latestID++;
+		return this;
 	}
 
 	/* Delegates and Events */
