@@ -39,9 +39,12 @@ public class PlayerAppearanceDriver : MonoBehaviour
 			entity.damageTypeChanged += dtChanged;
 		}
 
-		cone = leftWing = rightWing = engine = null;
+		addPart (defaultCone);
+		addPart (defaultWings);
+		addPart (defaultEngine);
 	}
 
+	// Initialize using an Entity's Seed data
 	public void init(Entity.Seed data)
 	{
 		for (int i = 0; i < data.abilities.Count; i++)
@@ -67,11 +70,30 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	private void partSwapped(Ability a, Ability b, int index)
 	{
 		partRemoved (b);
-		partAdded (a);
+		if (a != null)
+			partAdded (a);
+		else
+		{
+			switch (abilityToPart (b).section)
+			{
+			case Section.cone:
+				addPart (defaultCone);
+				break;
+			case Section.wings:
+				addPart (defaultWings);
+				break;
+			case Section.engine:
+				addPart (defaultEngine);
+				break;
+			}
+		}
 	}
 
 	private Part abilityToPart(Ability a)
 	{
+		if (a == null)
+			return null;
+
 		return parts.Find (delegate(Part obj) {
 			return a.name == obj.abilityName;
 		});
@@ -99,9 +121,12 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		switch (p.section)
 		{
 		case Section.cone:
+			Destroy (cone);
 			cone = Instantiate<GameObject> (p.prefab, transform, false);
 			break;
 		case Section.wings:
+			Destroy (leftWing);
+			Destroy (rightWing);
 			leftWing = Instantiate<GameObject> (p.prefab, transform, false);
 			rightWing = Instantiate<GameObject> (p.prefab, transform, false);
 			rightWing.transform.localScale = new Vector3 (
@@ -110,6 +135,7 @@ public class PlayerAppearanceDriver : MonoBehaviour
 				rightWing.transform.localScale.z);
 			break;
 		case Section.engine:
+			Destroy (engine);
 			engine = Instantiate<GameObject> (p.prefab, transform, false);
 			break;
 		}

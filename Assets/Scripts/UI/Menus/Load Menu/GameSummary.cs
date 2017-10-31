@@ -21,6 +21,10 @@ public class GameSummary : MonoBehaviour
 	[SerializeField]
 	private Text area;
 	[SerializeField]
+	private Image[] damageTypes;
+	[SerializeField]
+	private Image[] abilities;
+	[SerializeField]
 	private Button loadButton;
 	[SerializeField]
 	private Button deleteButton;
@@ -39,6 +43,19 @@ public class GameSummary : MonoBehaviour
 		summary.setDifficulty (data.difficulty);
 		summary.setTime (data.gameTime);
 		summary.setArea (data.currScene);
+
+		for (int i = 0; i < summary.damageTypes.Length; i++)
+		{
+			if ((data.dtUnlocks & (1 << (i + 1))) == 0)
+				summary.damageTypes [i].color = Color.clear;
+		}
+
+		for (int i = 0; i < summary.abilities.Length; i++)
+		{
+			if ((data.abilities & (1 << i)) == 0)
+				summary.abilities [i].color = Color.clear;
+		}
+
 		summary.data = data;
 
 		return summary;
