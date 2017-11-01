@@ -19,10 +19,12 @@ public sealed class Entity : MonoBehaviour, IReapable
 	private bool allowReset = true;
 
 	// A resource pool that is deducted from when taking damage. Death occurs when it reaches 0.
+	[SerializeField]
 	private float health;
 	public float healthMax = 75f;
 
 	// A resource pool that is deducted before health. Can regen after a delay.
+	[SerializeField]
 	private float shields;
 	public float shieldsMax = 25f;
 	public float shieldRegen = 1f;

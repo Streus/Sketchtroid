@@ -72,7 +72,7 @@ public class SceneStateManager : ISerializable
 	/* Destructor */
 	~SceneStateManager()
 	{
-		Debug.Log ("[SceneStateManager] Replaced SSM instance."); //DEBUG SSM destruction
+		Debug.Log ("[SSM] Replaced instance."); //DEBUG SSM destruction
 	}
 
 	/* Instance Methods */
@@ -120,7 +120,7 @@ public class SceneStateManager : ISerializable
 		//if the current scene is not ignored, save data from it
 		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
 		{
-			Console.log.println ("[SceneStateManager] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
+			Console.log.println ("[SSM] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
 
 			//create a dictionary for the incoming data
 			Dictionary<string, SeedBase> currData;
@@ -143,7 +143,7 @@ public class SceneStateManager : ISerializable
 			resetTimers.Add (currName, RESET_TIMER_MAX);
 		}
 		else
-			Console.log.println ("[SceneStateManager] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info);
+			Console.log.println ("[SSM] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info);
 
 		//do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -167,14 +167,14 @@ public class SceneStateManager : ISerializable
 		if(curr.name != "main") //TODO see if there's a better way to do this
 			GameManager.instance.createPlayer();
 
-		Console.log.println ("[SceneStateManager] Loading values for " + curr.name + ".", Console.LogTag.info); //DEBUG
+		Console.log.println ("[SSM] Loading values for " + curr.name + ".", Console.LogTag.info); //DEBUG
 
 		Dictionary<string, SeedBase> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
-			Console.log.println ("[SceneStateManager] No data to load for " + curr.name + ".", Console.LogTag.info); //DEBUG
+			Console.log.println ("[SSM] No data to load for " + curr.name + ".", Console.LogTag.info); //DEBUG
 			return;
 		}
 
@@ -184,9 +184,9 @@ public class SceneStateManager : ISerializable
 			if (sb.prefabPath != "")
 			{
 				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
-					Console.log.println ("[SceneStateManager] Respawned prefab object: " + sb.registeredID + ".", Console.LogTag.info); //DEBUG
+					Console.log.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.LogTag.info); //DEBUG
 				else
-					Console.log.println ("[SceneStateManager] Failed to respawn prefab object: " + sb.registeredID + ".", Console.LogTag.error); //DEBUG
+					Console.log.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.LogTag.error); //DEBUG
 			}
 		}
 
@@ -208,7 +208,7 @@ public class SceneStateManager : ISerializable
 
 		bool newIgnore = ignoreSet.Add (currName);
 		if(newIgnore)
-			Console.log.println ("[SceneStateManager] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info); //DEBUG
+			Console.log.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info); //DEBUG
 
 		return newIgnore;
 	}
@@ -229,6 +229,8 @@ public class SceneStateManager : ISerializable
 		if (currData.ContainsKey (ID))
 			currData.Remove (ID);
 		currData.Add (ID, seed);
+
+		Console.log.println ("[SSM] Created destruction entry for " + ID + ".", Console.LogTag.info);
 	}
 
 	// For serialization
@@ -247,7 +249,7 @@ public class SceneStateManager : ISerializable
 	// Resolve the current SSM instance to a string
 	public override string ToString ()
 	{
-		string str = "[SceneStateManager]\n";
+		string str = "[SSM]\n";
 		str += "Currently Managing " + scenes.Count + " scenes.\n";
 		foreach (string sceneName in scenes.Keys)
 		{
