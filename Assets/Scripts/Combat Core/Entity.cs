@@ -683,7 +683,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 			movespeed = subInfo.movespeed;
 
-			invincible = subInfo.movespeed;
+			invincible = subInfo.invincible;
 			stunned = subInfo.stunned;
 			rooted = subInfo.rooted;
 

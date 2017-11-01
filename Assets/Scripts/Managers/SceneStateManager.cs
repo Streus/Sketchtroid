@@ -167,14 +167,14 @@ public class SceneStateManager : ISerializable
 		if(curr.name != "main") //TODO see if there's a better way to do this
 			GameManager.instance.createPlayer();
 
-		Console.log.println ("[SSM] Loading values for " + curr.name + ".", Console.LogTag.info); //DEBUG
+		Console.log.println ("[SSM] Loading values for " + curr.name + ".", Console.LogTag.info);
 
 		Dictionary<string, SeedBase> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
-			Console.log.println ("[SSM] No data to load for " + curr.name + ".", Console.LogTag.info); //DEBUG
+			Console.log.println ("[SSM] No data to load for " + curr.name + ".", Console.LogTag.info);
 			return;
 		}
 
@@ -184,9 +184,9 @@ public class SceneStateManager : ISerializable
 			if (sb.prefabPath != "")
 			{
 				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
-					Console.log.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.LogTag.info); //DEBUG
+					Console.log.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.LogTag.info);
 				else
-					Console.log.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.LogTag.error); //DEBUG
+					Console.log.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.LogTag.error);
 			}
 		}
 
@@ -208,7 +208,7 @@ public class SceneStateManager : ISerializable
 
 		bool newIgnore = ignoreSet.Add (currName);
 		if(newIgnore)
-			Console.log.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info); //DEBUG
+			Console.log.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
 
 		return newIgnore;
 	}
