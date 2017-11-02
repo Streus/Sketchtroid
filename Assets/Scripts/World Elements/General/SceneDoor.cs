@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-//TODO fix first door edge case (can exit through first door)
 public class SceneDoor : MonoBehaviour
 {
 	/* Static Vars */

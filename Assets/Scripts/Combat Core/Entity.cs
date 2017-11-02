@@ -567,7 +567,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (died != null)
 			died ();
 
-		GetComponent<RegisteredObject> ().saveDestruction ();
+		RegisteredObject ro = GetComponent<RegisteredObject> ();
+		if(ro != null)
+			ro.saveDestruction ();
 		
 		Destroy(gameObject);
 	}

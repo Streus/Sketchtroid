@@ -31,8 +31,6 @@ public class GameSummary : MonoBehaviour
 
 	private GameManager.Save data;
 
-	//TODO ability/player appearance display
-
 	/* Static Methods */
 	public static GameSummary create(RectTransform parent, GameManager.Save data)
 	{
