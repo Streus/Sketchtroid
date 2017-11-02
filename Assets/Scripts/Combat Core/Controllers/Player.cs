@@ -20,7 +20,7 @@ public class Player : Controller
 
 	public override void Update()
 	{
-		if (Console.log.isEnabled)
+		if (Console.log != null && Console.log.isEnabled)
 			return;
 
 		//invoke abilities
@@ -77,7 +77,7 @@ public class Player : Controller
 
 	public override void FixedUpdate()
 	{
-		if (Console.log.isEnabled)
+		if (Console.log != null && Console.log.isEnabled)
 			return;
 
 		//face the mouse
