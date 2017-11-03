@@ -40,7 +40,7 @@ public class WormSegment : MonoBehaviour
 		//lock distance within trail distance
 		Vector2 dPos = child.transform.position - transform.position;
 		if (dPos.magnitude > trailDistance)
-			child.transform.localPosition = (Vector3)(dPos.normalized * trailDistance);
+			child.transform.position = transform.position + (Vector3)(dPos.normalized * trailDistance);
 
 		//go down the chain
 		WormSegment segment = child.GetComponent<WormSegment> ();

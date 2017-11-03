@@ -7,7 +7,6 @@ public abstract class Interactable : MonoBehaviour, IReapable
 	/* Instance Vars */
 	public bool interactable;
 	public bool activated{ get; protected set; }
-	public bool bulletActivated;
 	public DamageType keyType;
 
 	[SerializeField]
@@ -24,7 +23,7 @@ public abstract class Interactable : MonoBehaviour, IReapable
 
 	public virtual void OnInteract(DamageType dt)
 	{
-		if (!interactable || !bulletActivated)
+		if (!interactable)
 			return;
 
 		if (dt == keyType || keyType == DamageType.NONE)
@@ -43,7 +42,6 @@ public abstract class Interactable : MonoBehaviour, IReapable
 
 		interactable = seed.interactable;
 		activated = seed.activated;
-		bulletActivated = seed.bulletActivated;
 		keyType = seed.keyType;
 	}
 
@@ -56,7 +54,7 @@ public abstract class Interactable : MonoBehaviour, IReapable
 	protected class Seed : SeedBase
 	{
 		/* Instance Vars */
-		public bool interactable, activated, bulletActivated;
+		public bool interactable, activated;
 		public DamageType keyType;
 
 		/* Instance Methods */
@@ -65,14 +63,12 @@ public abstract class Interactable : MonoBehaviour, IReapable
 			Interactable i = subject.GetComponent<Interactable>();
 			interactable = i.interactable;
 			activated = i.activated;
-			bulletActivated = i.bulletActivated;
 			keyType = i.keyType;
 		}
 		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
 		{
 			interactable = info.GetBoolean("interactable");
 			activated = info.GetBoolean("activated");
-			bulletActivated = info.GetBoolean("bActivated");
 			keyType = (DamageType)info.GetInt32("keyType");
 		}
 
@@ -82,7 +78,6 @@ public abstract class Interactable : MonoBehaviour, IReapable
 
 			info.AddValue ("interactable", interactable);
 			info.AddValue ("activated", activated);
-			info.AddValue ("bActivated", bulletActivated);
 			info.AddValue ("keyType", keyType);
 		}
 	}

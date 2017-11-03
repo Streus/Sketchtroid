@@ -20,7 +20,7 @@ public class BasicBulletSwitch : Interactable
 		if (activated)
 			sprite.color = Color.black;
 		else
-			sprite.color = Color.green;
+			sprite.color = Bullet.damageTypeToColor(keyType);
 	}
 
 	public override void OnInteract (DamageType dt)
@@ -30,6 +30,6 @@ public class BasicBulletSwitch : Interactable
 		if (activated)
 			sprite.color = Color.black;
 		else
-			sprite.color = Color.green;
+			sprite.color = Bullet.damageTypeToColor(keyType);
 	}
 }
