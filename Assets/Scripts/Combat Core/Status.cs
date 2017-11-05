@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System;
 
 [Serializable]
-public class Status : ISerializable
+public sealed class Status : ISerializable
 {
 	/* Static Vars */
 
@@ -127,6 +127,17 @@ public class Status : ISerializable
 				break;
 			}
 		}
+	}
+
+	public float durationPercentage { get { return duration / initDuration; } }
+
+	// Get a StatusComponent on this Status of type T
+	public T getComponent<T>() where T : StatusComponent
+	{
+		foreach (StatusComponent sc in components)
+			if (sc.GetType () == typeof(T))
+				return (T)sc;
+		return null;
 	}
 
 	// --Hooks--
