@@ -168,7 +168,7 @@ public sealed class Bullet : MonoBehaviour
 		else if (d != null)
 		{
 			OnHit (col);
-			d.damage (damage);
+			d.applyDamage (damage);
 		}
 		else if (col.tag == "Indes")
 		{

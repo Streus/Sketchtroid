@@ -14,6 +14,7 @@ public class Controller : MonoBehaviour
 
 	/* Instance Vars */
 	protected Entity self;
+	public Entity data { get { return self; } }
 	protected Animator anim;
 	protected Rigidbody2D physbody;
 

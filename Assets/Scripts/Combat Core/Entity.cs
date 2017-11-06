@@ -228,26 +228,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			return;
 
 		Seed seed = (Seed)s;
-		destroyed = seed.destroyed;
-		if (destroyed)
-		{
-			//Entity is destroyed
-			Destroy (gameObject);
-			return;
-		}
 
-		//-SeedBase values-
-		transform.position = seed.tPosition;
-		transform.rotation = seed.tRotation;
-
-		Rigidbody2D body = GetComponent<Rigidbody2D> ();
-		if (body != null)
-		{
-			body.position = seed.rbPosition;
-			body.rotation = seed.rbRotation;
-			body.velocity = seed.rbVelocity;
-			body.angularVelocity = seed.rbAngVelocity;
-		}
+		seed.defaultSow (gameObject);
 
 		//-Entity-specific values-
 		faction = seed.faction;
@@ -296,7 +278,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			if (abilityAdded != null)
 				abilityAdded (a);
 	}
-	public bool destroyed { get; set; }
 	public bool ignoreReset() { return !allowReset; }
 
 	// --- Monobehavior Stuff ---
@@ -567,11 +548,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (died != null)
 			died ();
 
-		RegisteredObject ro = GetComponent<RegisteredObject> ();
-		if(ro != null)
-			ro.saveDestruction ();
-		
-		Destroy(gameObject);
+		RegisteredObject.destroy (gameObject);
 	}
 
 	// Shields have fallen to zero
@@ -662,6 +639,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 		public Seed(GameObject subject) : base(subject)
 		{
 			Entity subInfo = subject.GetComponent<Entity>();
+			if(subInfo == null)
+				return;
 
 			faction = subInfo.faction;
 

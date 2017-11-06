@@ -76,6 +76,14 @@ public class RegisteredObject : MonoBehaviour
 		return inst;
 	}
 
+	public static void destroy(GameObject go)
+	{
+		RegisteredObject ro = go.GetComponent<RegisteredObject> ();
+		if (ro != null)
+			ro.saveDestruction ();
+		Destroy (go);
+	}
+
 	/* Instance Methods */
 	public void Reset()
 	{
@@ -141,8 +149,8 @@ public class RegisteredObject : MonoBehaviour
 			hole.sow (seed);
 	}
 
-	// Called by client components when they are destroyed via gameplay
-	public void saveDestruction()
+	// Tells the SSM that a RO has been destroyed through gameplay
+	private void saveDestruction()
 	{
 		if (prefabPath != "")
 			return;

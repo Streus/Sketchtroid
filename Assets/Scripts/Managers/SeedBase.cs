@@ -124,4 +124,27 @@ public class SeedBase: ISerializable
 		info.AddValue ("rID", registeredID);
 		info.AddValue ("parentID", parentID);
 	}
+
+	public void defaultSow(GameObject subject)
+	{
+		if (destroyed)
+		{
+			//Entity is destroyed
+			MonoBehaviour.Destroy (subject);
+			return;
+		}
+
+		//-SeedBase values-
+		subject.transform.position = tPosition;
+		subject.transform.rotation = tRotation;
+
+		Rigidbody2D body = subject.GetComponent<Rigidbody2D> ();
+		if (body != null)
+		{
+			body.position = rbPosition;
+			body.rotation = rbRotation;
+			body.velocity = rbVelocity;
+			body.angularVelocity = rbAngVelocity;
+		}
+	}
 }

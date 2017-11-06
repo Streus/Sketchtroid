@@ -24,7 +24,7 @@ public class Destructable : MonoBehaviour, IReapable
 			parDes.destructed += OnDeath;
 	}
 
-	public void damage(float amount)
+	public void applyDamage(float amount)
 	{
 		OnHit (amount);
 
@@ -43,25 +43,15 @@ public class Destructable : MonoBehaviour, IReapable
 		Seed seed = (Seed)s;
 
 		//sow values
+		seed.defaultSow(gameObject);
+
 		health = seed.health;
-
-		transform.position = seed.tPosition;
-		transform.rotation = seed.tRotation;
-
-		Rigidbody2D rb = GetComponent<Rigidbody2D> ();
-		if (rb != null)
-		{
-			rb.position = seed.rbPosition;
-			rb.rotation = seed.rbRotation;
-			rb.velocity = seed.rbVelocity;
-			rb.angularVelocity = seed.rbAngVelocity;
-		}
 	}
 	public bool ignoreReset() { return !allowReset; }
 
 	protected virtual void OnHit(float damage)
 	{
-
+		
 	}
 
 	public virtual void OnDeath()
@@ -69,9 +59,7 @@ public class Destructable : MonoBehaviour, IReapable
 		if (destructed != null)
 			destructed ();
 
-		GetComponent<RegisteredObject> ().saveDestruction ();
-
-		Destroy (gameObject);
+		RegisteredObject.destroy (gameObject);
 	}
 
 	public void OnDestroy()
