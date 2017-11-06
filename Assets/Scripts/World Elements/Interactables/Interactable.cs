@@ -21,14 +21,19 @@ public abstract class Interactable : MonoBehaviour, IReapable
 		activated = !activated;
 	}
 
-	public virtual void OnInteract(DamageType dt)
+	public void OnInteract(DamageType dt)
 	{
 		if (!interactable)
 			return;
 
 		if (dt == keyType || keyType == DamageType.NONE)
+		{
 			activated = !activated;
+			doInteract ();
+		}
 	}
+
+	public abstract void doInteract ();
 
 	// --- IReapable methods ---
 	public virtual SeedBase reap()

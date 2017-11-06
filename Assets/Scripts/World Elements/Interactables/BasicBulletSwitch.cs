@@ -9,7 +9,7 @@ public class BasicBulletSwitch : Interactable
 	/* Instance Vars */
 
 	// The object this Switch will toggle
-	public Activateable subject;
+	public Activateable[] subjects;
 
 	// Only allow this Switch to be toggled once
 	[SerializeField]
@@ -32,10 +32,11 @@ public class BasicBulletSwitch : Interactable
 	}
 	#endif
 
-	public override void OnInteract (DamageType dt)
+	public override void doInteract ()
 	{
-		base.OnInteract (dt);
-		subject.OnActivate (activated);
+		if(subjects != null)
+			foreach(Activateable a in subjects)
+				a.OnActivate (activated);
 		setColor ();
 		if (lockState)
 			interactable = false;
