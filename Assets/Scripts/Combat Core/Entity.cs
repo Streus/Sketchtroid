@@ -341,6 +341,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	{
 		s.OnRevert (this);
 		s.durationCompleted -= removeStatus;
+		statuses.Remove (s);
 
 		//notify listeners
 		if (statusRemoved != null)
