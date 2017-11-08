@@ -17,6 +17,7 @@ public partial class Ability
 			"Shoot a continuous stream of bullets",
 			"UI_Ability_Spray",
 			0.1f,
+			0,
 			"sprayShoot").assignID()
 		);
 		repository.Add ("Refract", new Ability (
@@ -24,6 +25,7 @@ public partial class Ability
 			"Fire a wide spread of 3 lasers",
 			"UI_Ability_Refract",
 			1f,
+			0,
 			"refractShoot").assignID()
 		);
 		repository.Add ("Lay Waste", new Ability (
@@ -31,6 +33,7 @@ public partial class Ability
 			"Fire a large, slow projectile that splits into eight smaller projectiles on impact",
 			"UI_Ability_LayWaste",
 			2f,
+			0,
 			"lwShoot").assignID()
 		);
 		repository.Add ("Ricochet", new Ability (
@@ -38,6 +41,7 @@ public partial class Ability
 			"Shoot a piercing bullet that bounces three times before expiring",
 			"UI_Ability_Ricochet",
 			0.7f,
+			0,
 			"ricShoot").assignID()
 		);
 
@@ -47,13 +51,15 @@ public partial class Ability
 			"Increase maximum movespeed for a short time",
 			"UI_Ability_Overdrive",
 			5f,
+			0,
 			"overMove").assignID()
 		);
 		repository.Add ("Propel", new Ability (
 			"Propel",
 			"Gain a large burst of speed in one direction",
 			"UI_Ability_Propel",
-			3f,
+			5f,
+			3,
 			"propMove").assignID()
 		);
 		repository.Add ("Shift", new Ability (
@@ -61,6 +67,7 @@ public partial class Ability
 			"Teleport to a nearby location over 2 seconds",
 			"UI_Ability_Shift",
 			7f,
+			0,
 			"shiftMove").assignID()
 		);
 		repository.Add ("Phase", new Ability (
@@ -68,6 +75,7 @@ public partial class Ability
 			"Lose some movespeed, but gain the ability to pass through phase walls for a short time",
 			"UI_Ability_Phase",
 			10f,
+			0,
 			"phaseMove").assignID()
 		);
 
@@ -77,6 +85,7 @@ public partial class Ability
 			"Fire off a wave that pushes objects away",
 			"UI_Ability_Displace",
 			2f,
+			0,
 			"dispUtil").assignID()
 		);
 		repository.Add ("Grapple", new Ability (
@@ -84,6 +93,7 @@ public partial class Ability
 			"Thow out a grapple that attaches to any solid object",
 			"UI_Ability_Grapple",
 			4f,
+			0,
 			"grappUtil").assignID()
 		);
 		repository.Add ("Flash", new Ability (
@@ -91,6 +101,7 @@ public partial class Ability
 			"Discharge shield energy to stun enemies",
 			"UI_Ability_Flash",
 			6f,
+			0,
 			"flashUtil").assignID()
 		);
 		repository.Add ("Reflect", new Ability (
@@ -98,6 +109,7 @@ public partial class Ability
 			"Empower the shield to reflect projectiles for a short time",
 			"UI_Ability_Reflect",
 			10f,
+			0,
 			"refUtil").assignID()
 		);
 	}

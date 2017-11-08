@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Runtime.Serialization;
 using System;
 using System.Reflection;
-using UnityEngine.Scripting;
 
 [Serializable]
 public partial class Ability : ISerializable
@@ -39,10 +38,17 @@ public partial class Ability : ISerializable
 
 	// The current cooldown value
 	private float _cooldownCurr;
-	public float cooldownCurr{ get { return _cooldownCurr; } }
+	public float cooldownCurr { get { return _cooldownCurr; } }
 
 	// The maximum possible cooldown value
 	public readonly float cooldownMax;
+
+	// The number of use charges this ability has accrued (<= chargesMax)
+	private int _charges;
+	public int charges { get { return _charges; } }
+
+	// The maximum number of use charges this ability can accrue
+	public readonly int chargesMax;
 
 	// Delegate pointing the the method that will run when this ability is used
 	private UseEffect effect;
@@ -76,7 +82,7 @@ public partial class Ability : ISerializable
 	}
 
 	/* Constructors */
-	public Ability(string name, string desc, string iconPath, float cooldownMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
+	public Ability(string name, string desc, string iconPath, float cooldownMax, int chargesMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
 	{
 		this.id = -1;
 		this.name = name;
@@ -89,6 +95,9 @@ public partial class Ability : ISerializable
 
 		this.cooldownMax = cooldownMax;
 		_cooldownCurr = cooldownMax;
+
+		this.chargesMax = chargesMax;
+		_charges = 0;
 
 		effectName = effect;
 		this.effect = (UseEffect)Delegate.CreateDelegate (
@@ -113,7 +122,7 @@ public partial class Ability : ISerializable
 
 		persData = null;
 	}
-	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ this.id = a.id; }
+	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.chargesMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ this.id = a.id; }
 	public Ability(SerializationInfo info, StreamingContext context)
 	{
 		id = info.GetInt32 ("id");
@@ -124,6 +133,9 @@ public partial class Ability : ISerializable
 
 		cooldownMax = info.GetSingle ("cooldownMax");
 		_cooldownCurr = info.GetSingle ("cooldownCurr");
+
+		chargesMax = info.GetInt32 ("chargesMax");
+		_charges = info.GetInt32 ("charges");
 
 		effectName = info.GetString ("effect");
 		effect = (UseEffect)Delegate.CreateDelegate (
@@ -153,7 +165,7 @@ public partial class Ability : ISerializable
 	// Can this Ability be used?
 	public bool isReady()
 	{
-		return _cooldownCurr <= 0 && active && available;
+		return (_cooldownCurr <= 0 || charges > 0) && active && available;
 	}
 
 	// Return the percentage of the cooldown that has been completed
@@ -169,8 +181,16 @@ public partial class Ability : ISerializable
 			return;
 
 		_cooldownCurr -= time;
-		if (_cooldownCurr < 0f)
+		if (_cooldownCurr <= 0f)
+		{
 			_cooldownCurr = 0f;
+			if(_charges < chargesMax)
+			{
+				_charges++;
+				if(_charges != chargesMax)
+					_cooldownCurr = cooldownMax;
+			}
+		}
 	}
 
 	public void initPersData(ISerializable data)
@@ -189,7 +209,10 @@ public partial class Ability : ISerializable
 
 		if (effect (subject, targetPosition, args))
 		{
-			_cooldownCurr = cooldownMax;
+			if (_charges > 0)
+				_charges--;
+			if (_charges < chargesMax || chargesMax == 0)
+				_cooldownCurr = cooldownMax;
 			return true;
 		}
 		return false;
@@ -205,6 +228,9 @@ public partial class Ability : ISerializable
 
 		info.AddValue ("cooldownCurr", cooldownCurr);
 		info.AddValue ("cooldownMax", cooldownMax);
+
+		info.AddValue ("charges", _charges);
+		info.AddValue ("chargesMax", chargesMax);
 
 		info.AddValue ("effect", effectName);
 
@@ -237,8 +263,9 @@ public partial class Ability : ISerializable
 	{
 		return name + "\n" +
 			desc + "\n" +
-			"Icon: " + iconPath + "\n" +
+			"Icon: " + ICON_DIR + iconPath + "\n" +
 			"Cooldown: " + cooldownCurr.ToString ("##0.0") + " / " + cooldownMax.ToString ("##0.0") + "\n" +
+			"Charges: " + _charges + " / " + chargesMax + "\n" + 
 			"Effect: " + effect.Method.ToString() + "\n" +
 			"Prereq: " + checkName + "\n" +
 			"PreAnim: " + preAnim + "\n" +

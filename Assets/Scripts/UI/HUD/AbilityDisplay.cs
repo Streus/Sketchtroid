@@ -8,6 +8,8 @@ public class AbilityDisplay : MonoBehaviour
 	/* Instance Vars */
 	[SerializeField]
 	private Image cdIndicator, icon;
+	[SerializeField]
+	private Transform chargeList;
 
 	private Ability subject;
 
@@ -20,6 +22,20 @@ public class AbilityDisplay : MonoBehaviour
 		AbilityDisplay ad = inst.GetComponent<AbilityDisplay> ();
 		ad.setSubject (subject);
 
+		//fill charge list
+		GameObject c_pref = Resources.Load<GameObject>("Prefabs/UI/HUD/ChargeIndicator");
+		for (int i = 0; i < subject.chargesMax; i++)
+		{
+			GameObject c_inst = Instantiate<GameObject> (c_pref, ad.chargeList, false);
+			Image icon = c_inst.GetComponent<Image> ();
+			if (i < subject.charges)
+				icon.fillAmount = 1f;
+			else if (i == subject.charges)
+				icon.fillAmount = 1 - subject.cooldownPercentage();
+			else
+				icon.fillAmount = 0f;
+		}
+
 		return ad;
 	}
 
@@ -27,13 +43,41 @@ public class AbilityDisplay : MonoBehaviour
 	public void Awake()
 	{
 		subject = null;
-		if (cdIndicator == null || icon == null)
+		if (cdIndicator == null || icon == null || chargeList == null)
 			enabled = false;
 	}
 
 	public void Update()
 	{
-		cdIndicator.fillAmount = subject.cooldownPercentage ();
+		Debug.Log (subject.name + " charges: " + subject.charges); //DEBUG abilitydisplay charges
+
+		//initial cooldown
+		if (subject.charges == 0)
+			cdIndicator.fillAmount = subject.cooldownPercentage ();
+		//charge accumulation
+		else
+		{
+			for (int i = 0; i < chargeList.childCount; i++)
+			{
+				Debug.Log (i); //DEBUG
+				Image icon = chargeList.GetChild (i).GetComponent<Image> ();
+				if (i < subject.charges)
+				{
+					icon.fillAmount = 1f;
+					Debug.Log ("Filled"); //DEBUG
+				}
+				else if (i == subject.charges)
+				{
+					icon.fillAmount = 1 - subject.cooldownPercentage ();
+					Debug.Log ("Part-Filled"); //DEBUG
+				}
+				else
+				{
+					icon.fillAmount = 0f;
+					Debug.Log ("Not Filled"); //DEBUG
+				}
+			}
+		}
 	}
 
 	public void setSubject(Ability subject)
@@ -45,6 +89,12 @@ public class AbilityDisplay : MonoBehaviour
 	public void changeCDColor(Color c)
 	{
 		cdIndicator.color = c;
+		for (int i = 0; i < chargeList.childCount; i++)
+		{
+			Image icon = chargeList.GetChild (i).GetComponent<Image> ();
+			if(icon != null)
+				icon.color = c;
+		}
 	}
 
 	public bool hasAbility(Ability a)
