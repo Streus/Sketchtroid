@@ -12,105 +12,105 @@ public partial class Ability
 		repository = new Dictionary<string, Ability> ();
 
 		//player offensive
-		repository.Add ("Spray", new Ability (
+		put(new Ability (
 			"Spray",
 			"Shoot a continuous stream of bullets",
 			"UI_Ability_Spray",
 			0.1f,
 			0,
-			"sprayShoot").assignID()
+			"sprayShoot")
 		);
-		repository.Add ("Refract", new Ability (
+		put(new Ability (
 			"Refract",
 			"Fire a wide spread of 3 lasers",
 			"UI_Ability_Refract",
 			1f,
 			0,
-			"refractShoot").assignID()
+			"refractShoot")
 		);
-		repository.Add ("Lay Waste", new Ability (
+		put(new Ability (
 			"Lay Waste",
 			"Fire a large, slow projectile that splits into eight smaller projectiles on impact",
 			"UI_Ability_LayWaste",
 			2f,
 			0,
-			"lwShoot").assignID()
+			"lwShoot")
 		);
-		repository.Add ("Ricochet", new Ability (
+		put(new Ability (
 			"Ricochet",
 			"Shoot a piercing bullet that bounces three times before expiring",
 			"UI_Ability_Ricochet",
 			0.7f,
 			0,
-			"ricShoot").assignID()
+			"ricShoot")
 		);
 
 		//player mobility
-		repository.Add ("Overdrive", new Ability (
+		put(new Ability (
 			"Overdrive",
 			"Increase maximum movespeed for a short time",
 			"UI_Ability_Overdrive",
 			5f,
 			0,
-			"overMove").assignID()
+			"overMove")
 		);
-		repository.Add ("Propel", new Ability (
+		put(new Ability (
 			"Propel",
 			"Gain a large burst of speed in one direction",
 			"UI_Ability_Propel",
 			5f,
 			3,
-			"propMove").assignID()
+			"propMove")
 		);
-		repository.Add ("Shift", new Ability (
+		put(new Ability (
 			"Shift",
 			"Teleport to a nearby location over 2 seconds",
 			"UI_Ability_Shift",
 			7f,
 			0,
-			"shiftMove").assignID()
+			"shiftMove")
 		);
-		repository.Add ("Phase", new Ability (
+		put(new Ability (
 			"Phase",
 			"Lose some movespeed, but gain the ability to pass through phase walls for a short time",
 			"UI_Ability_Phase",
 			10f,
 			0,
-			"phaseMove").assignID()
+			"phaseMove")
 		);
 
 		//player utility
-		repository.Add ("Displace", new Ability (
+		put(new Ability (
 			"Displace",
 			"Fire off a wave that pushes objects away",
 			"UI_Ability_Displace",
 			2f,
 			0,
-			"dispUtil").assignID()
+			"dispUtil")
 		);
-		repository.Add ("Grapple", new Ability (
+		put(new Ability (
 			"Grapple",
 			"Thow out a grapple that attaches to any solid object",
 			"UI_Ability_Grapple",
 			4f,
 			0,
-			"grappUtil").assignID()
+			"grappUtil")
 		);
-		repository.Add ("Flash", new Ability (
+		put(new Ability (
 			"Flash",
 			"Discharge shield energy to stun enemies",
 			"UI_Ability_Flash",
 			6f,
 			0,
-			"flashUtil").assignID()
+			"flashUtil")
 		);
-		repository.Add ("Reflect", new Ability (
+		put(new Ability (
 			"Reflect",
 			"Empower the shield to reflect projectiles for a short time",
 			"UI_Ability_Reflect",
 			10f,
 			0,
-			"refUtil").assignID()
+			"refUtil")
 		);
 	}
 

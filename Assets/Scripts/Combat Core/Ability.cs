@@ -81,6 +81,12 @@ public partial class Ability : ISerializable
 		return null;
 	}
 
+	// Add an ability to the ability repository
+	private static void put(Ability a)
+	{
+		repository.Add (a.name, a.assignID());
+	}
+
 	/* Constructors */
 	public Ability(string name, string desc, string iconPath, float cooldownMax, int chargesMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
 	{
