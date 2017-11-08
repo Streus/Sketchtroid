@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviour
 	private static GameManager _instance;
 	public static GameManager instance { get { return _instance; } }
 
+	// The pause state of the entire game
+	private bool paused;
+
 	// The full paths to the saves and data directories
 	private static string saveDirectory;
 	private static string dataDirectory;
@@ -90,6 +93,8 @@ public class GameManager : MonoBehaviour
 
 		SceneStateManager.instance ().ignoreCurrentScene ();
 
+		paused = false;
+
 		saveName = "";
 		gameName = "";
 		sceneTime = 0f;
@@ -122,6 +127,24 @@ public class GameManager : MonoBehaviour
 	{
 		//track the time spent in the current scene
 		sceneTime += Time.unscaledDeltaTime;
+	}
+
+	public void setPause(bool state)
+	{
+		if (state != paused)
+		{
+			paused = state;
+			foreach (Rigidbody2D body in GameObject.FindObjectsOfType<Rigidbody2D>())
+				body.simulated = !paused;
+
+			if (pauseToggled != null)
+				pauseToggled (paused);
+		}
+	}
+
+	public bool isPaused()
+	{
+		return paused;
 	}
 
 	//Getters/Setters
@@ -328,7 +351,8 @@ public class GameManager : MonoBehaviour
 	}
 
 	/* Delegates and Events */
-
+	public delegate void TogglePaused(bool state);
+	public event TogglePaused pauseToggled;
 
 	/* Inner Classes */
 	[Serializable]
