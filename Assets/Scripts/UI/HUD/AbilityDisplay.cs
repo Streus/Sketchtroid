@@ -59,22 +59,18 @@ public class AbilityDisplay : MonoBehaviour
 		{
 			for (int i = 0; i < chargeList.childCount; i++)
 			{
-				Debug.Log (i); //DEBUG
 				Image icon = chargeList.GetChild (i).GetComponent<Image> ();
 				if (i < subject.charges)
 				{
 					icon.fillAmount = 1f;
-					Debug.Log ("Filled"); //DEBUG
 				}
 				else if (i == subject.charges)
 				{
 					icon.fillAmount = 1 - subject.cooldownPercentage ();
-					Debug.Log ("Part-Filled"); //DEBUG
 				}
 				else
 				{
 					icon.fillAmount = 0f;
-					Debug.Log ("Not Filled"); //DEBUG
 				}
 			}
 		}

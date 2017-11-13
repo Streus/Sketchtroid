@@ -76,6 +76,8 @@ public class RegisteredObject : MonoBehaviour
 		return inst;
 	}
 
+	// Special wrapper method for the generic Monobehaviour#Destroy
+	// Manages saving the destruction state of a RO
 	public static void destroy(GameObject go)
 	{
 		RegisteredObject ro = go.GetComponent<RegisteredObject> ();
@@ -87,7 +89,7 @@ public class RegisteredObject : MonoBehaviour
 	/* Instance Methods */
 	public void Reset()
 	{
-		registeredID = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ());
+		registeredID = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ()).TrimEnd('=');
 	}
 
 	public void Awake()
