@@ -72,10 +72,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 	private float freezeProgress;
 
 	// The Statuses currently affecting this Entity
+	[SerializeField]
 	private List<Status> statuses;
 
 	// The Abilities that this Entity
-	[SerializeField]
 	private List<Ability> abilities;
 
 	// The Bullets with which this Entity and its netowrk have collided
@@ -191,6 +191,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		freezeProgress = 0f;
 
 		statuses = new List<Status> ();
+		abilities = new List<Ability> ();
 
 		collisonLog = new HashSet<Bullet> ();
 	}
@@ -283,11 +284,16 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// --- Monobehavior Stuff ---
 	public void Update()
 	{
-		//TODO add in pause check
-
 		//update all statuses
-		foreach (Status s in statuses)
-			s.updateDuration (this, Time.deltaTime);
+		for (int i = 0; i < statuses.Count; i++)
+		{
+			if (statuses [i].updateDuration (this, Time.deltaTime))
+			{
+				//if a status ended and was removed from the list, then backtrack
+				//to ensure a status is not skipped
+				i--;
+			}
+		}
 
 		//update all abilities
 		foreach (Ability a in abilities)

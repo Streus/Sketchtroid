@@ -33,6 +33,11 @@ public class Controller : MonoBehaviour
 		physbody = GetComponent<Rigidbody2D> ();
 	}
 
+	public void setPause(bool pause)
+	{
+		self.enabled = physbody.simulated = pause;
+	}
+
 	protected bool isUpdating()
 	{
 		return physbody.simulated && !self.isStunned () && !self.frozen();

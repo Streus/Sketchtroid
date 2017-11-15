@@ -61,7 +61,7 @@ public class StatusComponent : ISerializable
 	public virtual void OnHealed(Entity subject, float healAmount){ }
 
 	// For serialization
-	public void GetObjectData(SerializationInfo info, StreamingContext context)
+	public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
 		info.AddValue ("stacks", stacks);
 	}

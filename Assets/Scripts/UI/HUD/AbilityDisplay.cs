@@ -49,8 +49,6 @@ public class AbilityDisplay : MonoBehaviour
 
 	public void Update()
 	{
-		Debug.Log (subject.name + " charges: " + subject.charges); //DEBUG abilitydisplay charges
-
 		//initial cooldown
 		if (subject.charges == 0)
 			cdIndicator.fillAmount = subject.cooldownPercentage ();

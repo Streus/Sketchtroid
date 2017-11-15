@@ -58,12 +58,9 @@ public sealed class Status : ISerializable
 		this.stacksMax = stacksMax;
 		stacks = 1;
 
-		this.components = new StatusComponent[components.Length];
+		this.components = components;
 		for(int i = 0; i < components.Length; i++)
-		{
-			this.components[i] = new StatusComponent(components[i]);
 			this.components [i].stacks = stacks;
-		}
 	}
 	public Status (Status s) : this (s.name, s.desc, s.iconPath, s.decayType, s.stacksMax, s.initDuration, s.components){ }
 	public Status(SerializationInfo info, StreamingContext context)
@@ -108,7 +105,8 @@ public sealed class Status : ISerializable
 	}
 
 	// Called by the subject during the update loop
-	public void updateDuration(Entity subject, float time)
+	// Returns true if it ended.
+	public bool updateDuration(Entity subject, float time)
 	{
 		OnUpdate (subject, time);
 
@@ -119,14 +117,18 @@ public sealed class Status : ISerializable
 			{
 			case DecayType.communal:
 				OnStatusEnded ();
-				break;
+				return true;
 			case DecayType.serial:
 				stack (subject, -1);
 				if (stacks <= 0)
+				{
 					OnStatusEnded ();
+					return true;
+				}
 				break;
 			}
 		}
+		return false;
 	}
 
 	public float durationPercentage { get { return duration / initDuration; } }
@@ -159,6 +161,7 @@ public sealed class Status : ISerializable
 	// Called every update cycle by the subject
 	public void OnUpdate(Entity subject, float time)
 	{
+		Debug.Log ("Status Update"); //DEBUG status update
 		foreach (StatusComponent sc in components)
 			sc.OnUpdate (subject, time);
 	}

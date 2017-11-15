@@ -135,7 +135,12 @@ public class GameManager : MonoBehaviour
 		{
 			paused = state;
 			foreach (Rigidbody2D body in GameObject.FindObjectsOfType<Rigidbody2D>())
+			{
 				body.simulated = !paused;
+				Controller c = body.GetComponent<Controller> ();
+				if (c != null)
+					c.setPause (body.simulated);
+			}
 
 			if (pauseToggled != null)
 				pauseToggled (paused);
