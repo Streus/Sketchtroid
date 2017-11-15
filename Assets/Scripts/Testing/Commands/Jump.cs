@@ -25,15 +25,23 @@ namespace Commands
 			if (args.Length > 2)
 				saveData = args [2] == "-s";
 
-			if (saveData)
+			try
 			{
-				SceneStateManager.instance ().transitionTo (jumpRoom);
-				Console.log.println ("Transitioned to " + jumpRoom, Console.LogTag.info);
+				if (saveData)
+				{
+					SceneStateManager.instance ().transitionTo (jumpRoom);
+					Console.log.println ("Transitioned to " + jumpRoom, Console.LogTag.info);
+				}
+				else
+				{
+					SceneStateManager.instance ().jumpTo (jumpRoom);
+					Console.log.println ("Jumped to " + jumpRoom, Console.LogTag.info);
+				}
 			}
-			else
+			catch(System.ArgumentException ae)
 			{
-				SceneStateManager.instance ().jumpTo (jumpRoom);
-				Console.log.println ("Jumped to " + jumpRoom, Console.LogTag.info);
+				Console.log.println ("The scene " + jumpRoom + " is invalid.", Console.LogTag.error);
+				return "";
 			}
 
 			return "Successfully changed scene!";
