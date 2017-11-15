@@ -60,9 +60,9 @@ public sealed class Status : ISerializable
 
 		this.components = components;
 		for(int i = 0; i < components.Length; i++)
-			this.components [i].stacks = stacks;
+			this.components [i].setParent(this).stacks = stacks;
 	}
-	public Status (Status s) : this (s.name, s.desc, s.iconPath, s.decayType, s.stacksMax, s.initDuration, s.components){ }
+	public Status (Status s) : this (s.name, s.desc, s.iconPath, s.decayType, s.stacksMax, s.initDuration, s.components) { }
 	public Status(SerializationInfo info, StreamingContext context)
 	{
 		name = info.GetString ("name");
@@ -80,9 +80,7 @@ public sealed class Status : ISerializable
 		int numComponents = info.GetInt32 ("numComponents");
 		this.components = new StatusComponent[numComponents];
 		for (int i = 0; i < numComponents; i++)
-		{
-			components[i] = (StatusComponent)info.GetValue ("component" + i, typeof(StatusComponent));
-		}
+			components[i] = ((StatusComponent)info.GetValue ("component" + i, typeof(StatusComponent))).setParent(this);
 	}
 
 	/* Instance Methods */
@@ -161,7 +159,6 @@ public sealed class Status : ISerializable
 	// Called every update cycle by the subject
 	public void OnUpdate(Entity subject, float time)
 	{
-		Debug.Log ("Status Update"); //DEBUG status update
 		foreach (StatusComponent sc in components)
 			sc.OnUpdate (subject, time);
 	}

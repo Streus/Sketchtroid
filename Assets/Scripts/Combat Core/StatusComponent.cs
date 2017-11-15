@@ -10,22 +10,35 @@ public class StatusComponent : ISerializable
 	/* Instance Vars */
 	public int stacks;
 
+	// Set by the parent Status when a component is added to it
+	protected Status parent;
+
 	/* Constructors */
 	public StatusComponent()
 	{
 		stacks = 1;
+		parent = null;
 	}
 	public StatusComponent(int stacks)
 	{
 		this.stacks = stacks;
+		parent = null;
 	}
 	public StatusComponent(StatusComponent other) : this(other.stacks) { }
 	public StatusComponent(SerializationInfo info, StreamingContext context)
 	{
 		stacks = info.GetInt32 ("stacks");
+		parent = null;
 	}
 
 	/* Instance Methods */
+
+	// Sets the parent Status of this StatusComponent to the given Status
+	public StatusComponent setParent(Status s)
+	{
+		parent = s;
+		return this;
+	}
 
 	// Called when this Status is first added to an Entity
 	public virtual void OnApply(Entity subject){ }
