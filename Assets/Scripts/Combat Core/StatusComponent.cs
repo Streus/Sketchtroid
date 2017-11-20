@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Runtime.Serialization;
 using System;
 
-[Serializable]
 public class StatusComponent : ISerializable
 {
 	/* Instance Vars */

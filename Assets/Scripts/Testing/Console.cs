@@ -79,6 +79,21 @@ public class Console : MonoBehaviour
 			}
 			else
 				input.ActivateInputField ();
+
+			//manage pause states
+			if (GameManager.instance != null)
+			{
+				if (GameManager.instance.isPaused ())
+				{
+					GameManager.instance.setPauseLock (false);
+					GameManager.instance.setPause (false);
+				}
+				else
+				{
+					GameManager.instance.setPause (true);
+					GameManager.instance.setPauseLock (true);
+				}
+			}
 		}
 	}
 

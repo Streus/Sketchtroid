@@ -76,7 +76,7 @@ public partial class Ability : ISerializable
 	public static Ability get(string name)
 	{
 		Ability a;
-		if (repository.TryGetValue (name, out a))
+		if (name != null && repository.TryGetValue (name, out a))
 			return new Ability(a);
 		return null;
 	}

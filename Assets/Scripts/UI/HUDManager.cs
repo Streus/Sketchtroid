@@ -23,7 +23,6 @@ public class HUDManager : MenuManager
 	/* Instance Vars */
 
 	// The Entity from which the HUD will pull values.
-	[SerializeField] //DEBUG
 	private Entity subject;
 
 	// Various UI elements that correspond to data in the subject entity
@@ -56,6 +55,11 @@ public class HUDManager : MenuManager
 
 		healthBar.fillAmount = subject.healthPerc;
 		shieldBar.fillAmount = subject.shieldPerc;
+
+		if (Input.GetKeyDown (KeyCode.Tab)) //TODO swap for proper bindings later
+		{
+			GameManager.instance.setPause (!GameManager.instance.isPaused ());
+		}
 	}
 
 	// Change the Entity from which the HUD will pull values

@@ -116,6 +116,9 @@ public sealed class Bullet : MonoBehaviour
 
 	public void Update()
 	{
+		if (!physbody.simulated)
+			return;
+
 		duration -= Time.deltaTime;
 		if (duration <= 0f)
 		{

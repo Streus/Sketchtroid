@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
 	// The pause state of the entire game
 	private bool paused;
+	private bool pauseLock;
 
 	// The full paths to the saves and data directories
 	private static string saveDirectory;
@@ -94,6 +95,7 @@ public class GameManager : MonoBehaviour
 		SceneStateManager.instance ().ignoreCurrentScene ();
 
 		paused = false;
+		pauseLock = false;
 
 		saveName = "";
 		gameName = "";
@@ -131,7 +133,7 @@ public class GameManager : MonoBehaviour
 
 	public void setPause(bool state)
 	{
-		if (state != paused)
+		if (state != paused && !pauseLock)
 		{
 			paused = state;
 			foreach (Rigidbody2D body in GameObject.FindObjectsOfType<Rigidbody2D>())
@@ -150,6 +152,11 @@ public class GameManager : MonoBehaviour
 	public bool isPaused()
 	{
 		return paused;
+	}
+
+	public void setPauseLock(bool state)
+	{
+		pauseLock = state;
 	}
 
 	//Getters/Setters
