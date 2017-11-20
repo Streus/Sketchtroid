@@ -25,6 +25,12 @@ public class HUDManager : MenuManager
 	// The Entity from which the HUD will pull values.
 	private Entity subject;
 
+	// Menus swapped out within the HUD
+	[SerializeField]
+	private Menu defaultMenu;
+	[SerializeField]
+	private Menu abilitySelectMenu;
+
 	// Various UI elements that correspond to data in the subject entity
 	[SerializeField]
 	private Image healthBar;
@@ -58,7 +64,10 @@ public class HUDManager : MenuManager
 
 		if (Input.GetKeyDown (KeyCode.Tab)) //TODO swap for proper bindings later
 		{
-			GameManager.instance.setPause (!GameManager.instance.isPaused ());
+			if (currentMenu.name != "Ability Select Menu")
+				showMenu (abilitySelectMenu);
+			else
+				showMenu (defaultMenu);
 		}
 	}
 

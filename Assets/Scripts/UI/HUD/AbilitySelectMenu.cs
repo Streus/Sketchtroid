@@ -9,7 +9,11 @@ public class AbilitySelectMenu : MonoBehaviour
 	private string[,] abilities;
 
 	[SerializeField]
-	private Pinwheel layout;
+	private Pinwheel offensiveLayout;
+	[SerializeField]
+	private Pinwheel mobilityLayout;
+	[SerializeField]
+	private Pinwheel utilityLayout;
 
 	/* Instance Methods */
 

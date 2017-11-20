@@ -1,20 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [ExecuteInEditMode]
-public class Pinwheel : MonoBehaviour
+public class Pinwheel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
 	/* Instance Vars */
 	[SerializeField]
 	private float initialRotation = 90f;
+	private float distanceToCenter;
 	[SerializeField]
-	private float distanceToCenter = 1f;
+	private float constrictedDistance = 50f;
+	[SerializeField]
+	private float expandedDistance = 100f;
+	[SerializeField]
+	private float expandSpeed = 5f;
+
+	private bool isExpanded;
 
 	/* Instance Methods */
+	public void Awake()
+	{
+		isExpanded = false;
+		distanceToCenter = constrictedDistance;
+	}
+
 	public void Update()
 	{
 		applyLayout ();
+		distanceToCenter = Mathf.Lerp (distanceToCenter, isExpanded ? expandedDistance : constrictedDistance, Time.deltaTime * expandSpeed);
 	}
 
 	private void applyLayout()
@@ -42,5 +57,15 @@ public class Pinwheel : MonoBehaviour
 				(petal.localPosition.x * Mathf.Cos (theta)) - (petal.localPosition.y * Mathf.Sin (theta)),
 				(petal.localPosition.x * Mathf.Sin (theta)) + (petal.localPosition.y * Mathf.Cos (theta)));
 		}
+	}
+
+	public void OnPointerEnter(PointerEventData data)
+	{
+		isExpanded = true;
+	}
+
+	public void OnPointerExit(PointerEventData data)
+	{
+		isExpanded = false;
 	}
 }
