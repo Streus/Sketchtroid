@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [ExecuteInEditMode]
 public class AbilitySelector : MonoBehaviour
@@ -49,17 +52,24 @@ public class AbilitySelector : MonoBehaviour
 
 	private void toggleChanged(bool v)
 	{
+		#if UNITY_EDITOR
+		if(!EditorApplication.isPlaying)
+			return;
+		#endif
 		Entity player = HUDManager.instance.getSubject ();
 		if (v)
 		{
+			ability = Ability.get (abilityName);
 			if (player.getAbility (abilityIndex) != null)
 				player.swapAbility (ability, abilityIndex);
 			else
 				player.addAbility (ability, abilityIndex);
+			Debug.Log ("Adding " + abilityName); //DEBUG ability added
 		}
 		else
 		{
-			player.removeAbility (ability);
+//			player.removeAbility (ability);
+			Debug.Log("Removing " + abilityName); //DEBUG ability removed
 		}
 	}
 }

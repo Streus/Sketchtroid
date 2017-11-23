@@ -98,12 +98,7 @@ public class Controller : MonoBehaviour
 		{
 			return self.getAbility (index).use (self, targetPos, args);
 		}
-		#pragma warning disable 0168
-		catch(IndexOutOfRangeException ioore)
-		#pragma warning restore 0168
-		{
-			Console.log.println (ioore.Message, Console.LogTag.error);
-			return false;
-		}
+		catch(NullReferenceException e) { return false; }
+		catch(IndexOutOfRangeException e) { return false; }
 	}
 }
