@@ -296,8 +296,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 		}
 
 		//update all abilities
-		foreach (Ability a in abilities)
-			a.updateCooldown (Time.deltaTime);
+		for (int i = 0; i < abilities.Count; i++)
+			if(abilities[i] != null)
+				abilities[i].updateCooldown (Time.deltaTime);
 
 		//update combat timer
 		combatTimer -= Time.deltaTime;
