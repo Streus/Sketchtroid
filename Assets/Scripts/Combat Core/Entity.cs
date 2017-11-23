@@ -191,7 +191,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		freezeProgress = 0f;
 
 		statuses = new List<Status> ();
-		abilities = new List<Ability> ();
+		abilities = new List<Ability> (3);
 
 		collisonLog = new HashSet<Bullet> ();
 	}
@@ -357,7 +357,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// --- Ability Handling ---
 
 	// Add an ability to this Entity
-	public void addAbility(Ability a)
+	public void addAbility(Ability a, int index = -1)
 	{
 		//don't allow ability changes if in combat
 		if (inCombat())
@@ -367,8 +367,19 @@ public sealed class Entity : MonoBehaviour, IReapable
 			return;
 
 		//add the ability and set it to active
-		abilities.Add (a);
-		a.active = true;
+		if (index == -1)
+		{
+			abilities.Add (a);
+			a.active = true;
+		}
+		else if (index < abilities.Count)
+		{
+			if (abilities [index] != null && abilityRemoved != null)
+				abilityRemoved (abilities [index]);
+			abilities [index] = a;
+		}
+		else
+			return;
 
 		//notify listeners
 		if (abilityAdded != null)
@@ -434,6 +445,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Ability getter
 	public Ability getAbility(int index)
 	{
+		if (index >= abilities.Count)
+			return null;
 		return abilities [index];
 	}
 
