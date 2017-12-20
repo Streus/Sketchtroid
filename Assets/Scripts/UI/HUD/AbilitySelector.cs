@@ -24,18 +24,41 @@ public class AbilitySelector : MonoBehaviour
 	private Ability ability;
 
 	/* Static Methods */
+	public static AbilitySelector create(Transform parent, string abilityName, int abilityIndex, ToggleGroup tg)
+	{
+		GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/AbilityToggle");
+		GameObject inst = Instantiate<GameObject> (pref, parent, false);
+		AbilitySelector aSel = inst.GetComponent<AbilitySelector> ();
+		aSel.abilityName = abilityName;
+		aSel.abilityIndex = abilityIndex;
+		aSel.setAbility ();
 
+		Toggle t = inst.GetComponent<Toggle> ();
+		t.group = tg;
+
+		return aSel;
+	}
 
 	/* Instance Methods */
 	public void Awake()
 	{
-		toggle.onValueChanged.AddListener (toggleChanged);
 		if (abilityIndex >= ABIL_INDEX_MAX)
 			Debug.LogError ("Invalid ability index on " + name + "!");
 	}
 
+	public void Start()
+	{
+		toggle.onValueChanged.AddListener (toggleChanged);
+	}
+
 	#if UNITY_EDITOR
 	public void Update()
+	{
+		setAbility ();
+	}
+	#endif
+
+	private void setAbility()
 	{
 		ability = Ability.get (abilityName);
 		if (ability != null)
@@ -43,7 +66,6 @@ public class AbilitySelector : MonoBehaviour
 			abilIcon.sprite = ability.icon;
 		}
 	}
-	#endif
 
 	public void setToggle(bool v)
 	{
@@ -68,7 +90,7 @@ public class AbilitySelector : MonoBehaviour
 		}
 		else
 		{
-//			player.removeAbility (ability);
+			player.removeAbility (abilityIndex);
 			Debug.Log("Removing " + abilityName); //DEBUG ability removed
 		}
 	}
