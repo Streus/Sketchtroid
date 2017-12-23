@@ -34,47 +34,40 @@ public class AbilitySelectMenu : MonoBehaviour
 
 	private void focusMenu(bool inFocus)
 	{
-		int i;
 		if (inFocus)
 		{
-			ToggleGroup tg = offensiveLayout.GetComponent<ToggleGroup> ();
-			for (i = 0; i < offensiveAbilities.Length; i++)
-			{
-				if (GameManager.instance.isAbilityUnlocked (offensiveAbilities [i]))
-				{
-					if(HUDManager.instance.getSubject().getAbility(0).name == offensiveAbilities [i])
-						AbilitySelector.create (offensiveLayout, offensiveAbilities [i], 0, tg);
-				}
-			}
-			
-			tg = mobilityLayout.GetComponent<ToggleGroup> ();
-			for (i = 0; i < mobilityAbilities.Length; i++)
-			{
-				if (GameManager.instance.isAbilityUnlocked (mobilityAbilities [i]))
-				{
-					if(HUDManager.instance.getSubject().getAbility(1).name == mobilityAbilities [i])
-						AbilitySelector.create (mobilityLayout, mobilityAbilities [i], 1, tg);
-				}
-			}
-
-			tg = utilityLayout.GetComponent<ToggleGroup> ();
-			for (i = 0; i < utilityAbilities.Length; i++)
-			{
-				if (GameManager.instance.isAbilityUnlocked (utilityAbilities [i]))
-				{
-					if(HUDManager.instance.getSubject().getAbility(2).name == utilityAbilities [i])
-						AbilitySelector.create (utilityLayout, utilityAbilities [i], 2, tg);
-				}
-			}
+			setupWheel (0, offensiveLayout, offensiveAbilities);
+			setupWheel (1, mobilityLayout, mobilityAbilities);
+			setupWheel (2, utilityLayout, utilityAbilities);
 		}
 		else
 		{
+			int i;
 			for(i = 0; i < offensiveLayout.transform.childCount; i++)
 				Destroy(offensiveLayout.transform.GetChild(i).gameObject);
 			for(i = 0; i < mobilityLayout.transform.childCount; i++)
 				Destroy(mobilityLayout.transform.GetChild(i).gameObject);
 			for(i = 0; i < utilityLayout.transform.childCount; i++)
 				Destroy(utilityLayout.transform.GetChild(i).gameObject);
+		}
+	}
+
+	private void setupWheel(int abilityIndex, Transform layout, string[] abilityList)
+	{
+		ToggleGroup tg = layout.GetComponent<ToggleGroup> ();
+		for (int i = 0; i < abilityList.Length; i++)
+		{
+			if (true/*DEBUG*/ || GameManager.instance.isAbilityUnlocked (abilityList [i]))
+			{
+				Ability a = HUDManager.instance.getSubject ().getAbility (abilityIndex);
+				AbilitySelector aSel = AbilitySelector.create (layout, abilityList [i], abilityIndex, tg);
+				if (a != null && a.name == abilityList [i])
+				{
+					aSel.setActive (false);
+					aSel.setToggle (true);
+					aSel.setActive (true);
+				}
+			}
 		}
 	}
 }

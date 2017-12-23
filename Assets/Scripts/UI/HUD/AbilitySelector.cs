@@ -23,6 +23,8 @@ public class AbilitySelector : MonoBehaviour
 	private string abilityName;
 	private Ability ability;
 
+	private bool activeSet;
+
 	/* Static Methods */
 	public static AbilitySelector create(Transform parent, string abilityName, int abilityIndex, ToggleGroup tg)
 	{
@@ -32,6 +34,8 @@ public class AbilitySelector : MonoBehaviour
 		aSel.abilityName = abilityName;
 		aSel.abilityIndex = abilityIndex;
 		aSel.setAbility ();
+
+		aSel.activeSet = true;
 
 		Toggle t = inst.GetComponent<Toggle> ();
 		t.group = tg;
@@ -72,12 +76,25 @@ public class AbilitySelector : MonoBehaviour
 		toggle.isOn = v;
 	}
 
+	public void setActive(bool active)
+	{
+		activeSet = active;
+	}
+	public bool isActive()
+	{
+		return activeSet;
+	}
+
 	private void toggleChanged(bool v)
 	{
 		#if UNITY_EDITOR
 		if(!EditorApplication.isPlaying)
 			return;
 		#endif
+
+		if (!activeSet)
+			return;
+
 		Entity player = HUDManager.instance.getSubject ();
 		if (v)
 		{

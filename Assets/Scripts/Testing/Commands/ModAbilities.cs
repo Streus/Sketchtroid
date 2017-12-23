@@ -33,7 +33,7 @@ namespace Commands
 			// no modifications, just print out ability list info
 			if (args.Length < 2)
 			{
-				printOut = "Abilities:";
+				printOut = "Abilities[" + rep.abilityCount + "]:";
 				for(int i = 0; i < rep.abilityCount; i++)
 					printOut += "\n" + rep.getAbility (i).name;
 				return printOut;
