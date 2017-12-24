@@ -24,21 +24,11 @@ public class Console : MonoBehaviour
 
 	/* Instance Vars */
 
-	// The input line for the Console
-	[SerializeField]
-	private InputField input;
+	// The current value of the input field
+	private string input;
 
-	// The output display for the Console
-	[SerializeField]
-	private Text output;
-
-	// The base RectTransform of the Console
-	[SerializeField]
-	private RectTransform root;
-
-	// The Console's Canvas Group
-	[SerializeField]
-	private CanvasGroup _canvas;
+	// The style used by all GUI rendered by this console
+	private GUIStyle textStyle;
 
 	// The maximum number of lines output will display (also history size)
 	public int linesMax;
@@ -60,7 +50,7 @@ public class Console : MonoBehaviour
 		return commands.ToArray ();
 	}
 
-	// Every individual 
+	// Every individual user entry made during current runtime
 	private List<string> history;
 	private int historyIndex;
 
@@ -70,16 +60,7 @@ public class Console : MonoBehaviour
 		get { return _enabled; }
 		set
 		{
-			_enabled = _canvas.interactable = _canvas.blocksRaycasts = value;
-			_canvas.alpha = _enabled ? 1f : 0f;
-			if (!_enabled)
-			{
-				input.text = "";
-				input.DeactivateInputField ();
-			}
-			else
-				input.ActivateInputField ();
-
+			_enabled = value;
 			//manage pause states
 			if (GameManager.instance != null)
 			{
@@ -99,7 +80,7 @@ public class Console : MonoBehaviour
 
 	public bool isFocused
 	{
-		get { return input.isFocused; }
+		get { return false; } //TODO console focused
 	}
 
 	/* Instance Methods */
@@ -109,6 +90,14 @@ public class Console : MonoBehaviour
 		{
 			log = this;
 			DontDestroyOnLoad (gameObject);
+
+			input = "";
+
+			textStyle = new GUIStyle ();
+			textStyle.font = new Font ("Consolas");
+			textStyle.fontSize = 11;
+			textStyle.richText = true;
+			textStyle.wordWrap = true;
 
 			commands = new List<Command> ();
 			buildCommandList ();
@@ -149,7 +138,7 @@ public class Console : MonoBehaviour
 
 	public void Start()
 	{
-		input.onEndEdit.AddListener (delegate{inputEntered();});
+		
 	}
 
 	public void Update()
@@ -165,16 +154,16 @@ public class Console : MonoBehaviour
 
 		if (!isFocused && (Input.GetKeyDown (KeyCode.Return) || Input.GetKeyDown (KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.UpArrow)))
 		{
-			input.ActivateInputField ();
-			input.Select ();
-			input.text = "";
+//			input.ActivateInputField ();
+//			input.Select ();
+			input = "";
 			historyIndex = -1;
 		}
 
 		if (Input.GetKeyDown (KeyCode.UpArrow))
 		{
 			historyIndex = (historyIndex + 1) % history.Count;
-			input.text = history [historyIndex];
+			input = history [historyIndex];
 		}
 
 		if (Input.GetKeyDown (KeyCode.DownArrow))
@@ -182,18 +171,23 @@ public class Console : MonoBehaviour
 			historyIndex--;
 			if (historyIndex < 0)
 				historyIndex = history.Count - 1;
-			input.text = history [historyIndex];
+			input = history [historyIndex];
 		}
+	}
+
+	public void OnGUI()
+	{
+		input = GUI.TextField (new Rect(0, 0, Screen.width, 30), input);
 	}
 
 	// Invoked when the user presses enter and the console is active
 	private void inputEntered()
 	{
-		if (!isEnabled || input.text == "")
+		if (!isEnabled ||input == "")
 			return;
 		
 		//use the text from input to execute a command
-		execute(input.text);
+		execute(input);
 	}
 
 	// Execute a file of prepared commands, treating each line as an indiv. command
@@ -308,7 +302,7 @@ public class Console : MonoBehaviour
 		}
 		if(!success)
 			println ("Command not found.  Try \"help\" for a list of commands", LogTag.error);
-		history.Insert (0, input.text);
+//		history.Insert (0, input.text);
 
 		return success;
 	}
@@ -461,35 +455,35 @@ public class Console : MonoBehaviour
 		if (quietMode && tag == LogTag.command_out)
 			return;
 		
-		output.text += tags [(int)tag] + " " + message;
-
-		if (output.cachedTextGenerator.lineCount > linesMax)
-		{
-			string currOutput = output.text;
-			output.text = currOutput.Substring (output.cachedTextGenerator.lines [1].startCharIdx);
-		}
+//		output.text += tags [(int)tag] + " " + message;
+//
+//		if (output.cachedTextGenerator.lineCount > linesMax)
+//		{
+//			string currOutput = output.text;
+//			output.text = currOutput.Substring (output.cachedTextGenerator.lines [1].startCharIdx);
+//		}
 	}
 
 	// Clear the console output window
 	public void clear()
 	{
-		output.text = "";
+//		output.text = "";
 	}
 
 	// Maximize the console window
 	public void maximize()
 	{
-		root.anchorMin = new Vector2 (0f, 0f);
-		root.pivot = new Vector2 (0.5f, 0.5f);
-		root.sizeDelta = new Vector2 (0f, 0f);
+//		root.anchorMin = new Vector2 (0f, 0f);
+//		root.pivot = new Vector2 (0.5f, 0.5f);
+//		root.sizeDelta = new Vector2 (0f, 0f);
 	}
 
 	// Minimize the console window
 	public void minimize()
 	{
-		root.anchorMin = new Vector2 (0f, 1f);
-		root.pivot = new Vector2 (0.5f, 1f);
-		root.sizeDelta = new Vector2 (0f, 100f);
+//		root.anchorMin = new Vector2 (0f, 1f);
+//		root.pivot = new Vector2 (0.5f, 1f);
+//		root.sizeDelta = new Vector2 (0f, 100f);
 	}
 
 	/* Inner Classes */
