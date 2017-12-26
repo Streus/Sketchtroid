@@ -7,6 +7,8 @@ using System.IO;
 
 public class Console : MonoBehaviour
 {
+	private const string INPUT = "input", OUTPUT = "output";
+
 	/* Static Vars */
 	public static Console log;
 
@@ -27,8 +29,22 @@ public class Console : MonoBehaviour
 	// The current value of the input field
 	private string input;
 
+	// The current value of the output field
+	private string output;
+
+	// Position of output field viewport
+	private Vector2 scrollPos;
+
+	// Size of output field viewport
+	private float outputFieldSize;
+	[SerializeField]
+	private float defaultOFSize = 70f;
+
 	// The style used by all GUI rendered by this console
+	[SerializeField]
 	private GUIStyle textStyle;
+	[SerializeField]
+	private Color backgroundColor = Color.black;
 
 	// The maximum number of lines output will display (also history size)
 	public int linesMax;
@@ -80,7 +96,7 @@ public class Console : MonoBehaviour
 
 	public bool isFocused
 	{
-		get { return false; } //TODO console focused
+		get { return GUI.GetNameOfFocusedControl() == INPUT; }
 	}
 
 	/* Instance Methods */
@@ -93,11 +109,8 @@ public class Console : MonoBehaviour
 
 			input = "";
 
-			textStyle = new GUIStyle ();
-			textStyle.font = new Font ("Consolas");
-			textStyle.fontSize = 11;
-			textStyle.richText = true;
-			textStyle.wordWrap = true;
+			scrollPos = Vector2.zero;
+			outputFieldSize = defaultOFSize;
 
 			commands = new List<Command> ();
 			buildCommandList ();
@@ -149,13 +162,18 @@ public class Console : MonoBehaviour
 			return;
 		}
 
+		if (isEnabled && Event.current != null && Event.current.isKey && Event.current.keyCode == KeyCode.Return)
+			inputEntered ();
+	}
+
+	public void OnGUI()
+	{
 		if (!isEnabled)
 			return;
 
 		if (!isFocused && (Input.GetKeyDown (KeyCode.Return) || Input.GetKeyDown (KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.UpArrow)))
 		{
-//			input.ActivateInputField ();
-//			input.Select ();
+			GUI.FocusControl (INPUT);
 			input = "";
 			historyIndex = -1;
 		}
@@ -173,19 +191,36 @@ public class Console : MonoBehaviour
 				historyIndex = history.Count - 1;
 			input = history [historyIndex];
 		}
-	}
 
-	public void OnGUI()
-	{
-		input = GUI.TextField (new Rect(0, 0, Screen.width, 30), input);
+		GUI.backgroundColor = backgroundColor;
+
+		GUIContent outText = new GUIContent (output);
+		GUIContent inText = new GUIContent (input);
+
+		float oth = textStyle.CalcHeight (outText, Screen.width);
+		float ith = textStyle.CalcHeight (inText, Screen.width);
+
+		scrollPos = GUI.BeginScrollView (
+			new Rect (0, 0, Screen.width, outputFieldSize), 
+			scrollPos, 
+			new Rect (0, 0, Screen.width, oth));
+		GUI.SetNextControlName (OUTPUT);
+		GUI.Label (new Rect (0, 0, Screen.width, oth), outText, textStyle);
+		GUI.EndScrollView ();
+
+		GUI.SetNextControlName (INPUT);
+		input = GUI.TextField (new Rect (0, oth, Screen.width, ith), input, textStyle);
 	}
 
 	// Invoked when the user presses enter and the console is active
 	private void inputEntered()
 	{
-		if (!isEnabled ||input == "")
+		Debug.Log ("Input Entered"); //DEBUG
+		if (!isEnabled || input == "")
 			return;
-		
+
+		Debug.Log ("Executing: " + input); //DEBUG
+
 		//use the text from input to execute a command
 		execute(input);
 	}
@@ -302,7 +337,7 @@ public class Console : MonoBehaviour
 		}
 		if(!success)
 			println ("Command not found.  Try \"help\" for a list of commands", LogTag.error);
-//		history.Insert (0, input.text);
+		history.Insert (0, input);
 
 		return success;
 	}
@@ -455,35 +490,26 @@ public class Console : MonoBehaviour
 		if (quietMode && tag == LogTag.command_out)
 			return;
 		
-//		output.text += tags [(int)tag] + " " + message;
-//
-//		if (output.cachedTextGenerator.lineCount > linesMax)
-//		{
-//			string currOutput = output.text;
-//			output.text = currOutput.Substring (output.cachedTextGenerator.lines [1].startCharIdx);
-//		}
+		output += tags [(int)tag] + " " + message;
 	}
 
 	// Clear the console output window
 	public void clear()
 	{
-//		output.text = "";
+		output = "";
 	}
 
 	// Maximize the console window
 	public void maximize()
 	{
-//		root.anchorMin = new Vector2 (0f, 0f);
-//		root.pivot = new Vector2 (0.5f, 0.5f);
-//		root.sizeDelta = new Vector2 (0f, 0f);
+		float inh = textStyle.CalcHeight (new GUIContent (input), Screen.width);
+		outputFieldSize = Screen.height - inh;
 	}
 
 	// Minimize the console window
 	public void minimize()
 	{
-//		root.anchorMin = new Vector2 (0f, 1f);
-//		root.pivot = new Vector2 (0.5f, 1f);
-//		root.sizeDelta = new Vector2 (0f, 100f);
+		outputFieldSize = defaultOFSize;
 	}
 
 	/* Inner Classes */
