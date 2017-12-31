@@ -96,7 +96,10 @@ public class HUDManager : MenuManager
 
 		//setup ability list
 		for (int i = 0; i < subject.abilityCount; i++)
-			AbilityDisplay.create (abilListRoot, subject.getAbility (i));
+		{
+			if (subject.getAbility (i) != null)
+				AbilityDisplay.create (abilListRoot, subject.getAbility (i));
+		}
 
 		subject.abilityAdded += addAbility;
 		subject.abilityRemoved += removeAbility;

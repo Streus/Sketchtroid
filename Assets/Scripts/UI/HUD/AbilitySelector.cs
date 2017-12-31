@@ -102,13 +102,28 @@ public class AbilitySelector : MonoBehaviour
 			if (player.getAbility (abilityIndex) != null)
 				player.swapAbility (ability, abilityIndex);
 			else
-				player.addAbility (ability, abilityIndex);
+			{
+				try { player.addAbility (ability, abilityIndex); }
+				catch(System.ArgumentOutOfRangeException aoore)
+				{ player.addAbility (ability); }
+			}
 			Debug.Log ("Adding " + abilityName); //DEBUG ability added
 		}
 		else
 		{
 			player.removeAbility (abilityIndex);
 			Debug.Log("Removing " + abilityName); //DEBUG ability removed
+		}
+
+		//DEBUG
+		Debug.Log("Ability List");
+		for (int i = 0; i < player.abilityCount; i++)
+		{
+			Ability a = player.getAbility (i);
+			if (a != null)
+				Debug.Log (i + ": " + player.getAbility (i).name);
+			else
+				Debug.Log (i + ": NULL");
 		}
 	}
 }

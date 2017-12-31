@@ -191,7 +191,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		freezeProgress = 0f;
 
 		statuses = new List<Status> ();
-		abilities = new List<Ability> (3);
+		abilities = new List<Ability> (new Ability[] { null, null, null });
 
 		collisonLog = new HashSet<Bullet> ();
 	}
@@ -365,7 +365,12 @@ public sealed class Entity : MonoBehaviour, IReapable
 			return;
 
 		if (a == null)
+		{
+			throw new NullReferenceException ("Null Ability passed to addAbility().");
 			return;
+		}
+
+		Debug.Log (index); //DEBUG ability add index
 
 		//add the ability and set it to active
 		if (index == -1)
@@ -373,11 +378,12 @@ public sealed class Entity : MonoBehaviour, IReapable
 			abilities.Add (a);
 			a.active = true;
 		}
-		else if (index < abilities.Count)
+		else if (index >= 0 && index < abilities.Capacity)
 		{
 			if (abilities [index] != null && abilityRemoved != null)
 				abilityRemoved (abilities [index]);
 			abilities [index] = a;
+			a.active = true;
 		}
 		else
 			return;
