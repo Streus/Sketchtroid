@@ -161,9 +161,6 @@ public class Console : MonoBehaviour
 			isEnabled = !isEnabled;
 			return;
 		}
-
-		if (isEnabled && Event.current != null && Event.current.isKey && Event.current.keyCode == KeyCode.Return)
-			inputEntered ();
 	}
 
 	public void OnGUI()
@@ -171,19 +168,25 @@ public class Console : MonoBehaviour
 		if (!isEnabled)
 			return;
 
+		Event e = Event.current;
+		if (isFocused && e.isKey && e.type == EventType.KeyDown && e.keyCode == KeyCode.Return)
+			inputEntered ();
+
+		//move focus to input line
 		if (!isFocused && (Input.GetKeyDown (KeyCode.Return) || Input.GetKeyDown (KeyCode.DownArrow) || Input.GetKeyDown (KeyCode.UpArrow)))
 		{
 			GUI.FocusControl (INPUT);
 			input = "";
 			historyIndex = -1;
+			return;
 		}
 
+		//navigate the history
 		if (Input.GetKeyDown (KeyCode.UpArrow))
 		{
 			historyIndex = (historyIndex + 1) % history.Count;
 			input = history [historyIndex];
 		}
-
 		if (Input.GetKeyDown (KeyCode.DownArrow))
 		{
 			historyIndex--;
@@ -192,6 +195,7 @@ public class Console : MonoBehaviour
 			input = history [historyIndex];
 		}
 
+		//draw GUI
 		GUI.backgroundColor = backgroundColor;
 
 		GUIContent outText = new GUIContent (output);
@@ -209,20 +213,18 @@ public class Console : MonoBehaviour
 		GUI.EndScrollView ();
 
 		GUI.SetNextControlName (INPUT);
-		input = GUI.TextField (new Rect (0, oth, Screen.width, ith), input, textStyle);
+		input = GUI.TextField (new Rect (0, outputFieldSize, Screen.width, ith), input, textStyle);
 	}
 
 	// Invoked when the user presses enter and the console is active
 	private void inputEntered()
 	{
-		Debug.Log ("Input Entered"); //DEBUG
-		if (!isEnabled || input == "")
+		if (!isEnabled || input.Length == 0)
 			return;
-
-		Debug.Log ("Executing: " + input); //DEBUG
 
 		//use the text from input to execute a command
 		execute(input);
+		input = "";
 	}
 
 	// Execute a file of prepared commands, treating each line as an indiv. command
@@ -491,6 +493,9 @@ public class Console : MonoBehaviour
 			return;
 		
 		output += tags [(int)tag] + " " + message;
+
+		float outh = textStyle.CalcHeight (new GUIContent (output), Screen.width);
+		scrollPos = new Vector2 (scrollPos.x, outh);
 	}
 
 	// Clear the console output window
