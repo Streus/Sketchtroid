@@ -104,6 +104,19 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		switch (p.section)
 		{
 		case Section.cone:
+			addPart (defaultCone);
+			break;
+		case Section.wings:
+			addPart (defaultWings);
+			break;
+		case Section.engine:
+			addPart (defaultEngine);
+			break;
+		}
+		/*
+		switch (p.section)
+		{
+		case Section.cone:
 			Destroy (cone);
 			cone = Instantiate<GameObject> (defaultCone.prefab, transform, false);
 			break;
@@ -122,6 +135,7 @@ public class PlayerAppearanceDriver : MonoBehaviour
 			engine = Instantiate<GameObject> (defaultEngine.prefab, transform, false);
 			break;
 		}
+		*/
 	}
 
 	private void addPart(Part p)
