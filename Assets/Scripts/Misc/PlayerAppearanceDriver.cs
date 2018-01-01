@@ -47,20 +47,20 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	// Initialize using an Entity's Seed data
 	public void init(Entity.Seed data)
 	{
-		for (int i = 0; i < data.abilities.Count; i++)
+		for (int i = 0; i < data.abilities.Capacity; i++)
 		{
-			partAdded (data.abilities [i]);
+			partAdded (data.abilities [i], i);
 		}
 	}
 
-	private void partAdded(Ability a)
+	private void partAdded(Ability a, int index = -1)
 	{
 		Part newPart = abilityToPart (a);
 		if (newPart != null)
 			addPart (newPart);
 	}
 
-	private void partRemoved(Ability a)
+	private void partRemoved(Ability a, int index = -1)
 	{
 		Part oldPart = abilityToPart (a);
 		if (oldPart != null)
@@ -105,13 +105,21 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		{
 		case Section.cone:
 			Destroy (cone);
+			cone = Instantiate<GameObject> (defaultCone.prefab, transform, false);
 			break;
 		case Section.wings:
 			Destroy (leftWing);
 			Destroy (rightWing);
+			leftWing = Instantiate<GameObject> (defaultWings.prefab, transform, false);
+			rightWing = Instantiate<GameObject> (defaultWings.prefab, transform, false);
+			rightWing.transform.localScale = new Vector3 (
+				-rightWing.transform.localScale.x,
+				rightWing.transform.localScale.y,
+				rightWing.transform.localScale.z);
 			break;
 		case Section.engine:
 			Destroy (engine);
+			engine = Instantiate<GameObject> (defaultEngine.prefab, transform, false);
 			break;
 		}
 	}
@@ -170,6 +178,6 @@ public class PlayerAppearanceDriver : MonoBehaviour
 
 	public enum Section
 	{
-		cone, wings, engine
+		cone, engine, wings
 	}
 }

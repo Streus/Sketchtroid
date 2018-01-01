@@ -34,8 +34,14 @@ namespace Commands
 			if (args.Length < 2)
 			{
 				printOut = "Abilities[" + rep.abilityCount + "]:";
-				for(int i = 0; i < rep.abilityCount; i++)
-					printOut += "\n" + rep.getAbility (i).name;
+				for (int i = 0; i < rep.abilityCap; i++)
+				{
+					Ability a = rep.getAbility (i);
+					if(a != null)
+						printOut += "\n" + a.name;
+					else
+						printOut += "\n" + "|";
+				}
 				return printOut;
 			}
 

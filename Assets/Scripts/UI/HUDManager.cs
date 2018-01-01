@@ -95,7 +95,7 @@ public class HUDManager : MenuManager
 			return;
 
 		//setup ability list
-		for (int i = 0; i < subject.abilityCount; i++)
+		for (int i = 0; i < subject.abilityCap; i++)
 		{
 			if (subject.getAbility (i) != null)
 				AbilityDisplay.create (abilListRoot, subject.getAbility (i));
@@ -121,12 +121,14 @@ public class HUDManager : MenuManager
 		TextPrompt.create (GetComponent<RectTransform>(), title, caption, duration);
 	}
 
-	private void addAbility(Ability a)
+	private void addAbility(Ability a, int index)
 	{
-		AbilityDisplay.create (abilListRoot, a).changeCDColor(Bullet.damageTypeToColor(subject.defaultDT));
+		AbilityDisplay ad = AbilityDisplay.create (abilListRoot, a);
+		ad.changeCDColor (Bullet.damageTypeToColor (subject.defaultDT));
+		ad.transform.SetSiblingIndex (index);
 	}
 
-	private void removeAbility(Ability a)
+	private void removeAbility(Ability a, int index)
 	{
 		AbilityDisplay ad;
 		for (int i = 0; i < abilListRoot.childCount; i++)

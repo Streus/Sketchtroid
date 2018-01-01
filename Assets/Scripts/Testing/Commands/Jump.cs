@@ -38,7 +38,9 @@ namespace Commands
 					Console.log.println ("Jumped to " + jumpRoom, Console.LogTag.info);
 				}
 			}
+			#pragma warning disable 0168
 			catch(System.ArgumentException ae)
+			#pragma warning restore 0168
 			{
 				Console.log.println ("The scene " + jumpRoom + " is invalid.", Console.LogTag.error);
 				return "";

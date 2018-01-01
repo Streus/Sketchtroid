@@ -105,7 +105,7 @@ public class AbilitySelector : MonoBehaviour
 			{
 				try { player.addAbility (ability, abilityIndex); }
 				catch(System.ArgumentOutOfRangeException aoore)
-				{ player.addAbility (ability); }
+				{ player.addAbility (ability); } 
 			}
 			Debug.Log ("Adding " + abilityName); //DEBUG ability added
 		}
@@ -117,7 +117,7 @@ public class AbilitySelector : MonoBehaviour
 
 		//DEBUG
 		Debug.Log("Ability List");
-		for (int i = 0; i < player.abilityCount; i++)
+		for (int i = 0; i < player.abilityCap; i++)
 		{
 			Ability a = player.getAbility (i);
 			if (a != null)

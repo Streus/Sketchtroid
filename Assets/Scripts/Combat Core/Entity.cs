@@ -367,7 +367,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (a == null)
 		{
 			throw new NullReferenceException ("Null Ability passed to addAbility().");
-			return;
 		}
 
 		Debug.Log (index); //DEBUG ability add index
@@ -381,7 +380,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		else if (index >= 0 && index < abilities.Capacity)
 		{
 			if (abilities [index] != null && abilityRemoved != null)
-				abilityRemoved (abilities [index]);
+				abilityRemoved (abilities [index], index);
 			abilities [index] = a;
 			a.active = true;
 		}
@@ -390,7 +389,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		//notify listeners
 		if (abilityAdded != null)
-			abilityAdded (a);
+			abilityAdded (a, index);
 	}
 
 	// Remove an ability from this Entity
@@ -411,9 +410,22 @@ public sealed class Entity : MonoBehaviour, IReapable
 	#pragma warning disable 0168
 	public void removeAbility(int index)
 	{
+		if (inCombat ())
+			return;
+
+		Ability removed = null;
+
 		try
 		{
-			removeAbility(abilities[index]);
+			if(abilities[index] == null)
+				return;
+
+			removed = abilities[index];
+			abilities[index] = null;
+			removed.active = false;
+
+			if (abilityRemoved != null)
+				abilityRemoved (removed, index);
 		}
 		catch(IndexOutOfRangeException ioore)
 		{
@@ -452,13 +464,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Ability getter
 	public Ability getAbility(int index)
 	{
-		if (index >= abilities.Count)
+		if (index < 0 || index >= abilities.Capacity)
 			return null;
 		return abilities [index];
 	}
 
 	// For externally looping through the ability list
-	public int abilityCount { get { return abilities.Count;} }
+	public int abilityCount { get { return abilities.Count; } }
+	public int abilityCap { get { return abilities.Capacity; } }
 
 	// --- Collision Log Handling ---
 
@@ -606,7 +619,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	public event StatusChanged statusAdded;
 	public event StatusChanged statusRemoved;
 
-	public delegate void AbilityChanged(Ability a);
+	public delegate void AbilityChanged(Ability a, int index = -1);
 	public event AbilityChanged abilityAdded;
 	public event AbilityChanged abilityRemoved;
 	public delegate void AbilitySwap(Ability a, Ability old, int index);
