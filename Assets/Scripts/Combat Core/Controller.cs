@@ -63,9 +63,9 @@ public class Controller : MonoBehaviour
 
 	public void setState(State state)
 	{
-		state.enter (this);
 		activeState.exit (this);
 		activeState = state;
+		activeState.enter (this);
 	}
 
 	protected void facePoint(Vector2 point)

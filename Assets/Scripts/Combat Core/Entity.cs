@@ -296,7 +296,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		}
 
 		//update all abilities
-		for (int i = 0; i < abilities.Count; i++)
+		for (int i = 0; i < abilities.Capacity; i++)
 			if(abilities[i] != null)
 				abilities[i].updateCooldown (Time.deltaTime);
 
@@ -445,8 +445,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 		{
 			old = abilities [index];
 			abilities [index] = a;
-			a.active = true;
-			old.active = false;
+			if(a != null)
+				a.active = true;
+			if(old != null)
+				old.active = false;
 		}
 		catch(IndexOutOfRangeException ioore)
 		{
