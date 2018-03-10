@@ -5,28 +5,32 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System;
-using UnityEngine.UI;
+
+public enum Difficulty
+{
+	easy, normal, hard, expert, master
+}
 
 public class GameManager : MonoBehaviour
 {
-	/* Constants */
+	#region STATIC_VARS
 	public const int SPAWN_AT_DOOR = 0;
 	public const int SPAWN_AT_SVPNT = 1;
 
-	/* Static Vars */
 	private static GameManager _instance;
 	public static GameManager instance { get { return _instance; } }
-
-	// The pause state of the entire game
-	private bool paused;
-	private bool pauseLock;
 
 	// The full paths to the saves and data directories
 	private static string saveDirectory;
 	private static string dataDirectory;
 	public static string savePath { get { return saveDirectory; } }
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
+
+	// The pause state of the entire game
+	private bool paused;
+	private bool pauseLock;
 
 	// The system-defined name for the current game
 	// (Used to name the save file)
@@ -67,7 +71,7 @@ public class GameManager : MonoBehaviour
 	public GameObject player { get { return _player; } }
 
 	// Data describing the player object when it is not instantiated
-	private SeedBase playerData;
+	private SeedCollection.Base playerData;
 
 	// Used to determine whether the player is spawned at a savepoint, or via a door
 	private int playerSpawnType;
@@ -78,10 +82,14 @@ public class GameManager : MonoBehaviour
 	// The abilities unlocked by the player
 	private int _abilities;
 
-	/* Static Methods */
+	#endregion
 
+	#region STATIC_METHODS
 
-	/* Instance Methods */
+	#endregion
+
+	#region INSTANCE_METHODS
+
 	public void Awake()
 	{
 		if (_instance == null)
@@ -159,7 +167,6 @@ public class GameManager : MonoBehaviour
 		pauseLock = state;
 	}
 
-	//Getters/Setters
 	public void setGameName(string gameName)
 	{
 		this.gameName = gameName;
@@ -362,6 +369,10 @@ public class GameManager : MonoBehaviour
 		_abilities |= (1 << a.ID);
 	}
 
+	#endregion
+
+	#region INTERNAL_TYPES
+
 	/* Delegates and Events */
 	public delegate void TogglePaused(bool state);
 	public event TogglePaused pauseToggled;
@@ -378,7 +389,7 @@ public class GameManager : MonoBehaviour
 		public string prevScene;
 		public Difficulty difficulty;
 
-		public SeedBase playerData;
+		public SeedCollection.Base playerData;
 
 		public int dtUnlocks;
 		public int abilities;
@@ -408,7 +419,7 @@ public class GameManager : MonoBehaviour
 			prevScene = info.GetString("prevScene");
 			difficulty = (Difficulty)info.GetInt32("difficulty");
 
-			playerData = (SeedBase)info.GetValue("playerData", typeof(SeedBase));
+			playerData = (SeedCollection.Base)info.GetValue("playerData", typeof(SeedCollection.Base));
 
 			dtUnlocks = info.GetInt32("dtUnlocks");
 			abilities = info.GetInt32("abilities");
@@ -430,9 +441,6 @@ public class GameManager : MonoBehaviour
 			info.AddValue ("abilities", abilities);
 		}
 	}
-}
 
-public enum Difficulty
-{
-	easy, normal, hard, expert, master
+	#endregion
 }

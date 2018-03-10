@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Runtime.Serialization;
+using System.Collections.Generic;
 using System;
 
 #pragma warning disable 0168
 [Serializable]
-public class SeedBase: ISerializable
+public class SeedCollection : ISerializable
 {
-	/* Instance Vars */
+	#region INSTANCE_VARS
 
 	// The destroyed state of the subject
 	public bool destroyed;
@@ -33,10 +34,15 @@ public class SeedBase: ISerializable
 	// In the case of saving a prefab that is a child GO, the parent's rID is saved here
 	public string parentID;
 
-	/* Constructors */
+	// All the seeds taken from this collection's target gameobject
+	private Dictionary<Type, Base> seeds;
+
+	#endregion
+
+	#region INSTANCE_METHODS
 
 	// Create a new Seed that will pull transform and rigidbody info when serialized
-	public SeedBase(GameObject subject)
+	public SeedCollection(GameObject subject, params IReapable[] scripts)
 	{
 		destroyed = false;
 		tPosition = subject.transform.position;
@@ -51,15 +57,21 @@ public class SeedBase: ISerializable
 		}
 
 		destroyed = false;
-		ignoreReset = subject.GetComponent<IReapable> ().ignoreReset ();
+		ignoreReset = false;
 
 		prefabPath = "";
 		registeredID = "";
 		parentID = "";
+
+		seeds = new Dictionary<Type, Base> ();
+		for (int i = 0; i < scripts.Length; i++)
+		{
+			seeds.Add (scripts [i].GetType (), scripts [i].reap ());
+		}
 	}
 
 	// Create a Seed from serialized data that contains a transform and rigidbody state
-	public SeedBase(SerializationInfo info, StreamingContext context)
+	public SeedCollection(SerializationInfo info, StreamingContext context)
 	{
 		//load destroyed state
 		destroyed = info.GetBoolean ("destroyed");
@@ -125,16 +137,16 @@ public class SeedBase: ISerializable
 		info.AddValue ("parentID", parentID);
 	}
 
-	public void defaultSow(GameObject subject)
+	public void sowSeeds(GameObject subject, params IReapable[] scripts)
 	{
+		// Default load values
 		if (destroyed)
 		{
 			//Entity is destroyed
 			MonoBehaviour.Destroy (subject);
 			return;
 		}
-
-		//-SeedBase values-
+			
 		subject.transform.position = tPosition;
 		subject.transform.rotation = tRotation;
 
@@ -146,5 +158,25 @@ public class SeedBase: ISerializable
 			body.velocity = rbVelocity;
 			body.angularVelocity = rbAngVelocity;
 		}
+
+		// Individual script value loading
+		Base seed;
+		for (int i = 0; i < scripts.Length; i++)
+		{
+			if (seeds.TryGetValue (scripts [i].GetType (), out seed))
+				scripts [i].sow (seed);
+			else
+				Console.log.println ("[SC] Script mismatch! " + scripts [i].GetType ().FullName
+					+ " is on the GameObject, but not in the collection!", Console.LogTag.error);
+		}
 	}
+	#endregion
+
+	#region INTERNAL_TYPES
+
+	public abstract class Base : ISerializable
+	{
+		public abstract void GetObjectData (SerializationInfo info, StreamingContext context);
+	}
+	#endregion
 }

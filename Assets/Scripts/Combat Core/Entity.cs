@@ -6,17 +6,16 @@ using System;
 
 public sealed class Entity : MonoBehaviour, IReapable
 {
-	/* Static Vars */
-	private const float COMBAT_TIMER_MAX = 5f; // 5 seconds
+	#region STATIC_VARS
 
-	/* Instance Vars */
+	private const float COMBAT_TIMER_MAX = 5f; // 5 seconds
+	#endregion
+
+	#region INSTANCE_VARS
 
 	// The faction this Entity belongs to. Entities of the same faction cannot hurt eachother
 	[SerializeField]
 	private Faction faction;
-
-	[SerializeField]
-	private bool allowReset = true;
 
 	// A resource pool that is deducted from when taking damage. Death occurs when it reaches 0.
 	[SerializeField]
@@ -81,7 +80,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// The Bullets with which this Entity and its netowrk have collided
 	private HashSet<Bullet> collisonLog;
 
-	/* Static Methods */
+	#endregion
+
+	#region STATIC_METHODS
 	public static void damageEntity(Entity victim, Entity attacker, float damage, DamageType dt, bool ignoreShields = false, params Status[] s)
 	{
 		//everyone is in combat
@@ -174,8 +175,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 		
 		//TODO heal effect
 	}
+	#endregion
 
-	/* Instance Methods */
+	#region INSTANCE_METHODS
+
 	public void Awake()
 	{
 		//setup non-editor setable values
@@ -191,7 +194,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		freezeProgress = 0f;
 
 		statuses = new List<Status> ();
-		abilities = new List<Ability> (new Ability[] { null, null, null });
+		abilities = new List<Ability> ();
 
 		collisonLog = new HashSet<Bullet> ();
 	}
@@ -217,22 +220,19 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// --- IReapable Methods ---
-	public SeedBase reap()
+	public SeedCollection.Base reap()
 	{
 		Seed seed = new Seed (gameObject);
 
 		return seed;
 	}
-	public void sow(SeedBase s)
+	public void sow(SeedCollection.Base s)
 	{
 		if (s == null)
 			return;
 
 		Seed seed = (Seed)s;
 
-		seed.defaultSow (gameObject);
-
-		//-Entity-specific values-
 		faction = seed.faction;
 
 		//resource pools
@@ -279,7 +279,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 			if (abilityAdded != null)
 				abilityAdded (a);
 	}
-	public bool ignoreReset() { return !allowReset; }
 
 	// --- Monobehavior Stuff ---
 	public void Update()
@@ -297,8 +296,17 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		//update all abilities
 		for (int i = 0; i < abilities.Capacity; i++)
-			if(abilities[i] != null)
-				abilities[i].updateCooldown (Time.deltaTime);
+		{
+			try
+			{
+				if (abilities [i] != null)
+					abilities [i].updateCooldown (Time.deltaTime);
+			}
+			catch(ArgumentOutOfRangeException aoore)
+			{
+				Debug.Log (aoore.Message + " | " + i);
+			}
+		}
 
 		//update combat timer
 		combatTimer -= Time.deltaTime;
@@ -320,7 +328,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		}
 	}
 
-	// --- Status Handling ---
+	#region STATUS_HANDLING
 
 	// Add a status to the Entity and begin listening for its end
 	public void addStatus(Status s)
@@ -354,8 +362,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (statusRemoved != null)
 			statusRemoved (s);
 	}
+	#endregion
 
-	// --- Ability Handling ---
+	#region ABILITY_HANDLING
 
 	// Add an ability to this Entity
 	public void addAbility(Ability a, int index = -1)
@@ -474,8 +483,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// For externally looping through the ability list
 	public int abilityCount { get { return abilities.Count; } }
 	public int abilityCap { get { return abilities.Capacity; } }
+	#endregion
 
-	// --- Collision Log Handling ---
+	#region COLLISION_LOG_HANDLING
 
 	// Add an entry to the collision log
 	// Returns false if the entry already exists
@@ -494,8 +504,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (existed)
 			bullet.bulletDied -= removeColLogEntry;
 	}
+	#endregion
 
-	// --- inCombat, Frozen, Invincible, Stunned, Rooted accessors and modifiers ---
+	#region BUILTIN_STATUSES
+
 	public bool inCombat()
 	{
 		return combatTimer > 0f;
@@ -558,8 +570,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	{
 		return rooted.value > 0;
 	}
+	#endregion
 
-	// --- Hook Callers ---
+	#region HOOKS
 
 	// This Entity took damage
 	private void OnDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
@@ -612,6 +625,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (shieldsRecharged != null)
 			shieldsRecharged ();
 	}
+	#endregion
+	#endregion
+
+	#region INTERNAL_TYPES
 
 	/* Delegates and Events */
 	public delegate void ChangeDamageType(DamageType dt);
@@ -643,7 +660,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 	/* Inner Classes */
 	[Serializable]
-	public class Seed : SeedBase
+	public class Seed : SeedCollection.Base
 	{
 		/* Instance Vars */
 		public Faction faction;
@@ -678,7 +695,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		public List<Ability> abilities;
 
 		/* Constructors */
-		public Seed(GameObject subject) : base(subject)
+		public Seed(GameObject subject)
 		{
 			Entity subInfo = subject.GetComponent<Entity>();
 			if(subInfo == null)
@@ -715,7 +732,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 			statuses = subInfo.statuses;
 			abilities = subInfo.abilities;
 		}
-		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
+		public Seed(SerializationInfo info, StreamingContext context)
 		{
 			faction = (Faction)info.GetInt32("faction");
 
@@ -758,8 +775,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData (info, context);
-
 			info.AddValue ("faction", (int)faction);
 
 			info.AddValue ("health", health);
@@ -797,4 +812,5 @@ public sealed class Entity : MonoBehaviour, IReapable
 				info.AddValue ("abil" + i, abilities [i]);
 		}
 	}
+	#endregion
 }

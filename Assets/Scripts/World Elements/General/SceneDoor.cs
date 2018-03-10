@@ -21,16 +21,20 @@ public class SceneDoor : MonoBehaviour
 	private float borderPadding = 3f;
 
 	[SerializeField]
-	private string destination;
+	private string destination = "";
 
 	private bool transitioningIn = false;
 
 	/* Static Methods */
 	public static SceneDoor getDoor(string destination)
 	{
-		return doors.Find (delegate(SceneDoor obj) {
+		SceneDoor door = doors.Find (delegate(SceneDoor obj) {
 			return obj.destination == destination;
 		});
+
+		if (door == null)
+			Debug.LogError ("Could not find a door with the destination " + destination);
+		return door;
 	}
 
 	/* Instance Methods */

@@ -2,29 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Pickup : MonoBehaviour, IReapable
+public abstract class Pickup : MonoBehaviour
 {
-	/* Instance Vars */
-
-
-	/* Instance Methods */
-
-	// ---IReapable Methods---
-	public SeedBase reap()
-	{
-		SeedBase s = new SeedBase (gameObject);
-		return s;
-	}
-
-	public void sow(SeedBase s)
-	{
-		s.defaultSow (gameObject);
-	}
-
-	public bool ignoreReset()
-	{
-		return true;
-	}
+	#region INSTANCE_METHODS
 
 	// Do something to an Entity that collides with this pickup
 	protected abstract void apply (Entity e);
@@ -39,4 +19,5 @@ public abstract class Pickup : MonoBehaviour, IReapable
 			RegisteredObject.destroy(gameObject);
 		}
 	}
+	#endregion
 }

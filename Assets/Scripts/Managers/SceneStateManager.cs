@@ -27,7 +27,7 @@ public class SceneStateManager : ISerializable
 	/* Instance Vars */
 
 	// Holds all the data save from scenes that have been visited
-	private Dictionary<string, Dictionary<string, SeedBase>> scenes;
+	private Dictionary<string, Dictionary<string, SeedCollection>> scenes;
 
 	// Tracks the time since a scene was last visited
 	private Dictionary<string, float> resetTimers;
@@ -43,7 +43,7 @@ public class SceneStateManager : ISerializable
 	private SceneStateManager()
 	{
 		// First time instantiation
-		scenes = new Dictionary<string, Dictionary<string, SeedBase>>();
+		scenes = new Dictionary<string, Dictionary<string, SeedCollection>>();
 		resetTimers = new Dictionary<string, float> ();
 		ignoreSet = new HashSet<string> ();
 
@@ -51,10 +51,10 @@ public class SceneStateManager : ISerializable
 	}
 	public SceneStateManager(SerializationInfo info, StreamingContext context)
 	{
-		Type scene_type = typeof(Dictionary<string, Dictionary<string, SeedBase>>);
+		Type scene_type = typeof(Dictionary<string, Dictionary<string, SeedCollection>>);
 		Type rt_type = typeof(Dictionary<string, float>);
 
-		scenes = (Dictionary<string, Dictionary<string, SeedBase>>)info.GetValue ("scenes", scene_type);
+		scenes = (Dictionary<string, Dictionary<string, SeedCollection>>)info.GetValue ("scenes", scene_type);
 		resetTimers = (Dictionary<string, float>)info.GetValue ("resetTimers", rt_type);
 
 		ignoreSet = new HashSet<string> ();
@@ -90,12 +90,12 @@ public class SceneStateManager : ISerializable
 			//remove entries if the timer duration is expended
 			if (updatedTimer <= 0f)
 			{
-				Dictionary<string, SeedBase> sceneData;
-				Dictionary<string, SeedBase> updatedSD = new Dictionary<string, SeedBase> ();
+				Dictionary<string, SeedCollection> sceneData;
+				Dictionary<string, SeedCollection> updatedSD = new Dictionary<string, SeedCollection> ();
 				scenes.TryGetValue (timer.Key, out sceneData);
 
 				//check for objects that ignore reset and add them to a repo
-				foreach (KeyValuePair<string, SeedBase> entry in sceneData)
+				foreach (KeyValuePair<string, SeedCollection> entry in sceneData)
 				{
 					if (entry.Value.ignoreReset)
 						updatedSD.Add (entry.Key, entry.Value);
@@ -123,9 +123,9 @@ public class SceneStateManager : ISerializable
 			Console.log.println ("[SSM] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
 
 			//create a dictionary for the incoming data
-			Dictionary<string, SeedBase> currData;
+			Dictionary<string, SeedCollection> currData;
 			if (!scenes.TryGetValue (SceneManager.GetActiveScene ().name, out currData))
-				currData = new Dictionary<string, SeedBase> ();
+				currData = new Dictionary<string, SeedCollection> ();
 
 			//add each ROs data to the dictionary
 			foreach (RegisteredObject ro in RegisteredObject.getObjects())
@@ -169,7 +169,7 @@ public class SceneStateManager : ISerializable
 
 		Console.log.println ("[SSM] Loading values for " + curr.name + ".", Console.LogTag.info);
 
-		Dictionary<string, SeedBase> currData;
+		Dictionary<string, SeedCollection> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
@@ -179,7 +179,7 @@ public class SceneStateManager : ISerializable
 		}
 
 		//spawn prefabs before starting sow cycle
-		foreach (SeedBase sb in currData.Values)
+		foreach (SeedCollection sb in currData.Values)
 		{
 			if (sb.prefabPath != "")
 			{
@@ -193,7 +193,7 @@ public class SceneStateManager : ISerializable
 		//iterate over the list of ROs and pass them data
 		foreach (RegisteredObject ro in RegisteredObject.getObjects())
 		{
-			SeedBase data;
+			SeedCollection data;
 			if (currData.TryGetValue (ro.rID, out data))
 				ro.sow (data);
 		}
@@ -215,13 +215,13 @@ public class SceneStateManager : ISerializable
 
 	// Called by RegisteredObjects when their client components are destroyed in gameplay.
 	// Places the passed seed into the current scene's dictionary
-	public void store(string ID, SeedBase seed)
+	public void store(string ID, SeedCollection seed)
 	{
 		//get the data for the current scene. if none exists, create a container
-		Dictionary<string, SeedBase> currData;
+		Dictionary<string, SeedCollection> currData;
 		if (!scenes.TryGetValue (SceneManager.GetActiveScene ().name, out currData))
 		{
-			currData = new Dictionary<string, SeedBase> ();
+			currData = new Dictionary<string, SeedCollection> ();
 			scenes.Add (SceneManager.GetActiveScene ().name, currData);
 		}
 
@@ -264,7 +264,7 @@ public class SceneStateManager : ISerializable
 			}
 			str += "\n";
 
-			Dictionary<string, SeedBase> sceneData;
+			Dictionary<string, SeedCollection> sceneData;
 			scenes.TryGetValue (sceneName, out sceneData);
 			foreach (string regObj in sceneData.Keys)
 				str += "    " + regObj + "\n";

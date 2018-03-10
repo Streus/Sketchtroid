@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using System;
 using System.Runtime.Serialization;
 
+[DisallowMultipleComponent]
 public class RegisteredObject : MonoBehaviour
 {
-	/* Static Vars */
+	#region STATIC_VARS
 	private static List<RegisteredObject> directory;
 	static RegisteredObject()
 	{ 
 		directory = new List<RegisteredObject>();
 	}
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
 	[SerializeField]
 	private string registeredID;
 	public string rID
@@ -24,7 +26,11 @@ public class RegisteredObject : MonoBehaviour
 	// Path to a prefab to which this RO is attached
 	private string prefabPath = "";
 
-	/* Static Methods */
+	[SerializeField]
+	private bool ignoreReset = false;
+	#endregion
+
+	#region STATIC_METHODS
 	public static RegisteredObject[] getObjects()
 	{
 		return directory.ToArray ();
@@ -85,8 +91,9 @@ public class RegisteredObject : MonoBehaviour
 			ro.saveDestruction ();
 		Destroy (go);
 	}
+	#endregion
 
-	/* Instance Methods */
+	#region INSTANCE_METHODS
 	public void Reset()
 	{
 		registeredID = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ()).TrimEnd('=');
@@ -102,20 +109,22 @@ public class RegisteredObject : MonoBehaviour
 		directory.Remove (this);
 	}
 
-	// Get the reapable script attached to this GO and return its seed
-	public SeedBase reap()
+	// Get the reapable scripts attached to this GO and return their seeds
+	public SeedCollection reap()
 	{
-		IReapable blade = GetComponent<IReapable> ();
-		if (blade == null)
-			throw new ReapException (ToString() + " has no values to reap");
-		Console.log.println (ToString () + " reaped values.", Console.LogTag.info);
+		IReapable[] blades = GetComponents<IReapable> ();
+		if (blades.Length <= 0)
+			Console.log.println (ToString() + " has no additional values to reap", Console.LogTag.info);
+		else
+			Console.log.println (ToString () + " reaped values.", Console.LogTag.info);
 
-		SeedBase seed = blade.reap();
+		SeedCollection collection = new SeedCollection (gameObject, blades);
+		collection.ignoreReset = ignoreReset;
 
 		//pass in a prefabPath so that if this RO is a prefab, it can be spawned again later
-		seed.prefabPath = prefabPath;
+		collection.prefabPath = prefabPath;
 		if (prefabPath != "")
-			seed.registeredID = registeredID;
+			collection.registeredID = registeredID;
 
 		//pass in this RO's parent object, ifex
 		Transform parent = gameObject.transform.parent;
@@ -123,32 +132,29 @@ public class RegisteredObject : MonoBehaviour
 		{
 			RegisteredObject parentRO = parent.GetComponent<RegisteredObject> ();
 			if (parentRO != null)
-				seed.parentID = parentRO.registeredID;
+				collection.parentID = parentRO.registeredID;
 			else
 				Console.log.println (ToString () + " is under a non-RO. Make its parent an RO to save its data properly.", Console.LogTag.error);
 		}
 		else
-			seed.parentID = "";
+			collection.parentID = "";
 
-		return seed;
+		return collection;
 	}
 
-	// Take a seed and pass it along to the reapable script attached to this GO
-	public void sow(SeedBase seed)
+	// Take a seed collection and distrubute it among the reapable scripts attached to this GO
+	public void sow(SeedCollection collection)
 	{
-		IReapable hole = GetComponent<IReapable> ();
-		if (hole == null)
-			throw new ReapException (ToString() + " has nowhere to sow values");
-		Console.log.println (ToString () + " sowed values.", Console.LogTag.info);
+		IReapable[] holes = GetComponents<IReapable> ();
+		if (holes.Length <= 0)
+			Console.log.println (ToString() + " has nowhere to sow values", Console.LogTag.info);
+		else
+			Console.log.println (ToString () + " sowed values.", Console.LogTag.info);
 
 		//intercept and save prefabPath
-		prefabPath = seed.prefabPath;
+		prefabPath = collection.prefabPath;
 
-		//destroy object if it saved a destroyed state
-		if (seed.destroyed)
-			Destroy (gameObject);
-		else
-			hole.sow (seed);
+		collection.sowSeeds (gameObject, holes);
 	}
 
 	// Tells the SSM that a RO has been destroyed through gameplay
@@ -157,7 +163,7 @@ public class RegisteredObject : MonoBehaviour
 		if (prefabPath != "")
 			return;
 
-		SeedBase seed = reap ();
+		SeedCollection seed = reap ();
 		seed.destroyed = true;
 
 		SceneStateManager.instance ().store (rID, seed);
@@ -165,11 +171,7 @@ public class RegisteredObject : MonoBehaviour
 
 	public override string ToString ()
 	{
-		return "[RO] ID: " + registeredID;
+		return "[RO] NAME: " + gameObject.name + " ID: " + registeredID;
 	}
-}
-
-public class ReapException : ApplicationException
-{
-	public ReapException(string message) : base(message) { }
+	#endregion
 }

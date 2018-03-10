@@ -36,12 +36,12 @@ public abstract class Interactable : MonoBehaviour, IReapable
 	public abstract void doInteract ();
 
 	// --- IReapable methods ---
-	public virtual SeedBase reap()
+	public virtual SeedCollection.Base reap()
 	{
 		return new Seed (gameObject);
 	}
 
-	public virtual void sow(SeedBase s)
+	public virtual void sow(SeedCollection.Base s)
 	{
 		Seed seed = (Seed)s;
 
@@ -56,21 +56,21 @@ public abstract class Interactable : MonoBehaviour, IReapable
 	}
 
 	[System.Serializable]
-	protected class Seed : SeedBase
+	protected class Seed : SeedCollection.Base
 	{
 		/* Instance Vars */
 		public bool interactable, activated;
 		public DamageType keyType;
 
 		/* Instance Methods */
-		public Seed(GameObject subject) : base(subject)
+		public Seed(GameObject subject)
 		{
 			Interactable i = subject.GetComponent<Interactable>();
 			interactable = i.interactable;
 			activated = i.activated;
 			keyType = i.keyType;
 		}
-		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
+		public Seed(SerializationInfo info, StreamingContext context)
 		{
 			interactable = info.GetBoolean("interactable");
 			activated = info.GetBoolean("activated");
@@ -79,8 +79,6 @@ public abstract class Interactable : MonoBehaviour, IReapable
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData (info, context);
-
 			info.AddValue ("interactable", interactable);
 			info.AddValue ("activated", activated);
 			info.AddValue ("keyType", keyType);

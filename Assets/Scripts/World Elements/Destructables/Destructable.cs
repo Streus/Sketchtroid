@@ -6,8 +6,6 @@ using System;
 public class Destructable : MonoBehaviour, IReapable
 {
 	/* Instance Vars */
-	[SerializeField]
-	private bool allowReset = true;
 
 	[SerializeField]
 	private float health;
@@ -33,21 +31,17 @@ public class Destructable : MonoBehaviour, IReapable
 			OnDeath ();
 	}
 
-	public SeedBase reap()
+	public SeedCollection.Base reap()
 	{
 		Seed seed = new Seed (gameObject);
 		return seed;
 	}
-	public void sow(SeedBase s)
+	public void sow(SeedCollection.Base s)
 	{
 		Seed seed = (Seed)s;
 
-		//sow values
-		seed.defaultSow(gameObject);
-
 		health = seed.health;
 	}
-	public bool ignoreReset() { return !allowReset; }
 
 	protected virtual void OnHit(float damage)
 	{
@@ -73,25 +67,23 @@ public class Destructable : MonoBehaviour, IReapable
 
 	/* Inner classes */
 	[Serializable]
-	private class Seed : SeedBase
+	private class Seed : SeedCollection.Base
 	{
 		/* Instance Vars */
 		public float health;
 
 		/* Constructors */
-		public Seed(GameObject subject) : base(subject)
+		public Seed(GameObject subject)
 		{
 			health = subject.GetComponent<Destructable>().health;
 		}
-		public Seed(SerializationInfo info, StreamingContext context) : base(info, context)
+		public Seed(SerializationInfo info, StreamingContext context)
 		{
 			health = info.GetSingle("health");
 		}
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
-			base.GetObjectData (info, context);
-
 			info.AddValue ("health", health);
 		}
 	}
