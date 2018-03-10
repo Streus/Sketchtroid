@@ -18,7 +18,7 @@ namespace Commands
 
 		public override string execute (params string[] args)
 		{
-			Console.log.clear ();
+			Console.clear ();
 			return "";
 		}
 	}

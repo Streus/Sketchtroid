@@ -181,7 +181,7 @@ public class GameManager : MonoBehaviour
 		totalTime += (double)sceneTime;
 		sceneTime = 0f;
 
-		Console.log.println ("[GameManger] Time spent in scene: " + timeSave + ".", Console.LogTag.info);
+		Console.println ("[GameManger] Time spent in scene: " + timeSave + ".", Console.Tag.info);
 		return timeSave;
 	}
 

@@ -23,7 +23,7 @@ namespace Commands
 			if (args.Length == 1)
 			{
 				foreach (Command c in commands)
-					Console.log.println (c.getInvocation() + " | " + c.getHelp (), Console.LogTag.command_out);
+					Console.println (c.getInvocation() + " | " + c.getHelp (), Console.Tag.command_out);
 			}
 			else
 			{
@@ -31,7 +31,7 @@ namespace Commands
 				{
 					if (c.getInvocation () == args [1]) 
 					{
-						Console.log.println (c.getInvocation() + " | " + c.getHelp (), Console.LogTag.command_out);
+						Console.println (c.getInvocation() + " | " + c.getHelp (), Console.Tag.command_out);
 						return "";
 					}
 				}

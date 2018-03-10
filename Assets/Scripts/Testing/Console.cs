@@ -7,24 +7,25 @@ using System.IO;
 
 public class Console : MonoBehaviour
 {
-	private const string INPUT = "input", OUTPUT = "output";
+	#region STATIC_VARS
+
+	private const string INPUT = "i", OUTPUT = "o";
 
 	/* Static Vars */
 	public static Console log;
-
-	private static Assembly assembly = Assembly.GetExecutingAssembly();
 
 	// Tags that are appended to print calls
 	private static string[] tags = new string[]
 	{
 		"",
-		"<color=#ff1111ff><b>[ERROR]</b></color>", //red
-		"<color=#ffff11ff><b>[WARN]</b></color>", //yellow
-		"<color=#11ffffff><b>[INFO]</b></color>", //cyan
+		"<color=#ff1111ff><b>[ERR]</b></color>", //red
+		"<color=#ffff11ff><b>[WRN]</b></color>", //yellow
+		"<color=#11ffffff><b>[INF]</b></color>", //cyan
 		"<color=#11ff11ff><b>[OUT]</b></color>" //green
 	};
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
 
 	// The current value of the input field
 	private string input;
@@ -50,7 +51,7 @@ public class Console : MonoBehaviour
 	public int linesMax;
 
 	// A list of all available commands
-	private List<Command> commands;
+	private Dictionary<string, Command> commands;
 
 	// A list of all active variables
 	private Dictionary<string, Variable> variables;
@@ -63,7 +64,9 @@ public class Console : MonoBehaviour
 
 	public Command[] getCommandList()
 	{
-		return commands.ToArray ();
+		Command[] cs = new Command[commands.Values.Count];
+		commands.Values.CopyTo(cs, 0);
+		return cs;
 	}
 
 	// Every individual user entry made during current runtime
@@ -98,8 +101,62 @@ public class Console : MonoBehaviour
 	{
 		get { return GUI.GetNameOfFocusedControl() == INPUT; }
 	}
+	#endregion
 
-	/* Instance Methods */
+	#region STATIC_METHODS
+
+	// Print a message to the console
+	public static void println(string message)
+	{
+		print (message + "\n");
+	}
+	public static void println(string message, Tag tag)
+	{
+		print (message + "\n", tag);
+	}
+	public static void print(string message)
+	{
+		print (message, Tag.none);
+	}
+	public static void print(string message, Tag tag)
+	{
+		if (log == null)
+			return;
+		if (log.quietMode && tag == Tag.command_out)
+			return;
+
+		log.output += tags [(int)tag] + " " + message;
+
+		float outh = log.textStyle.CalcHeight (new GUIContent (log.output), Screen.width);
+		log.scrollPos = new Vector2 (log.scrollPos.x, outh);
+	}
+
+	// Clear the console output window
+	public static void clear()
+	{
+		if(log != null)
+			log.output = "";
+	}
+
+	// Maximize the console window
+	public static void maximize()
+	{
+		if (log != null)
+		{
+			float inh = log.textStyle.CalcHeight (new GUIContent (log.input), Screen.width);
+			log.outputFieldSize = Screen.height - inh;
+		}
+	}
+
+	// Minimize the console window
+	public static void minimize()
+	{
+		if(log != null)
+			log.outputFieldSize = log.defaultOFSize;
+	}
+	#endregion
+
+	#region INSTANCE_METHODS
 	public void Awake()
 	{
 		if (log == null) 
@@ -112,7 +169,6 @@ public class Console : MonoBehaviour
 			scrollPos = Vector2.zero;
 			outputFieldSize = defaultOFSize;
 
-			commands = new List<Command> ();
 			buildCommandList ();
 
 			variables = new Dictionary<string, Variable> ();
@@ -130,23 +186,30 @@ public class Console : MonoBehaviour
 	}
 	private void buildCommandList()
 	{
-		string baseDir = Directory.GetCurrentDirectory ();
-		string[] files = Directory.GetFiles (baseDir + "/Assets/Scripts/Testing/Commands");
-		foreach (string file in files)
-		{
-			if (file.EndsWith (".cs"))
-			{
-				int start = 1 + Mathf.Max (file.LastIndexOf ('/'), file.LastIndexOf ('\\'));
-				int end = file.LastIndexOf ('.');
+		commands = new Dictionary<string, Command> ();
 
-				string rawClass = file.Substring (start, end - start);
-
-				Command c = (Command)assembly.CreateInstance ("Commands." + rawClass);
-				if (c == null)
-					Debug.LogError ("Non-Command file in Commands folder."); //DEBUG
-				commands.Add (c);
-			}
-		}
+		putInCL (new Commands.Clear ());
+		putInCL (new Commands.DumpSSM ());
+		putInCL (new Commands.EndScope ());
+		putInCL (new Commands.Execute ());
+		putInCL (new Commands.Exit ());
+		putInCL (new Commands.Help ());
+		putInCL (new Commands.Hide ());
+		putInCL (new Commands.Jump ());
+		putInCL (new Commands.Maximize ());
+		putInCL (new Commands.Minimize ());
+		putInCL (new Commands.ModAbilities ());
+		putInCL (new Commands.Print ());
+		putInCL (new Commands.Save ());
+		putInCL (new Commands.Set ());
+		putInCL (new Commands.SetDifficulty ());
+		putInCL (new Commands.SetHUDSub ());
+		putInCL (new Commands.StartScope ());
+		putInCL (new Commands.TestParse ());
+	}
+	private void putInCL(Command c)
+	{
+		commands.Add (c.getInvocation (), c);
 	}
 
 	public void Start()
@@ -241,7 +304,7 @@ public class Console : MonoBehaviour
 		catch(IOException ioe)
 		#pragma warning restore 0168
 		{
-			println ("Could not load CSER file: " + fileName, LogTag.error);
+			println ("Could not load CSER file: " + fileName, Tag.error);
 			return false;
 		}
 
@@ -285,7 +348,7 @@ public class Console : MonoBehaviour
 				catch (System.IndexOutOfRangeException ioobe)
 				#pragma warning restore 0168
 				{
-					println ("Malformed goto on line " + i, LogTag.error);
+					println ("Malformed goto on line " + i, Tag.error);
 					return false;
 				}
 				int line = 0;
@@ -312,33 +375,31 @@ public class Console : MonoBehaviour
 		string[] args = parseLine(command);
 		args [0] = args [0].ToLower ();
 
-		foreach (Command c in commands)
+		Command c;
+		if(commands.TryGetValue(args[0], out c))
 		{
-			if(c.getInvocation().Equals(args[0]))
+			try
 			{
-				try
-				{
-					commOut = c.execute (args);
-				}
-				catch(Command.ExecutionException ee)
-				{
-					println (ee.Message, LogTag.error);
-				}
-				#pragma warning disable 0168
-				catch(System.IndexOutOfRangeException ioore)
-				#pragma warning restore 0168
-				{
-					println ("Provided too few arguments.\n" + c.getHelp(), LogTag.error);
-				}
-
-				if (commOut != "")
-					println (commOut, LogTag.command_out);
-
-				success = true;
+				commOut = c.execute (args);
 			}
+			catch(Command.ExecutionException ee)
+			{
+				println (ee.Message, Tag.error);
+			}
+			#pragma warning disable 0168
+			catch(System.IndexOutOfRangeException ioore)
+			#pragma warning restore 0168
+			{
+				println ("Provided too few arguments.\n" + c.getHelp(), Tag.error);
+			}
+
+			if (commOut != "")
+				println (commOut, Tag.command_out);
+
+			success = true;
 		}
 		if(!success)
-			println ("Command not found.  Try \"help\" for a list of commands", LogTag.error);
+			println ("Command not found.  Try \"help\" for a list of commands", Tag.error);
 		history.Insert (0, input);
 
 		return success;
@@ -435,7 +496,7 @@ public class Console : MonoBehaviour
 			if(variables.TryGetValue (i.ToString() + name, out v))
 				return v.value;
 		
-		println (name + " does not exist in the current context.", LogTag.error);
+		println (name + " does not exist in the current context.", Tag.error);
 		return name;
 	}
 
@@ -450,7 +511,7 @@ public class Console : MonoBehaviour
 	{
 		if (currScope == -1)
 		{
-			println ("Cannot close global scope.", LogTag.error);
+			println ("Cannot close global scope.", Tag.error);
 			return false;
 		}
 
@@ -473,54 +534,12 @@ public class Console : MonoBehaviour
 			str += "\n[" + v.scope + "] " + v.name + " = " + v.value;
 		return str;
 	}
+	#endregion
 
-	// Print a message to the console
-	public void println(string message)
-	{
-		print (message + "\n");
-	}
-	public void println(string message, LogTag tag)
-	{
-		print (message + "\n", tag);
-	}
-	public void print(string message)
-	{
-		print (message, LogTag.none);
-	}
-	public void print(string message, LogTag tag)
-	{
-		if (quietMode && tag == LogTag.command_out)
-			return;
-		
-		output += tags [(int)tag] + " " + message;
-
-		float outh = textStyle.CalcHeight (new GUIContent (output), Screen.width);
-		scrollPos = new Vector2 (scrollPos.x, outh);
-	}
-
-	// Clear the console output window
-	public void clear()
-	{
-		output = "";
-	}
-
-	// Maximize the console window
-	public void maximize()
-	{
-		float inh = textStyle.CalcHeight (new GUIContent (input), Screen.width);
-		outputFieldSize = Screen.height - inh;
-	}
-
-	// Minimize the console window
-	public void minimize()
-	{
-		outputFieldSize = defaultOFSize;
-	}
-
-	/* Inner Classes */
+	#region INTERNAL_TYPES
 
 	// Used to tag output with appending strings and colors
-	public enum LogTag
+	public enum Tag
 	{
 		none, error, warning, info, command_out
 	}
@@ -545,4 +564,6 @@ public class Console : MonoBehaviour
 			this.scope = scope;
 		}
 	}
+
+	#endregion
 }

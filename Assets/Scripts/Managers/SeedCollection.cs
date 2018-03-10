@@ -166,8 +166,8 @@ public class SeedCollection : ISerializable
 			if (seeds.TryGetValue (scripts [i].GetType (), out seed))
 				scripts [i].sow (seed);
 			else
-				Console.log.println ("[SC] Script mismatch! " + scripts [i].GetType ().FullName
-					+ " is on the GameObject, but not in the collection!", Console.LogTag.error);
+				Console.println ("[SC] Script mismatch! " + scripts [i].GetType ().FullName
+					+ " is on the GameObject, but not in the collection!", Console.Tag.error);
 		}
 	}
 	#endregion

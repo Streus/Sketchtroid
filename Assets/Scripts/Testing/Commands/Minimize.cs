@@ -14,12 +14,12 @@ namespace Commands
 
 		public override string getInvocation ()
 		{
-			return "minimize";
+			return "min";
 		}
 
 		public override string execute (params string[] args)
 		{
-			Console.log.minimize ();
+			Console.minimize ();
 			return "Minimized the console window.";
 		}
 	}

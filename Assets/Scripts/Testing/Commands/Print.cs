@@ -19,26 +19,26 @@ namespace Commands
 
 		public override string execute (params string[] args)
 		{
-			Console.LogTag tag = Console.LogTag.none;
+			Console.Tag tag = Console.Tag.none;
 			int mesgArg = 2;
 			if (args [1] == "-e")
-				tag = Console.LogTag.error;
+				tag = Console.Tag.error;
 			else if (args [1] == "-w")
-				tag = Console.LogTag.warning;
+				tag = Console.Tag.warning;
 			else if (args [1] == "-o")
-				tag = Console.LogTag.command_out;
+				tag = Console.Tag.command_out;
 			else
 				mesgArg = 1;
 
 			try
 			{
-				Console.log.println (args [mesgArg], tag);
+				Console.println (args [mesgArg], tag);
 			}
 			#pragma warning disable 0168
 			catch(System.IndexOutOfRangeException ioore)
 			#pragma warning restore 0168
 			{
-				Console.log.println ("", tag);
+				Console.println ("", tag);
 			}
 
 			return "";

@@ -120,7 +120,7 @@ public class SceneStateManager : ISerializable
 		//if the current scene is not ignored, save data from it
 		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
 		{
-			Console.log.println ("[SSM] Saving " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
+			Console.println ("[SSM] Saving " + SceneManager.GetActiveScene ().name + ".", Console.Tag.info);
 
 			//create a dictionary for the incoming data
 			Dictionary<string, SeedCollection> currData;
@@ -143,7 +143,7 @@ public class SceneStateManager : ISerializable
 			resetTimers.Add (currName, RESET_TIMER_MAX);
 		}
 		else
-			Console.log.println ("[SSM] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.LogTag.info);
+			Console.println ("[SSM] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.Tag.info);
 
 		//do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -167,14 +167,14 @@ public class SceneStateManager : ISerializable
 		if(curr.name != "main") //TODO see if there's a better way to do this
 			GameManager.instance.createPlayer();
 
-		Console.log.println ("[SSM] Loading values for " + curr.name + ".", Console.LogTag.info);
+		Console.println ("[SSM] Loading values for " + curr.name + ".", Console.Tag.info);
 
 		Dictionary<string, SeedCollection> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
-			Console.log.println ("[SSM] No data to load for " + curr.name + ".", Console.LogTag.info);
+			Console.println ("[SSM] No data to load for " + curr.name + ".", Console.Tag.info);
 			return;
 		}
 
@@ -184,9 +184,9 @@ public class SceneStateManager : ISerializable
 			if (sb.prefabPath != "")
 			{
 				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
-					Console.log.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.LogTag.info);
+					Console.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.Tag.info);
 				else
-					Console.log.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.LogTag.error);
+					Console.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.Tag.error);
 			}
 		}
 
@@ -208,7 +208,7 @@ public class SceneStateManager : ISerializable
 
 		bool newIgnore = ignoreSet.Add (currName);
 		if(newIgnore)
-			Console.log.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.LogTag.info);
+			Console.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.Tag.warning);
 
 		return newIgnore;
 	}
@@ -230,7 +230,7 @@ public class SceneStateManager : ISerializable
 			currData.Remove (ID);
 		currData.Add (ID, seed);
 
-		Console.log.println ("[SSM] Created destruction entry for " + ID + ".", Console.LogTag.info);
+		Console.println ("[SSM] Created destruction entry for " + ID + ".", Console.Tag.info);
 	}
 
 	// For serialization

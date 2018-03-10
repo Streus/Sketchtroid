@@ -114,9 +114,9 @@ public class RegisteredObject : MonoBehaviour
 	{
 		IReapable[] blades = GetComponents<IReapable> ();
 		if (blades.Length <= 0)
-			Console.log.println (ToString() + " has no additional values to reap", Console.LogTag.info);
+			Console.println (ToString() + " has no additional values to reap", Console.Tag.info);
 		else
-			Console.log.println (ToString () + " reaped values.", Console.LogTag.info);
+			Console.println (ToString () + " reaped values.", Console.Tag.info);
 
 		SeedCollection collection = new SeedCollection (gameObject, blades);
 		collection.ignoreReset = ignoreReset;
@@ -134,7 +134,7 @@ public class RegisteredObject : MonoBehaviour
 			if (parentRO != null)
 				collection.parentID = parentRO.registeredID;
 			else
-				Console.log.println (ToString () + " is under a non-RO. Make its parent an RO to save its data properly.", Console.LogTag.error);
+				Console.println (ToString () + " is under a non-RO. Make its parent an RO to save its data properly.", Console.Tag.error);
 		}
 		else
 			collection.parentID = "";
@@ -147,9 +147,9 @@ public class RegisteredObject : MonoBehaviour
 	{
 		IReapable[] holes = GetComponents<IReapable> ();
 		if (holes.Length <= 0)
-			Console.log.println (ToString() + " has nowhere to sow values", Console.LogTag.info);
+			Console.println (ToString() + " has nowhere to sow values", Console.Tag.info);
 		else
-			Console.log.println (ToString () + " sowed values.", Console.LogTag.info);
+			Console.println (ToString () + " sowed values.", Console.Tag.info);
 
 		//intercept and save prefabPath
 		prefabPath = collection.prefabPath;
@@ -171,7 +171,7 @@ public class RegisteredObject : MonoBehaviour
 
 	public override string ToString ()
 	{
-		return "[RO] NAME: " + gameObject.name + " ID: " + registeredID;
+		return "[RO] " + gameObject.name + " (" + registeredID + ")";
 	}
 	#endregion
 }

@@ -30,19 +30,19 @@ namespace Commands
 				if (saveData)
 				{
 					SceneStateManager.instance ().transitionTo (jumpRoom);
-					Console.log.println ("Transitioned to " + jumpRoom, Console.LogTag.info);
+					Console.println ("Transitioned to " + jumpRoom, Console.Tag.info);
 				}
 				else
 				{
 					SceneStateManager.instance ().jumpTo (jumpRoom);
-					Console.log.println ("Jumped to " + jumpRoom, Console.LogTag.info);
+					Console.println ("Jumped to " + jumpRoom, Console.Tag.info);
 				}
 			}
 			#pragma warning disable 0168
 			catch(System.ArgumentException ae)
 			#pragma warning restore 0168
 			{
-				Console.log.println ("The scene " + jumpRoom + " is invalid.", Console.LogTag.error);
+				Console.println ("The scene " + jumpRoom + " is invalid.", Console.Tag.error);
 				return "";
 			}
 

@@ -14,12 +14,12 @@ namespace Commands
 
 		public override string getInvocation ()
 		{
-			return "maximize";
+			return "max";
 		}
 
 		public override string execute (params string[] args)
 		{
-			Console.log.maximize ();
+			Console.maximize ();
 			return "Maximized the console window.";
 		}
 	}
