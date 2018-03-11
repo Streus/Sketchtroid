@@ -187,36 +187,36 @@ public sealed class Bullet : MonoBehaviour
 			if (faction != e.getFaction ())
 			{
 				Entity.damageEntity (e, source, damage, damageType);
-				OnHit (col, e);
+				onHit (col, e);
 				if (destroyOnHit)
 					OnDeath ();
 			}
 		}
 		else if (i != null)
 		{
-			OnHit (col);
+			onHit (col);
 			i.OnInteract (damageType);
 		}
 		else if (d != null)
 		{
-			OnHit (col);
+			onHit (col);
 			d.applyDamage (damage);
 		}
 		else if (col.tag == "Indes")
 		{
-			OnHit (col);
+			onHit (col);
 			OnDeath ();
 		}
 	}
 
-	private void OnHit(Collider2D col, Entity hit)
+	private void onHit(Collider2D col, Entity hit)
 	{
 		if (behavior != null)
 			behavior.onHit (this, col, hit);
 	}
-	private void OnHit(Collider2D col)
+	private void onHit(Collider2D col)
 	{
-		OnHit (col, null);
+		onHit (col, null);
 	}
 
 	public void OnDeath()

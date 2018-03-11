@@ -7,10 +7,11 @@ using System;
 [Serializable]
 public sealed class Status : ISerializable
 {
-	/* Static Vars */
+	#region STATIC_VARS
 
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
 
 	// The displayed name of this Status
 	public readonly string name;
@@ -40,10 +41,16 @@ public sealed class Status : ISerializable
 	// The components that make up this Status
 	private StatusComponent[] components;
 
-	/* Static Methods */
+	// Event that fires when this status's duration completes
+	public event StatusEnded durationCompleted;
+	#endregion
 
+	#region STATIC_METHODS
 
-	/* Constructors */
+	#endregion
+
+	#region INSTANCE_METHODS
+
 	public Status(string name, string desc, string iconPath, DecayType dt, int stacksMax, float duration, params StatusComponent[] components)
 	{
 		this.name = name;
@@ -94,10 +101,10 @@ public sealed class Status : ISerializable
 			return;
 		foreach (StatusComponent sc in components)
 		{
-			sc.OnRevert (subject);
+			sc.onRevert (subject);
 			sc.stacks += dStacks;
 			if(this.stacks > 0)
-				sc.OnApply (subject);
+				sc.onApply (subject);
 		}
 		this.stacks += dStacks;
 	}
@@ -106,7 +113,7 @@ public sealed class Status : ISerializable
 	// Returns true if it ended.
 	public bool updateDuration(Entity subject, float time)
 	{
-		OnUpdate (subject, time);
+		onUpdate (subject, time);
 
 		duration -= time;
 		if (duration <= 0f)
@@ -114,13 +121,13 @@ public sealed class Status : ISerializable
 			switch (decayType)
 			{
 			case DecayType.communal:
-				OnStatusEnded ();
+				onStatusEnded ();
 				return true;
 			case DecayType.serial:
 				stack (subject, -1);
 				if (stacks <= 0)
 				{
-					OnStatusEnded ();
+					onStatusEnded ();
 					return true;
 				}
 				break;
@@ -143,80 +150,80 @@ public sealed class Status : ISerializable
 	// --Hooks--
 
 	// Called when this Status is first added to an Entity
-	public void OnApply(Entity subject)
+	public void onApply(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnApply (subject);
+			sc.onApply (subject);
 	}
 
 	// Called when this Status is removed from its subject
-	public void OnRevert(Entity subject)
+	public void onRevert(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnRevert (subject);
+			sc.onRevert (subject);
 	}
 
 	// Called every update cycle by the subject
-	public void OnUpdate(Entity subject, float time)
+	public void onUpdate(Entity subject, float time)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnUpdate (subject, time);
+			sc.onUpdate (subject, time);
 	}
 
 	// Called whenever the subject takes damage
-	public void OnDamageTaken(Entity subject, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	public void onDamageTaken(Entity subject, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnDamageTaken (subject, attacker, rawDamage, calcDamage, dt, hitShields);
+			sc.onDamageTaken (subject, attacker, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// Called whenever the subject deals damage
-	public void OnDamageDealt(Entity subject, Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	public void onDamageDealt(Entity subject, Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnDamageDealt (subject, victim, rawDamage, calcDamage, dt, hitShields);
+			sc.onDamageDealt (subject, victim, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// Called when the subject dies
-	public void OnDeath(Entity subject)
+	public void onDeath(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnDeath (subject);
+			sc.onDeath (subject);
 	}
 
 	// Called when the subject's shields fall to zero
-	public void OnShieldsDown(Entity subject)
+	public void onShieldsDown(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnShieldsDown (subject);
+			sc.onShieldsDown (subject);
 	}
 
 	// Called when the subject's shields are fully recharged
-	public void OnShieldsRecharged(Entity subject)
+	public void onShieldsRecharged(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnShieldsRecharged (subject);
+			sc.onShieldsRecharged (subject);
 	}
 
 	// Called when the subject enters a stunned state
-	public void OnStunned(Entity subject)
+	public void onStunned(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnStunned (subject);
+			sc.onStunned (subject);
 	}
 
 	// Called when the subject enters a rooted state
-	public void OnRooted(Entity subject)
+	public void onRooted(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnRooted (subject);
+			sc.onRooted (subject);
 	}
 
 	// Called when the subject is healed
-	public void OnHealed(Entity subject, float healAmount)
+	public void onHealed(Entity subject, float healAmount)
 	{
 		foreach (StatusComponent sc in components)
-			sc.OnHealed (subject, healAmount);
+			sc.onHealed (subject, healAmount);
 	}
 
 	// For serialization
@@ -241,7 +248,7 @@ public sealed class Status : ISerializable
 	}
 
 	// Called when this Status's duration falls below zero
-	public void OnStatusEnded()
+	public void onStatusEnded()
 	{
 		if (durationCompleted != null)
 			durationCompleted (this);
@@ -263,9 +270,11 @@ public sealed class Status : ISerializable
 		return name + "\n" + desc + "\n" + duration.ToString("#00.0") + " / " + initDuration.ToString("#00.0");
 	}
 
+	#endregion
+
+	#region INTERNAL_TYPES
 	/* Delegates and Events */
 	public delegate void StatusEnded(Status s);
-	public event StatusEnded durationCompleted;
 
 	/* Inner classes, etc. */
 	public enum DecayType
@@ -276,4 +285,5 @@ public sealed class Status : ISerializable
 		//stacks decay one at a time
 		serial
 	}
+	#endregion
 }

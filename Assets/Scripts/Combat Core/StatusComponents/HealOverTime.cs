@@ -39,7 +39,7 @@ namespace StatusComponents
 			finalHeal = info.GetSingle ("finalHeal");
 		}
 
-		public override void OnUpdate (Entity subject, float time)
+		public override void onUpdate (Entity subject, float time)
 		{
 			currentTick -= time;
 			if (currentTick <= 0)
@@ -54,7 +54,7 @@ namespace StatusComponents
 			}
 		}
 
-		public override void OnRevert (Entity subject)
+		public override void onRevert (Entity subject)
 		{
 			Entity.healEntity (subject, finalHeal);
 		}

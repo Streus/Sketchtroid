@@ -1,18 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Runtime.Serialization;
-using System;
 
 public class StatusComponent : ISerializable
 {
-	/* Instance Vars */
+	#region INSTANCE_VARS
 	public int stacks;
 
 	// Set by the parent Status when a component is added to it
 	protected Status parent;
+	#endregion
 
-	/* Constructors */
+	#region INSTANCE_METHODS
 	public StatusComponent()
 	{
 		stacks = 1;
@@ -30,8 +28,6 @@ public class StatusComponent : ISerializable
 		parent = null;
 	}
 
-	/* Instance Methods */
-
 	// Sets the parent Status of this StatusComponent to the given Status
 	public StatusComponent setParent(Status s)
 	{
@@ -40,41 +36,42 @@ public class StatusComponent : ISerializable
 	}
 
 	// Called when this Status is first added to an Entity
-	public virtual void OnApply(Entity subject){ }
+	public virtual void onApply(Entity subject){ }
 
 	// Called when this Status is removed from its subject
-	public virtual void OnRevert(Entity subject){ }
+	public virtual void onRevert(Entity subject){ }
 
 	// Called every update cycle by the subject
-	public virtual void OnUpdate(Entity subject, float time){ }
+	public virtual void onUpdate(Entity subject, float time){ }
 
 	// Called whenever the subject takes damage
-	public virtual void OnDamageTaken(Entity subject, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields){ }
+	public virtual void onDamageTaken(Entity subject, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields){ }
 
 	// Called whenever the subject deals damage
-	public virtual void OnDamageDealt(Entity subject, Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields){ }
+	public virtual void onDamageDealt(Entity subject, Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields){ }
 
 	// Called when the subject dies
-	public virtual void OnDeath(Entity subject){ }
+	public virtual void onDeath(Entity subject){ }
 
 	// Called when the subject's shields fall to zero
-	public virtual void OnShieldsDown(Entity subject){ }
+	public virtual void onShieldsDown(Entity subject){ }
 
 	// Called when the subject's shields are fully recharged
-	public virtual void OnShieldsRecharged(Entity subject){ }
+	public virtual void onShieldsRecharged(Entity subject){ }
 
 	// Called when the subject enters a stunned state
-	public virtual void OnStunned(Entity subject){ }
+	public virtual void onStunned(Entity subject){ }
 
 	// Called when the subject enters a rooted state
-	public virtual void OnRooted(Entity subject){ }
+	public virtual void onRooted(Entity subject){ }
 
 	// Called when the subject is healed
-	public virtual void OnHealed(Entity subject, float healAmount){ }
+	public virtual void onHealed(Entity subject, float healAmount){ }
 
 	// For serialization
 	public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
 		info.AddValue ("stacks", stacks);
 	}
+	#endregion
 }

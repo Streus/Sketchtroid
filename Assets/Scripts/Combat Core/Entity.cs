@@ -138,7 +138,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 			if (victim.shields <= 0f)
 			{
 				victim.shields = 0f;
-				victim.OnShieldsDown ();
+				victim.onShieldsDown ();
 				victim.shieldDelay = victim.shieldDelayMax;
 			}
 		}
@@ -149,14 +149,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 			if (victim.health <= 0f)
 			{
 				victim.health = 0f;
-				victim.OnDeath ();
+				victim.onDeath ();
 			}
 		}
 
 		//combat event hooks
-		victim.OnDamageTaken (attacker, damage, calcDamage, dt, hitShields);
+		victim.onDamageTaken (attacker, damage, calcDamage, dt, hitShields);
 		if(attacker != null)
-			attacker.OnDamageDealt (victim, damage, calcDamage, dt, hitShields);
+			attacker.onDamageDealt (victim, damage, calcDamage, dt, hitShields);
 	}
 
 	public static void healEntity(Entity e, float healAmount)
@@ -168,7 +168,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 			e.health = e.healthMax;
 
 		foreach (Status s in e.statuses)
-			s.OnHealed (e, healAmount);
+			s.onHealed (e, healAmount);
 
 		if(e.healed != null)
 			e.healed(healAmount);
@@ -205,9 +205,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 		Destructable parDes = GetComponentInParent<Destructable> ();
 
 		if (parEnt != null && parEnt != this)
-			parEnt.died += OnDeath;
+			parEnt.died += onDeath;
 		else if (parDes != null)
-			parDes.destructed += OnDeath;
+			parDes.destructed += onDeath;
 	}
 
 	public float healthPerc { get { return health / healthMax; } }
@@ -344,7 +344,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		//this status is new to this Entity
 		statuses.Add (s);
 		s.durationCompleted += removeStatus;
-		s.OnApply (this);
+		s.onApply (this);
 
 		//notify listeners
 		if (statusAdded != null)
@@ -354,13 +354,19 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Either a status naturally ran out, or it is being manually removed
 	public void removeStatus(Status s)
 	{
-		s.OnRevert (this);
+		s.onRevert (this);
 		s.durationCompleted -= removeStatus;
 		statuses.Remove (s);
 
 		//notify listeners
 		if (statusRemoved != null)
 			statusRemoved (s);
+	}
+
+	// Check for a specific status in this Entity's status list
+	public bool hasStatus(Status s)
+	{
+		throw new NotImplementedException ();
 	}
 	#endregion
 
@@ -377,8 +383,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 		{
 			throw new NullReferenceException ("Null Ability passed to addAbility().");
 		}
-
-		Debug.Log (index); //DEBUG ability add index
 
 		//add the ability and set it to active
 		if (index == -1)
@@ -497,7 +501,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		return isNew;
 	}
 
-	// Called automatically but bullets in the collision log when they die
+	// Called automatically by bullets in the collision log when they die
 	private void removeColLogEntry(Bullet bullet)
 	{
 		bool existed = collisonLog.Remove (bullet);
@@ -536,7 +540,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 			stunned += 1;
 
 			foreach (Status s in statuses)
-				s.OnStunned (this);
+				s.onStunned (this);
 
 			if (wasStunned != null)
 				wasStunned ();
@@ -557,7 +561,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 			rooted += 1;
 
 			foreach (Status s in statuses)
-				s.OnRooted (this);
+				s.onRooted (this);
 
 			if (wasRooted != null)
 				wasRooted ();
@@ -575,30 +579,30 @@ public sealed class Entity : MonoBehaviour, IReapable
 	#region HOOKS
 
 	// This Entity took damage
-	private void OnDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	private void onDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (Status s in statuses)
-			s.OnDamageTaken (this, attacker, rawDamage, calcDamage, dt, hitShields);
+			s.onDamageTaken (this, attacker, rawDamage, calcDamage, dt, hitShields);
 
 		if (tookDamage != null)
 			tookDamage (this, attacker, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// This Entity dealt damage
-	private void OnDamageDealt(Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	private void onDamageDealt(Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (Status s in statuses)
-			s.OnDamageDealt (this, victim, rawDamage, calcDamage, dt, hitShields);
+			s.onDamageDealt (this, victim, rawDamage, calcDamage, dt, hitShields);
 
 		if (tookDamage != null)
 			dealtDamage (victim, this, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// This Entity has died
-	public void OnDeath()
+	public void onDeath()
 	{
 		foreach (Status s in statuses)
-			s.OnDeath (this);
+			s.onDeath (this);
 		
 		if (died != null)
 			died ();
@@ -607,20 +611,20 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// Shields have fallen to zero
-	private void OnShieldsDown()
+	private void onShieldsDown()
 	{
 		foreach (Status s in statuses)
-			s.OnShieldsDown (this);
+			s.onShieldsDown (this);
 
 		if (shieldsBroken != null)
 			shieldsBroken ();
 	}
 
 	// Shields have recharged to full
-	private void OnShieldsRecharged()
+	private void onShieldsRecharged()
 	{
 		foreach (Status s in statuses)
-			s.OnShieldsRecharged (this);
+			s.onShieldsRecharged (this);
 
 		if (shieldsRecharged != null)
 			shieldsRecharged ();
@@ -685,6 +689,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		public Stat movespeed;
 
+		public float combatTimer;
+
 		public Stat invincible;
 		public Stat stunned;
 		public Stat rooted;
@@ -723,6 +729,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 			movespeed = subInfo.movespeed;
 
+			combatTimer = subInfo.combatTimer;
+
 			invincible = subInfo.invincible;
 			stunned = subInfo.stunned;
 			rooted = subInfo.rooted;
@@ -755,6 +763,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			defaultDT = (DamageType)info.GetInt32("defaultDT");
 
 			movespeed = (Stat)info.GetValue("movespeed", typeof(Stat));
+
+			combatTimer = info.GetSingle("combatTimer");
 
 			invincible = (Stat)info.GetValue("invincible", typeof(Stat));
 			stunned = (Stat)info.GetValue("stunned", typeof(Stat));
@@ -796,6 +806,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			info.AddValue ("defaultDT", (int)defaultDT);
 
 			info.AddValue ("movespeed", movespeed);
+
+			info.AddValue ("combatTimer", combatTimer);
 
 			info.AddValue ("invincible", invincible);
 			info.AddValue ("stunned", stunned);
