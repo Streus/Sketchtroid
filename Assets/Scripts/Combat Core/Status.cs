@@ -5,13 +5,22 @@ using System.Runtime.Serialization;
 using System;
 
 [Serializable]
-public sealed class Status : ISerializable
+public sealed partial class Status : ISerializable
 {
 	#region STATIC_VARS
 
+	// A repo for commonly used statuses
+	private static Dictionary<string, Status> repo;
+
+	// the latest ID not assigned to a status
+	private static int latestID = 0;
 	#endregion
 
 	#region INSTANCE_VARS
+
+	// The unique ID for this status
+	private int _id;
+	public int id { get { return _id; } }
 
 	// The displayed name of this Status
 	public readonly string name;
@@ -47,6 +56,29 @@ public sealed class Status : ISerializable
 
 	#region STATIC_METHODS
 
+	// Get a copy of the given status from the repository
+	public static Status get(string name, float duration = float.NaN)
+	{
+		Status s;
+		if (repo.TryGetValue (name, out s))
+		{
+			if (float.IsNaN (duration))
+				return new Status (s);
+			return new Status (s, duration);
+		}
+		return null;
+	}
+
+	private static Status assignID(Status s)
+	{
+		s._id = latestID++;
+		return s;
+	}
+
+	private static void put(Status s)
+	{
+		repo.Add (s.name, assignID (s));
+	}
 	#endregion
 
 	#region INSTANCE_METHODS
@@ -70,6 +102,11 @@ public sealed class Status : ISerializable
 			this.components [i].setParent(this).stacks = stacks;
 	}
 	public Status (Status s) : this (s.name, s.desc, s.iconPath, s.decayType, s.stacksMax, s.initDuration, s.components) { }
+	public Status(Status s, float duration) : this(s)
+	{
+		this.initDuration = duration;
+		this.duration = initDuration;
+	}
 	public Status(SerializationInfo info, StreamingContext context)
 	{
 		name = info.GetString ("name");
