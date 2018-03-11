@@ -103,9 +103,10 @@ public class AbilitySelector : MonoBehaviour
 				player.swapAbility (ability, abilityIndex);
 			else
 			{
-				try { player.addAbility (ability, abilityIndex); }
-				catch(System.ArgumentOutOfRangeException aoore)
-				{ player.addAbility (ability); } 
+				if (abilityIndex < 0 || abilityIndex >= player.abilityCap)
+					player.addAbility (ability);
+				else
+					player.addAbility (ability, abilityIndex);
 			}
 			Debug.Log ("Adding " + abilityName); //DEBUG ability added
 		}

@@ -197,8 +197,18 @@ public class GameManager : MonoBehaviour
 		FileStream file = File.Open (saveDirectory + saveName + ".save", FileMode.OpenOrCreate);
 
 		BinaryFormatter formatter = new BinaryFormatter ();
-		formatter.Serialize (file, fillSave ());
-		file.Close ();
+		try
+		{
+			formatter.Serialize (file, fillSave ());
+		}
+		catch(SerializationException se)
+		{
+			Debug.LogException (se);
+		}
+		finally
+		{
+			file.Close ();
+		}
 
 		saveData ();
 	}
@@ -231,8 +241,18 @@ public class GameManager : MonoBehaviour
 		FileStream file = File.Open (dataDirectory + saveName + ".dat", FileMode.OpenOrCreate);
 
 		BinaryFormatter formatter = new BinaryFormatter ();
-		formatter.Serialize (file, SceneStateManager.instance());
-		file.Close ();
+		try
+		{
+			formatter.Serialize (file, SceneStateManager.instance());
+		}
+		catch(SerializationException se)
+		{
+			Debug.LogException (se);
+		}
+		finally
+		{
+			file.Close ();
+		}
 	}
 
 	// Load up a save from the file system
@@ -245,8 +265,19 @@ public class GameManager : MonoBehaviour
 		{
 			FileStream file = File.Open (filepath, FileMode.Open);
 			BinaryFormatter formatter = new BinaryFormatter ();
-			Save save = (Save)formatter.Deserialize (file);
-			file.Close ();
+			Save save = null;
+			try
+			{
+				save = (Save)formatter.Deserialize (file);
+			}
+			catch(SerializationException se)
+			{
+				Debug.LogException (se);
+			}
+			finally
+			{
+				file.Close ();
+			}
 			return save;
 		}
 
@@ -262,8 +293,18 @@ public class GameManager : MonoBehaviour
 		{
 			FileStream file = File.Open (filepath, FileMode.Open);
 			BinaryFormatter formatter = new BinaryFormatter ();
-			formatter.Deserialize (file);
-			file.Close ();
+			try
+			{
+				formatter.Deserialize (file);
+			}
+			catch(SerializationException se)
+			{
+				Debug.LogException (se);
+			}
+			finally
+			{
+				file.Close ();
+			}
 		}
 	}
 

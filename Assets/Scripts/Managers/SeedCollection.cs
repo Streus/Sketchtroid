@@ -65,12 +65,10 @@ public class SeedCollection : ISerializable
 
 		seeds = new Dictionary<Type, Base> ();
 		for (int i = 0; i < scripts.Length; i++)
-		{
 			seeds.Add (scripts [i].GetType (), scripts [i].reap ());
-		}
 	}
 
-	// Create a Seed from serialized data that contains a transform and rigidbody state
+	// Create a collection from serialized data that contains a transform and rigidbody state
 	public SeedCollection(SerializationInfo info, StreamingContext context)
 	{
 		//load destroyed state
@@ -102,21 +100,24 @@ public class SeedCollection : ISerializable
 			info.GetSingle("rb.v.y"));
 		rbAngVelocity = info.GetSingle("rb.av");
 
-		//load misc
+		//load registered object data
 		prefabPath = info.GetString("prefabPath");
 		registeredID = info.GetString ("rID");
 		parentID = info.GetString ("parentID");
+
+		//load ireapable scripts' data
+		seeds = (Dictionary<Type, Base>)info.GetValue("seeds", typeof(Dictionary<Type, Base>));
 	}
 
 	public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 	{
-		//save destroyed state
+		//destroyed state
 		info.AddValue("destroyed", destroyed);
 
-		//save ignoreReset state
+		//ignoreReset state
 		info.AddValue("ignoreReset", ignoreReset);
 
-		//save transform values
+		//transform values
 		info.AddValue ("t.p.x", tPosition.x);
 		info.AddValue ("t.p.y", tPosition.y);
 		info.AddValue ("t.p.z", tPosition.z);
@@ -125,6 +126,7 @@ public class SeedCollection : ISerializable
 		info.AddValue ("t.r.z", tRotation.z);
 		info.AddValue ("t.r.w", tRotation.w);
 
+		//rigidbody2d values
 		info.AddValue ("rb.p.x", rbPosition.x);
 		info.AddValue ("rb.p.y", rbPosition.y);
 		info.AddValue ("rb.r", rbRotation);
@@ -132,9 +134,13 @@ public class SeedCollection : ISerializable
 		info.AddValue ("rb.v.y", rbVelocity.y);
 		info.AddValue ("rb.av", rbAngVelocity);
 
+		//registered object values
 		info.AddValue ("prefabPath", prefabPath);
 		info.AddValue ("rID", registeredID);
 		info.AddValue ("parentID", parentID);
+
+		//ireapable scripts' values
+		info.AddValue ("seeds", seeds);
 	}
 
 	public void sowSeeds(GameObject subject, params IReapable[] scripts)

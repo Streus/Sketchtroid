@@ -71,7 +71,6 @@ public class GameSummary : MonoBehaviour
 		gameName.text = name;
 	}
 
-	//TODO create sprites for each difficulty
 	public void setDifficulty(Difficulty difficulty)
 	{
 		this.difficulty.color = Bullet.damageTypeToColor ((DamageType) ((int)difficulty + 2));
@@ -86,7 +85,10 @@ public class GameSummary : MonoBehaviour
 		{
 			timeString = timeString.Substring(0, timeString.LastIndexOf ('.'));
 		}
-		catch(System.ArgumentOutOfRangeException aoore) { }
+		catch(System.ArgumentOutOfRangeException aoore)
+		{
+			Debug.LogError (aoore.Message + " Error processing time string.");
+		}
 		this.time.text = "Game Time: " + timeString;
 	}
 
