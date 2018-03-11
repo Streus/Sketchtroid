@@ -364,9 +364,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// Check for a specific status in this Entity's status list
+	public bool hasStatus(string name)
+	{
+		return statuses.Find (delegate(Status obj) { return obj.name == name; }) != null;
+	}
+
 	public bool hasStatus(Status s)
 	{
-		throw new NotImplementedException ();
+		return hasStatus (s.name);
 	}
 	#endregion
 
