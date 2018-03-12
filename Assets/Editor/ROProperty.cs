@@ -3,11 +3,27 @@ using UnityEditor;
 
 #pragma warning disable 0168
 [CustomEditor(typeof(RegisteredObject))]
+[InitializeOnLoad]
 public class ROProperty : Editor
 {
+	static ROProperty()
+	{
+		RegisteredObject.allowGeneration = false;
+		EditorApplication.update += initComplete;
+
+		Debug.Log ("Preserving ROIDs");
+	}
+
+	private static void initComplete()
+	{
+		RegisteredObject.allowGeneration = true;
+		EditorApplication.update -= initComplete;
+
+		Debug.Log ("Startup done; ROIDS can be modified");
+	}
+
 	RegisteredObject ro;
 	SerializedObject tar;
-	//SerializedProperty uID;
 
 	public void OnEnable()
 	{
@@ -17,14 +33,18 @@ public class ROProperty : Editor
 			tar = new SerializedObject (ro);
 		}
 		catch(System.NullReferenceException nre) { }
-		//uID = target.FindProperty ("rID");
 	}
 
 	public override void OnInspectorGUI ()
 	{
 		tar.Update ();
 
-		EditorGUILayout.HelpBox ("ID: " + ro.rID, MessageType.None);
+		EditorGUILayout.SelectableLabel (ro.rID, EditorStyles.largeLabel);
+
+		EditorGUILayout.BeginHorizontal ();
+		EditorGUILayout.PrefixLabel ("Ignore Reset");
+		ro.setIgnoreReset (EditorGUILayout.Toggle (ro.getIgnoreReset ()));
+		EditorGUILayout.EndHorizontal ();
 
 		if (GUI.changed)
 			EditorUtility.SetDirty (ro);

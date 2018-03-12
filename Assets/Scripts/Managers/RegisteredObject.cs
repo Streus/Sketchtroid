@@ -8,6 +8,8 @@ using System.Runtime.Serialization;
 public class RegisteredObject : MonoBehaviour
 {
 	#region STATIC_VARS
+	public static bool allowGeneration = false;
+
 	private static List<RegisteredObject> directory;
 	static RegisteredObject()
 	{ 
@@ -17,11 +19,14 @@ public class RegisteredObject : MonoBehaviour
 
 	#region INSTANCE_VARS
 	[SerializeField]
-	private string registeredID;
+	private string registeredID = "";
 	public string rID
 	{
 		get { return registeredID; }
 	}
+
+	// Used to detect duplicated objects
+	private int instanceID = 0;
 
 	// Path to a prefab to which this RO is attached
 	private string prefabPath = "";
@@ -57,7 +62,7 @@ public class RegisteredObject : MonoBehaviour
 		else
 			inst = Instantiate (go, position, rotation, parent);
 		RegisteredObject ro = inst.GetComponent<RegisteredObject> ();
-		ro.Reset ();
+		ro.generateID ();
 		ro.prefabPath = prefabPath;
 		return inst;
 	}
@@ -94,9 +99,30 @@ public class RegisteredObject : MonoBehaviour
 	#endregion
 
 	#region INSTANCE_METHODS
+
+	// Generate a new ID for this RO
+	public bool generateID()
+	{
+		#if UNITY_EDITOR
+		if (!allowGeneration || UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			return false;
+		#endif
+
+		if (instanceID != GetInstanceID () || registeredID == "")
+		{
+			string oldROID = registeredID;
+			instanceID = GetInstanceID ();
+			registeredID = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ()).TrimEnd ('=');
+
+			Debug.LogWarning (ToString () + " generated a new ID.\n Old ID: " + oldROID);
+			return true;
+		}
+		return false;
+	}
+
 	public void Reset()
 	{
-		registeredID = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ()).TrimEnd('=');
+		generateID ();
 	}
 
 	public void Awake()
@@ -167,6 +193,16 @@ public class RegisteredObject : MonoBehaviour
 		seed.destroyed = true;
 
 		SceneStateManager.instance ().store (rID, seed);
+	}
+
+	public bool getIgnoreReset()
+	{
+		return ignoreReset;
+	}
+
+	public void setIgnoreReset(bool val)
+	{
+		ignoreReset = val;
 	}
 
 	public override string ToString ()
