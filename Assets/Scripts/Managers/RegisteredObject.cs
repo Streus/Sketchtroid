@@ -132,11 +132,18 @@ public class RegisteredObject : MonoBehaviour
 	public void Awake()
 	{
 		generateID();
+		#if UNITY_EDITOR
+		if(UnityEditor.EditorApplication.isPlaying)
+		#endif
 		directory.Add (this);
+
 	}
 
 	public void OnDestroy()
 	{
+		#if UNITY_EDITOR
+		if(UnityEditor.EditorApplication.isPlaying)
+		#endif
 		directory.Remove (this);
 	}
 
