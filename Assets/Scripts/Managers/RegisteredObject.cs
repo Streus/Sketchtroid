@@ -5,6 +5,7 @@ using System;
 using System.Runtime.Serialization;
 
 [DisallowMultipleComponent]
+[ExecuteInEditMode]
 public class RegisteredObject : MonoBehaviour
 {
 	#region STATIC_VARS
@@ -19,13 +20,14 @@ public class RegisteredObject : MonoBehaviour
 
 	#region INSTANCE_VARS
 	[SerializeField]
-	private string registeredID = "";
+	private string registeredID;
 	public string rID
 	{
 		get { return registeredID; }
 	}
 
 	// Used to detect duplicated objects
+	[SerializeField]
 	private int instanceID = 0;
 
 	// Path to a prefab to which this RO is attached
@@ -122,11 +124,14 @@ public class RegisteredObject : MonoBehaviour
 
 	public void Reset()
 	{
+		registeredID = "";
+		instanceID = 0;
 		generateID ();
 	}
 
 	public void Awake()
 	{
+		generateID();
 		directory.Add (this);
 	}
 
