@@ -95,7 +95,7 @@ public class AbilitySelector : MonoBehaviour
 		if (!activeSet)
 			return;
 
-		Entity player = HUDManager.instance.getSubject ();
+		Entity player = HUDManager.getInstance().getSubject ();
 		if (v)
 		{
 			ability = Ability.get (abilityName);

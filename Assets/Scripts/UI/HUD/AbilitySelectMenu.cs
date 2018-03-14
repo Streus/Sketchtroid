@@ -59,7 +59,7 @@ public class AbilitySelectMenu : MonoBehaviour
 		{
 			if (true/*DEBUG*/ || GameManager.instance.isAbilityUnlocked (abilityList [i]))
 			{
-				Ability a = HUDManager.instance.getSubject ().getAbility (abilityIndex);
+				Ability a = HUDManager.getInstance().getSubject ().getAbility (abilityIndex);
 				AbilitySelector aSel = AbilitySelector.create (layout, abilityList [i], abilityIndex, tg);
 				if (a != null && a.name == abilityList [i])
 				{

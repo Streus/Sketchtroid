@@ -6,18 +6,15 @@ using UnityEngine.UI;
 public class HUDManager : MenuManager
 {
 	/* Static Vars */
-	private static HUDManager _instance;
-	public static HUDManager instance
+	private static HUDManager instance;
+	public static HUDManager getInstance()
 	{
-		get
+		if (instance == null)
 		{
-			if (_instance == null)
-			{
-				GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/HUD");
-				_instance = Instantiate<GameObject> (pref).GetComponent<HUDManager>();
-			}
-			return _instance;
+			GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/HUD");
+			instance = Instantiate<GameObject> (pref).GetComponent<HUDManager>();
 		}
+		return instance;
 	}
 
 	/* Instance Vars */
@@ -38,15 +35,17 @@ public class HUDManager : MenuManager
 	private Image shieldBar;
 	[SerializeField]
 	private RectTransform abilListRoot;
+	[SerializeField]
+	private RectTransform statListRoot;
 	//TODO add more fields to the HUDManager
 
 
 	/* Instance Methods */
 	public void Awake()
 	{
-		if (_instance == null)
+		if (instance == null)
 		{
-			_instance = this;
+			instance = this;
 		}
 		else
 			Destroy (gameObject);
@@ -87,6 +86,10 @@ public class HUDManager : MenuManager
 
 			for (int i = 0; i < abilListRoot.childCount; i++)
 				Destroy (abilListRoot.GetChild (i).gameObject);
+
+
+			for (int i = 0; i < statListRoot.childCount; i++)
+				Destroy (statListRoot.GetChild (i).gameObject);
 		}
 
 		//set up new subject

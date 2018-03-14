@@ -23,12 +23,12 @@ namespace Commands
 			string printOut = "ERROR";
 
 			//pre-checks
-			if (HUDManager.instance == null)
+			if (HUDManager.getInstance() == null)
 				throw new ExecutionException ("No currently active HUD!");
-			if (HUDManager.instance.getSubject () == null)
+			if (HUDManager.getInstance().getSubject () == null)
 				throw new ExecutionException ("HUD has no subject!");
 
-			Entity rep = HUDManager.instance.getSubject ();
+			Entity rep = HUDManager.getInstance().getSubject ();
 
 			// no modifications, just print out ability list info
 			if (args.Length < 2)

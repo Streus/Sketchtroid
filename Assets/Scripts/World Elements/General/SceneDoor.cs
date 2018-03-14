@@ -142,6 +142,6 @@ public class SceneDoor : MonoBehaviour
 		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 60f, ForceMode2D.Impulse);
 
 		//show current scene name
-		HUDManager.instance.displayTextPrompt (SceneManager.GetActiveScene ().name, "");
+		HUDManager.getInstance().displayTextPrompt (SceneManager.GetActiveScene ().name, "");
 	}
 }

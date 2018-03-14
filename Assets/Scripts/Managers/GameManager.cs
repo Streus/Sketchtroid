@@ -357,7 +357,7 @@ public class GameManager : MonoBehaviour
 			RegisteredObject ro = _player.GetComponent<RegisteredObject> ();
 			ro.sow (playerData);
 		}
-		HUDManager.instance.setSubject (_player.GetComponent<Entity>());
+		HUDManager.getInstance().setSubject (_player.GetComponent<Entity>());
 
 		switch (playerSpawnType)
 		{
