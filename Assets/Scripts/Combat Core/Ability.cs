@@ -6,9 +6,10 @@ using System;
 using System.Reflection;
 
 [Serializable]
-public partial class Ability : ISerializable
+public partial sealed class Ability : ISerializable
 {
-	/* Static Vars */
+	#region STATIC_VARS
+
 	private static Dictionary<string, Ability> repository;
 
 	// The resources directory that holds all ability icons
@@ -16,8 +17,9 @@ public partial class Ability : ISerializable
 
 	// The latest ID number not assigned to an ability
 	private static int latestID;
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
 
 	// The unique ID for this ability type
 	private int id;
@@ -69,8 +71,9 @@ public partial class Ability : ISerializable
 
 	// Persistent data intended to carry over between invokes of this Ability
 	private ISerializable persData;
+	#endregion
 
-	/* Static Methods */
+	#region STATIC_METHODS
 
 	// Get an ability from the ability repository, ifex
 	public static Ability get(string name)
@@ -87,8 +90,11 @@ public partial class Ability : ISerializable
 		repository.Add (a.name, a.assignID());
 	}
 
-	/* Constructors */
-	public Ability(string name, string desc, string iconPath, float cooldownMax, int chargesMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
+	#endregion
+
+	#region INSTANCE_METHODS
+
+	private Ability(string name, string desc, string iconPath, float cooldownMax, int chargesMax, string effect, string prereq = "", string preAnim = "", string postAnim = "")
 	{
 		this.id = -1;
 		this.name = name;
@@ -285,11 +291,14 @@ public partial class Ability : ISerializable
 		return this;
 	}
 
-	/* Delegates and Events */
+	#endregion
+
+	#region INTERNAL_TYPES
 
 	// The effect that will occur when this ability is used
 	private delegate bool UseEffect(Entity subject, Vector2 targetPosition, params object[] args);
 
 	// A secondary boolean check to run before running an effect
 	private delegate bool PrereqCheck(Entity Subject);
+	#endregion
 }
