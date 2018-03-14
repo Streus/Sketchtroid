@@ -8,7 +8,7 @@ using System;
 [Serializable]
 public class SceneStateManager : ISerializable
 {
-	/* Static Vars */
+	#region STATIC_VARS
 
 	// The time it takes to reset an unvisted scene
 	private const float RESET_TIMER_MAX = 900f;
@@ -23,8 +23,9 @@ public class SceneStateManager : ISerializable
 		}
 		return _instance;
 	}
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
 
 	// Holds all the data save from scenes that have been visited
 	private Dictionary<string, Dictionary<string, SeedCollection>> scenes;
@@ -35,11 +36,14 @@ public class SceneStateManager : ISerializable
 	// Scenes that the SSM should ignore
 	// Ignored scenes do not save data or load data
 	private HashSet<string> ignoreSet;
+	#endregion
 
-	/* Static Methods */
+	#region STATIC_METHODS
 
+	#endregion
 
-	/* Constructors */
+	#region INSTANCE_METHODS
+
 	private SceneStateManager()
 	{
 		// First time instantiation
@@ -68,14 +72,11 @@ public class SceneStateManager : ISerializable
 
 		_instance = this;
 	}
-
-	/* Destructor */
+		
 	~SceneStateManager()
 	{
 		Debug.Log ("[SSM] Replaced instance."); //DEBUG SSM destruction
 	}
-
-	/* Instance Methods */
 
 	// Save the data for the current scene
 	public void transitionTo(string nextName)
@@ -120,7 +121,7 @@ public class SceneStateManager : ISerializable
 		//if the current scene is not ignored, save data from it
 		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
 		{
-			Console.println ("[SSM] Saving " + SceneManager.GetActiveScene ().name + ".", Console.Tag.info);
+			Console.println ("[SSM] Saving " + SceneManager.GetActiveScene ().name + ".", Console.Tag.info, Console.nameToChannel("SSM"));
 
 			//create a dictionary for the incoming data
 			Dictionary<string, SeedCollection> currData;
@@ -143,7 +144,7 @@ public class SceneStateManager : ISerializable
 			resetTimers.Add (currName, RESET_TIMER_MAX);
 		}
 		else
-			Console.println ("[SSM] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.Tag.info);
+			Console.println ("[SSM] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.Tag.info, Console.nameToChannel("SSM"));
 
 		//do the scene transition and tell the GM what scene was entered
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
@@ -167,14 +168,14 @@ public class SceneStateManager : ISerializable
 		if(curr.name != "main") //TODO see if there's a better way to do this
 			GameManager.instance.createPlayer();
 
-		Console.println ("[SSM] Loading values for " + curr.name + ".", Console.Tag.info);
+		Console.println ("[SSM] Loading values for " + curr.name + ".", Console.Tag.info, Console.nameToChannel("SSM"));
 
 		Dictionary<string, SeedCollection> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
-			Console.println ("[SSM] No data to load for " + curr.name + ".", Console.Tag.info);
+			Console.println ("[SSM] No data to load for " + curr.name + ".", Console.Tag.info, Console.nameToChannel("SSM"));
 			return;
 		}
 
@@ -184,9 +185,9 @@ public class SceneStateManager : ISerializable
 			if (sb.prefabPath != "")
 			{
 				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
-					Console.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.Tag.info);
+					Console.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.Tag.info, Console.nameToChannel("SSM"));
 				else
-					Console.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.Tag.error);
+					Console.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.Tag.error, Console.nameToChannel("SSM"));
 			}
 		}
 
@@ -208,7 +209,7 @@ public class SceneStateManager : ISerializable
 
 		bool newIgnore = ignoreSet.Add (currName);
 		if(newIgnore)
-			Console.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.Tag.warning);
+			Console.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.Tag.warning, Console.nameToChannel("SSM"));
 
 		return newIgnore;
 	}
@@ -230,7 +231,7 @@ public class SceneStateManager : ISerializable
 			currData.Remove (ID);
 		currData.Add (ID, seed);
 
-		Console.println ("[SSM] Created destruction entry for " + ID + ".", Console.Tag.info);
+		Console.println ("[SSM] Created destruction entry for " + ID + ".", Console.Tag.info, Console.nameToChannel("SSM"));
 	}
 
 	// For serialization
@@ -271,4 +272,5 @@ public class SceneStateManager : ISerializable
 		}
 		return str;
 	}
+	#endregion
 }

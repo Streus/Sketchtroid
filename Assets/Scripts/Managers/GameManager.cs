@@ -136,7 +136,8 @@ public class GameManager : MonoBehaviour
 	public void Update()
 	{
 		//track the time spent in the current scene
-		sceneTime += Time.unscaledDeltaTime;
+		if(!paused)
+			sceneTime += Time.unscaledDeltaTime;
 	}
 
 	public void setPause(bool state)
@@ -181,7 +182,9 @@ public class GameManager : MonoBehaviour
 		totalTime += (double)sceneTime;
 		sceneTime = 0f;
 
-		Console.println ("[GameManger] Time spent in scene: " + timeSave + ".", Console.Tag.info);
+		Console.println ("[GameManger] Time spent in scene: " + timeSave + ".",
+			Console.Tag.info,
+			Console.nameToChannel("GM"));
 		return timeSave;
 	}
 

@@ -11,7 +11,12 @@ public class Console : MonoBehaviour
 
 	private const string INPUT = "i", OUTPUT = "o";
 
-	/* Static Vars */
+	// Channel constants
+	public const int 
+	MUTE = 0x0,
+	DEFAULT = 0x1,
+	BROADCAST = ~0x0;
+
 	public static Console log;
 
 	// Tags that are appended to print calls
@@ -27,11 +32,18 @@ public class Console : MonoBehaviour
 
 	#region INSTANCE_VARS
 
+	// Currently viewed channel in the GUI
+	private int currentChannel;
+
 	// The current value of the input field
 	private string input;
 
-	// The current value of the output field
-	private string output;
+	// The current values of the output fields
+	private string[] channels;
+
+	// The displayed names of all channels
+	[SerializeField]
+	private string[] channelNames = new string[sizeof(int) * 8];
 
 	// Position of output field viewport
 	private Vector2 scrollPos;
@@ -58,9 +70,6 @@ public class Console : MonoBehaviour
 
 	// The current scope
 	private int currScope;
-
-	// When true, command output will be suppressed
-	private bool quietMode;
 
 	public Command[] getCommandList()
 	{
@@ -105,37 +114,79 @@ public class Console : MonoBehaviour
 
 	#region STATIC_METHODS
 
+	// Set the name for a channel
+	public static void setChannelName(int channel, string name)
+	{
+		if (channel == 0)
+		{
+			Debug.LogError ("Channel 1 is reserved!");
+			return;
+		}
+
+		try { log.channelNames [channel] = name; }
+		catch(System.IndexOutOfRangeException ioore)
+		{
+			Debug.LogException (ioore);
+		}
+	}
+
+	public static int nameToChannel(string name)
+	{
+		if (name == "")
+			throw new System.InvalidOperationException ("Cannot resolve empty string to channel.");
+
+		for(int i = 0; i < log.channelNames.Length; i++)
+		{
+			if (log.channelNames [i] == name)
+				return (1 << i); //return OR-able mask
+		}
+
+		//if the channel does not exist, should be muted
+		return MUTE;
+	}
+
 	// Print a message to the console
-	public static void println(string message)
+	public static void println(string message, int channelMask = DEFAULT)
 	{
-		print (message + "\n");
+		print (message + "\n", channelMask);
 	}
-	public static void println(string message, Tag tag)
+	public static void println(string message, Tag tag, int channelMask = DEFAULT)
 	{
-		print (message + "\n", tag);
+		print (message + "\n", tag, channelMask);
 	}
-	public static void print(string message)
+	public static void print(string message, int channelMask = DEFAULT)
 	{
-		print (message, Tag.none);
+		print (message, Tag.none, channelMask);
 	}
-	public static void print(string message, Tag tag)
+	public static void print(string message, Tag tag, int channelMask = DEFAULT)
 	{
 		if (log == null)
 			return;
-		if (log.quietMode && tag == Tag.command_out)
-			return;
 
-		log.output += tags [(int)tag] + " " + message;
+		channelMask |= DEFAULT;
 
-		float outh = log.textStyle.CalcHeight (new GUIContent (log.output), Screen.width);
-		log.scrollPos = new Vector2 (log.scrollPos.x, outh);
+		//update all channels in the mask
+		for(int i = 0, c = sizeof(int) * 8; i < c; i++)
+		{
+			if ((channelMask & (1 << i)) != 0)
+			{
+				log.channels [i] += tags [(int)tag] + " " + message;
+			}
+		}
+
+		//if the currently viewed channel was updated, update the GUI
+		if ((channelMask & (1 << log.currentChannel)) != 0)
+		{
+			float outh = log.textStyle.CalcHeight (new GUIContent (log.channels [log.currentChannel]), Screen.width);
+			log.scrollPos = new Vector2 (log.scrollPos.x, outh);
+		}
 	}
 
 	// Clear the console output window
 	public static void clear()
 	{
 		if(log != null)
-			log.output = "";
+			log.channels[log.currentChannel] = "";
 	}
 
 	// Maximize the console window
@@ -166,6 +217,9 @@ public class Console : MonoBehaviour
 
 			input = "";
 
+			channels = new string[channelNames.Length];
+			channelNames [0] = "Default";
+
 			scrollPos = Vector2.zero;
 			outputFieldSize = defaultOFSize;
 
@@ -178,8 +232,6 @@ public class Console : MonoBehaviour
 			historyIndex = -1;
 
 			isEnabled = false;
-
-			quietMode = false;
 		}
 		else
 			Destroy (gameObject);
@@ -261,22 +313,29 @@ public class Console : MonoBehaviour
 		//draw GUI
 		GUI.backgroundColor = backgroundColor;
 
-		GUIContent outText = new GUIContent (output);
+		GUIContent outText = new GUIContent (channels[currentChannel]);
 		GUIContent inText = new GUIContent (input);
 
-		float oth = textStyle.CalcHeight (outText, Screen.width);
-		float ith = textStyle.CalcHeight (inText, Screen.width);
+		//TODO channel select
+		float csw = 120f;
+		currentChannel = GUI.SelectionGrid(
+			new Rect(Screen.width - csw, 0, csw, Screen.height),
+			currentChannel,
+			channelNames, 1);
+
+		float oth = textStyle.CalcHeight (outText, Screen.width - csw);
+		float ith = textStyle.CalcHeight (inText, Screen.width - csw);
 
 		scrollPos = GUI.BeginScrollView (
-			new Rect (0, 0, Screen.width, outputFieldSize), 
+			new Rect (0, 0, Screen.width - csw, outputFieldSize), 
 			scrollPos, 
-			new Rect (0, 0, Screen.width, oth));
+			new Rect (0, 0, Screen.width - csw, oth));
 		GUI.SetNextControlName (OUTPUT);
-		GUI.Label (new Rect (0, 0, Screen.width, oth), outText, textStyle);
+		GUI.Label (new Rect (0, 0, Screen.width - csw, oth), outText, textStyle);
 		GUI.EndScrollView ();
 
 		GUI.SetNextControlName (INPUT);
-		input = GUI.TextField (new Rect (0, outputFieldSize, Screen.width, ith), input, textStyle);
+		input = GUI.TextField (new Rect (0, outputFieldSize, Screen.width - csw, ith), input, textStyle);
 	}
 
 	// Invoked when the user presses enter and the console is active
@@ -290,6 +349,7 @@ public class Console : MonoBehaviour
 		input = "";
 	}
 
+	#region CSER_STUFF
 	// Execute a file of prepared commands, treating each line as an indiv. command
 	public bool executeFile(string fileName)
 	{
@@ -323,14 +383,10 @@ public class Console : MonoBehaviour
 			}	
 		}
 
-		//save current option statuses for reset later
-		bool quietMode_store = quietMode;
-
 		string[] optionsLine = parseLine (commSer [0]);
 		foreach (string option in optionsLine)
 		{
-			if (option == "-q")
-				quietMode = true;
+			
 		}
 
 		//execute the file
@@ -358,9 +414,6 @@ public class Console : MonoBehaviour
 			else //execute the command on the current line
 				execute (commSer [i]);
 		}
-
-		//reset any toggled options
-		quietMode = quietMode_store;
 
 		return true;
 	}
@@ -390,16 +443,16 @@ public class Console : MonoBehaviour
 			catch(System.IndexOutOfRangeException ioore)
 			#pragma warning restore 0168
 			{
-				println ("Provided too few arguments.\n" + c.getHelp(), Tag.error);
+				println ("Provided too few arguments.\n" + c.getHelp(), Tag.error, BROADCAST);
 			}
 
 			if (commOut != "")
-				println (commOut, Tag.command_out);
+				println (commOut, Tag.command_out, BROADCAST);
 
 			success = true;
 		}
 		if(!success)
-			println ("Command not found.  Try \"help\" for a list of commands", Tag.error);
+			println ("Command not found.  Try \"help\" for a list of commands", Tag.error, BROADCAST);
 		history.Insert (0, input);
 
 		return success;
@@ -534,6 +587,7 @@ public class Console : MonoBehaviour
 			str += "\n[" + v.scope + "] " + v.name + " = " + v.value;
 		return str;
 	}
+	#endregion
 	#endregion
 
 	#region INTERNAL_TYPES
