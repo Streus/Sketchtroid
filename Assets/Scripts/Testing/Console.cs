@@ -325,6 +325,7 @@ public class Console : MonoBehaviour
 
 		float oth = textStyle.CalcHeight (outText, Screen.width - csw);
 		float ith = textStyle.CalcHeight (inText, Screen.width - csw);
+		oth = Mathf.Max (oth, outputFieldSize);
 
 		scrollPos = GUI.BeginScrollView (
 			new Rect (0, 0, Screen.width - csw, outputFieldSize), 
@@ -443,16 +444,16 @@ public class Console : MonoBehaviour
 			catch(System.IndexOutOfRangeException ioore)
 			#pragma warning restore 0168
 			{
-				println ("Provided too few arguments.\n" + c.getHelp(), Tag.error, BROADCAST);
+				println ("Provided too few arguments.\n" + c.getHelp(), Tag.error);
 			}
 
 			if (commOut != "")
-				println (commOut, Tag.command_out, BROADCAST);
+				println (commOut, Tag.command_out);
 
 			success = true;
 		}
 		if(!success)
-			println ("Command not found.  Try \"help\" for a list of commands", Tag.error, BROADCAST);
+			println ("Command not found.  Try \"help\" for a list of commands", Tag.error);
 		history.Insert (0, input);
 
 		return success;
