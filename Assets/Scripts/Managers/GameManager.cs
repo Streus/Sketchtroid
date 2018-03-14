@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy (gameObject);
 
-		SceneStateManager.instance ().ignoreCurrentScene ();
+		SceneStateManager.getInstance ().ignoreCurrentScene ();
 
 		paused = false;
 		pauseLock = false;
@@ -246,7 +246,7 @@ public class GameManager : MonoBehaviour
 		BinaryFormatter formatter = new BinaryFormatter ();
 		try
 		{
-			formatter.Serialize (file, SceneStateManager.instance());
+			formatter.Serialize (file, SceneStateManager.getInstance());
 		}
 		catch(SerializationException se)
 		{
@@ -330,7 +330,7 @@ public class GameManager : MonoBehaviour
 		loadData (saveName);
 
 		playerSpawnType = SPAWN_AT_SVPNT;
-		SceneStateManager.instance ().jumpTo (save.currScene);
+		SceneStateManager.getInstance ().jumpTo (save.currScene);
 	}
 
 	// Delete all the data associated with a given save
