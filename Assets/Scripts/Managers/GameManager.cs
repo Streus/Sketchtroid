@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
 	public GameObject player { get { return _player; } }
 
 	// Data describing the player object when it is not instantiated
-	private SeedCollection.Base playerData;
+	private SeedCollection playerData;
 
 	// Used to determine whether the player is spawned at a savepoint, or via a door
 	private int playerSpawnType;
@@ -227,7 +227,7 @@ public class GameManager : MonoBehaviour
 		save.prevScene = prevScene;
 		save.difficulty = _difficulty;
 
-		save.playerData = playerData = player.GetComponent<Entity>().reap();
+		save.playerData = playerData = player.GetComponent<RegisteredObject>().reap();
 
 		save.dtUnlocks = _damageTypeUnlocks;
 		save.abilities = _abilities;
@@ -352,9 +352,12 @@ public class GameManager : MonoBehaviour
 		GameObject pref = Resources.Load<GameObject> ("Prefabs/Entities/Player");
 		GameObject inst = Instantiate<GameObject> (pref);
 		_player = inst;
-		Entity e = _player.GetComponent<Entity> ();
-		e.sow (playerData);
-		HUDManager.instance.setSubject (e);
+		if (playerData != null)
+		{
+			RegisteredObject ro = _player.GetComponent<RegisteredObject> ();
+			ro.sow (playerData);
+		}
+		HUDManager.instance.setSubject (_player.GetComponent<Entity>());
 
 		switch (playerSpawnType)
 		{
@@ -378,7 +381,7 @@ public class GameManager : MonoBehaviour
 	public void savePlayer()
 	{
 		if(_player != null)
-			playerData = _player.GetComponent<Entity> ().reap ();
+			playerData = _player.GetComponent<RegisteredObject> ().reap ();
 	}
 
 	// --- Unlock Management ---
@@ -433,7 +436,7 @@ public class GameManager : MonoBehaviour
 		public string prevScene;
 		public Difficulty difficulty;
 
-		public SeedCollection.Base playerData;
+		public SeedCollection playerData;
 
 		public int dtUnlocks;
 		public int abilities;
@@ -463,7 +466,7 @@ public class GameManager : MonoBehaviour
 			prevScene = info.GetString("prevScene");
 			difficulty = (Difficulty)info.GetInt32("difficulty");
 
-			playerData = (SeedCollection.Base)info.GetValue("playerData", typeof(SeedCollection.Base));
+			playerData = (SeedCollection)info.GetValue("playerData", typeof(SeedCollection));
 
 			dtUnlocks = info.GetInt32("dtUnlocks");
 			abilities = info.GetInt32("abilities");

@@ -24,10 +24,19 @@ public class ROProperty : Editor
 
 		EditorGUILayout.SelectableLabel (ro.rID, EditorStyles.largeLabel);
 
+		GUI.enabled = !EditorApplication.isPlayingOrWillChangePlaymode;
+
 		EditorGUILayout.BeginHorizontal ();
 		EditorGUILayout.PrefixLabel ("Ignore Reset");
 		ro.setIgnoreReset (EditorGUILayout.Toggle (ro.getIgnoreReset ()));
 		EditorGUILayout.EndHorizontal ();
+
+		EditorGUILayout.BeginHorizontal ();
+		EditorGUILayout.PrefixLabel ("Exclude From Directory");
+		ro.setExcludeFromDirectory (EditorGUILayout.Toggle (ro.getExcludeFromDirectory ()));
+		EditorGUILayout.EndHorizontal ();
+
+		GUI.enabled = true;
 
 		if (GUI.changed)
 			EditorUtility.SetDirty (ro);

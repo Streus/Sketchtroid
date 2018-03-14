@@ -33,8 +33,14 @@ public class RegisteredObject : MonoBehaviour
 	// Path to a prefab to which this RO is attached
 	private string prefabPath = "";
 
+	// Does this RO's values persist through reset cycles?
 	[SerializeField]
 	private bool ignoreReset = false;
+
+	// Is this RO tracked by the SSM?
+	// Should only be enabled for the Player
+	[SerializeField]
+	private bool excludeFromDirectory = false;
 	#endregion
 
 	#region STATIC_METHODS
@@ -134,8 +140,13 @@ public class RegisteredObject : MonoBehaviour
 		generateID();
 		#if UNITY_EDITOR
 		if(UnityEditor.EditorApplication.isPlaying)
+		{
 		#endif
-		directory.Add (this);
+			if(!excludeFromDirectory)
+				directory.Add (this);
+		#if UNITY_EDITOR
+		}
+		#endif
 
 	}
 
@@ -143,8 +154,13 @@ public class RegisteredObject : MonoBehaviour
 	{
 		#if UNITY_EDITOR
 		if(UnityEditor.EditorApplication.isPlaying)
+		{
 		#endif
-		directory.Remove (this);
+			if(!excludeFromDirectory)
+				directory.Remove (this);
+		#if UNITY_EDITOR
+		}
+		#endif
 	}
 
 	// Get the reapable scripts attached to this GO and return their seeds
@@ -215,6 +231,22 @@ public class RegisteredObject : MonoBehaviour
 	public void setIgnoreReset(bool val)
 	{
 		ignoreReset = val;
+	}
+
+	public bool getExcludeFromDirectory()
+	{
+		return excludeFromDirectory;
+	}
+
+	public void setExcludeFromDirectory(bool val)
+	{
+		//prevent modification from anywhere but in non-playing editor
+		//changing this in runtime could cause some inconsistent behavior
+		#if UNITY_EDITOR
+		if(UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			return;
+		excludeFromDirectory = val;
+		#endif
 	}
 
 	public override string ToString ()

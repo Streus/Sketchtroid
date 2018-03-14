@@ -61,14 +61,21 @@ public class GameListPanel : MonoBehaviour
 		if (!building)
 			return;
 
-		string[] saves = Directory.GetFiles (GameManager.savePath);
-		foreach (string save in saves)
+		if (Directory.Exists (GameManager.savePath))
 		{
-			int start = save.LastIndexOf (Path.DirectorySeparatorChar) + 1;
-			int end = save.LastIndexOf ('.');
-			string sani_save = save.Substring (start, end - start);
-			GameSummary.create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
-			Debug.Log ("Loaded " + sani_save); //DEBUG
+			string[] saves = Directory.GetFiles (GameManager.savePath);
+			foreach (string save in saves)
+			{
+				int start = save.LastIndexOf (Path.DirectorySeparatorChar) + 1;
+				int end = save.LastIndexOf ('.');
+				string sani_save = save.Substring (start, end - start);
+				GameSummary.create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
+				Debug.Log ("Loaded " + sani_save); //DEBUG
+			}
+		}
+		else
+		{
+			//TODO display special graphic for no saves
 		}
 
 		// orient the window on the first save, ifex
