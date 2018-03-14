@@ -75,7 +75,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 	private List<Status> statuses;
 
 	// The Abilities that this Entity
-	private List<Ability> abilities;
+	private Ability[] abilities;
+	private int abilSize;
 
 	// The Bullets with which this Entity and its netowrk have collided
 	private HashSet<Bullet> collisonLog;
@@ -194,7 +195,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 		freezeProgress = 0f;
 
 		statuses = new List<Status> ();
-		abilities = new List<Ability> ();
+		abilities = new Ability[3];
+		abilSize = 0;
 
 		collisonLog = new HashSet<Bullet> ();
 	}
@@ -295,17 +297,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 		}
 
 		//update all abilities
-		for (int i = 0; i < abilities.Capacity; i++)
+		for (int i = 0; i < abilities.Length; i++)
 		{
-			try
-			{
-				if (abilities [i] != null)
-					abilities [i].updateCooldown (Time.deltaTime);
-			}
-			catch(ArgumentOutOfRangeException aoore)
-			{
-				Debug.Log (aoore.Message + " | " + i);
-			}
+			if (abilities [i] != null)
+				abilities [i].updateCooldown (Time.deltaTime);
 		}
 
 		//update combat timer
@@ -378,24 +373,24 @@ public sealed class Entity : MonoBehaviour, IReapable
 	#region ABILITY_HANDLING
 
 	// Add an ability to this Entity
-	public void addAbility(Ability a, int index = -1)
+	public bool addAbility(Ability a, int index = -1)
 	{
 		//don't allow ability changes if in combat
-		if (inCombat())
-			return;
-
-		if (a == null)
-		{
-			throw new NullReferenceException ("Null Ability passed to addAbility().");
-		}
+		//don't allow null insertions
+		//don't allow active ability additions
+		if (inCombat() || a == null || a.active)
+			return false;
 
 		//add the ability and set it to active
 		if (index == -1)
 		{
-			abilities.Add (a);
+			abilities [abilSize++] = a;
 			a.active = true;
+
+			if (abilSize >= abilities.Length)
+				resizeAbilities ();
 		}
-		else if (index >= 0 && index < abilities.Capacity)
+		else if (index >= 0 && index < abilities.Length)
 		{
 			if (abilities [index] != null && abilityRemoved != null)
 				abilityRemoved (abilities [index], index);
@@ -403,40 +398,50 @@ public sealed class Entity : MonoBehaviour, IReapable
 			a.active = true;
 		}
 		else
-			return;
+			return false;
 
 		//notify listeners
 		if (abilityAdded != null)
 			abilityAdded (a, index);
+
+		return true;
+	}
+	private void resizeAbilities()
+	{
+		Ability[] temp = abilities;
+		abilities = new Ability[temp.Length * 2];
+		for (int i = 0; i < temp.Length; i++)
+			abilities [i] = temp [i];
 	}
 
 	// Remove an ability from this Entity
-	public void removeAbility(Ability a)
+	public bool removeAbility(Ability a)
 	{
 		//don't allow ability changes if in combat
 		if (inCombat())
-			return;
+			return false;
 
 		//remove the ability and set it to inactive
-		abilities.Remove (a);
-		a.active = false;
-
-		//notify listeners
-		if (abilityRemoved != null)
-			abilityRemoved (a);
+		for (int i = 0; i < abilities.Length; i++)
+		{
+			//look for equal reference
+			if (a == abilities [i])
+				return removeAbility (i);
+		}
+		return false;
 	}
 	#pragma warning disable 0168
-	public void removeAbility(int index)
+	public bool removeAbility(int index)
 	{
 		if (inCombat ())
-			return;
+			return false;
 
 		Ability removed = null;
 
 		try
 		{
 			if(abilities[index] == null)
-				return;
+				return false;
 
 			removed = abilities[index];
 			abilities[index] = null;
@@ -448,13 +453,16 @@ public sealed class Entity : MonoBehaviour, IReapable
 		catch(IndexOutOfRangeException ioore)
 		{
 			Debug.LogError ("Attempted to remove a non-existant Ability."); //DEBUG
+			return false;
 		}
+
+		return true;
 	}
 
 	// Swap the ability at index for a new ability. Returns the the old ability (null if fails)
 	public Ability swapAbility(Ability a, int index)
 	{
-		if (inCombat())
+		if (inCombat() || a == null)
 			return null;
 
 		//swap 'em
@@ -484,14 +492,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Ability getter
 	public Ability getAbility(int index)
 	{
-		if (index < 0 || index >= abilities.Capacity)
+		if (index < 0 || index >= abilities.Length)
 			return null;
 		return abilities [index];
 	}
 
 	// For externally looping through the ability list
-	public int abilityCount { get { return abilities.Count; } }
-	public int abilityCap { get { return abilities.Capacity; } }
+	public int abilityCount { get { return abilSize; } }
+	public int abilityCap { get { return abilities.Length; } }
 	#endregion
 
 	#region COLLISION_LOG_HANDLING
@@ -703,7 +711,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		public float freezeProgress;
 
 		public List<Status> statuses;
-		public List<Ability> abilities;
+		public Ability[] abilities;
 
 		/* Constructors */
 		public Seed(GameObject subject)
@@ -783,9 +791,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 				statuses.Add((Status)info.GetValue("status" + i, typeof(Status)));
 
 			int abilSize = info.GetInt32("abilSize");
-			abilities =  new List<Ability>();
+			abilities = new Ability[abilSize];
 			for(int i = 0; i < abilSize; i++)
-				abilities.Add((Ability)info.GetValue("abil" + i, typeof(Ability)));
+				abilities[i] = ((Ability)info.GetValue("abil" + i, typeof(Ability)));
 		}
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
@@ -824,8 +832,8 @@ public sealed class Entity : MonoBehaviour, IReapable
 			for (int i = 0; i < statuses.Count; i++)
 				info.AddValue ("status" + i, statuses [i]);
 
-			info.AddValue ("abilSize", abilities.Count);
-			for (int i = 0; i < abilities.Count; i++)
+			info.AddValue ("abilSize", abilities.Length);
+			for (int i = 0; i < abilities.Length; i++)
 				info.AddValue ("abil" + i, abilities [i]);
 		}
 	}

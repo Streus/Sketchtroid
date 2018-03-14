@@ -47,7 +47,7 @@ public class PlayerAppearanceDriver : MonoBehaviour
 	// Initialize using an Entity's Seed data
 	public void init(Entity.Seed data)
 	{
-		for (int i = 0; i < data.abilities.Capacity; i++)
+		for (int i = 0; i < data.abilities.Length; i++)
 		{
 			partAdded (data.abilities [i], i);
 		}
