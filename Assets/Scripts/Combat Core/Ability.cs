@@ -6,7 +6,7 @@ using System;
 using System.Reflection;
 
 [Serializable]
-public partial sealed class Ability : ISerializable
+public sealed partial class Ability : ISerializable
 {
 	#region STATIC_VARS
 
