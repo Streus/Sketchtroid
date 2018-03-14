@@ -18,7 +18,7 @@ public class Prompt : MonoBehaviour
 	/* Static Methods */
 	public static Prompt create (RectTransform parent, string description, params Option[] options)
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui/", "Prompt");
+		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui", "Prompt");
 		GameObject inst = Instantiate (pref, parent, false);
 		Prompt p = inst.GetComponent<Prompt> ();
 
@@ -33,7 +33,7 @@ public class Prompt : MonoBehaviour
 	/* Instance Methods */
 	public void addOption (Option option)
 	{
-		GameObject butPref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui/", "TempButton"); //TODO replace with final button version
+		GameObject butPref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui", "TempButton"); //TODO replace with final button version
 		GameObject inst = Instantiate(butPref, optionList, false);
 		inst.transform.GetChild (0).GetComponent<Text> ().text = option.text;
 		if (option.function == null)

@@ -184,7 +184,7 @@ public class SceneStateManager : ISerializable
 		{
 			if (sb.prefabPath != "")
 			{
-				if (RegisteredObject.recreate (sb.prefabPath, sb.registeredID, sb.parentID) != null)
+				if (RegisteredObject.recreate (sb.prefabPath, sb.prefabName, sb.registeredID, sb.parentID) != null)
 					Console.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.Tag.info, Console.nameToChannel("SSM"));
 				else
 					Console.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.Tag.error, Console.nameToChannel("SSM"));

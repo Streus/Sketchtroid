@@ -35,6 +35,7 @@ public class SceneTransition : MonoBehaviour
 		for (int i = 0; i < amount; i++)
 		{
 			RegisteredObject.create (
+				"core/prefabs/entities",
 				"TestEntityPrefab", 
 				(Vector3)Random.insideUnitCircle, 
 				Quaternion.identity);
@@ -43,7 +44,9 @@ public class SceneTransition : MonoBehaviour
 
 	public void spawnRegisteredChildPrefab(RegisteredObject obj)
 	{
-		RegisteredObject.create ("TestEntityPrefab",
+		RegisteredObject.create (
+			"core/prefabs/entities",
+			"TestEntityPrefab",
 			Vector3.zero,
 			Quaternion.identity,
 			obj.transform);

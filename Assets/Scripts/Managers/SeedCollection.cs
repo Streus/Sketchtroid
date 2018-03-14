@@ -28,6 +28,9 @@ public class SeedCollection : ISerializable
 	// Path for a prefab that this seed should spawn
 	public string prefabPath;
 
+	// Name of the prefab
+	public string prefabName;
+
 	// In the case of prefab saving, the Registered ID is saved here
 	public string registeredID;
 
@@ -60,6 +63,7 @@ public class SeedCollection : ISerializable
 		ignoreReset = false;
 
 		prefabPath = "";
+		prefabName = "";
 		registeredID = "";
 		parentID = "";
 
@@ -102,6 +106,7 @@ public class SeedCollection : ISerializable
 
 		//load registered object data
 		prefabPath = info.GetString("prefabPath");
+		prefabName = info.GetString ("prefabName");
 		registeredID = info.GetString ("rID");
 		parentID = info.GetString ("parentID");
 
@@ -136,6 +141,7 @@ public class SeedCollection : ISerializable
 
 		//registered object values
 		info.AddValue ("prefabPath", prefabPath);
+		info.AddValue ("prefabName", prefabName);
 		info.AddValue ("rID", registeredID);
 		info.AddValue ("parentID", parentID);
 

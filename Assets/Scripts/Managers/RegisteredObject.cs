@@ -33,6 +33,9 @@ public class RegisteredObject : MonoBehaviour
 	// Path to a prefab to which this RO is attached
 	private string prefabPath = "";
 
+	// Name of the prefab
+	private string prefabName = "";
+
 	// Does this RO's values persist through reset cycles?
 	[SerializeField]
 	private bool ignoreReset = false;
@@ -57,13 +60,16 @@ public class RegisteredObject : MonoBehaviour
 	}
 
 	// For first-time spawning of prefabs that should be tracked by the SSM
-	public static GameObject create(string prefabPath, Vector3 position, Quaternion rotation)
+	public static GameObject create(string prefabPath, string prefabName, Vector3 position, Quaternion rotation)
 	{
-		return create (prefabPath, position, rotation, null);
+		return create (prefabPath, prefabName, position, rotation, null);
 	}
-	public static GameObject create(string prefabPath, Vector3 position, Quaternion rotation, Transform parent)
+	public static GameObject create(string prefabPath, string prefabName, Vector3 position, Quaternion rotation, Transform parent)
 	{
-		GameObject go = Resources.Load<GameObject> ("Prefabs/" + prefabPath);
+		if (prefabPath == "" || prefabName == "")
+			throw new ArgumentException ("Cannot create prefab with empty path and/or name");
+
+		GameObject go = AssetBundleUtil.loadAsset<GameObject> (prefabPath, prefabName);
 		GameObject inst;
 		if(parent == null)
 			inst = Instantiate (go, position, rotation);
@@ -72,13 +78,17 @@ public class RegisteredObject : MonoBehaviour
 		RegisteredObject ro = inst.GetComponent<RegisteredObject> ();
 		ro.generateID ();
 		ro.prefabPath = prefabPath;
+		ro.prefabName = prefabName;
 		return inst;
 	}
 
 	// For respawning a prefab in the sow cycle
-	public static GameObject recreate(string prefabPath, string registeredID, string parentID)
+	public static GameObject recreate(string prefabPath, string prefabName, string registeredID, string parentID)
 	{
-		GameObject go = Resources.Load<GameObject> ("Prefabs/" + prefabPath);
+		if (prefabPath == "" || prefabName == "")
+			throw new ArgumentException ("Cannot create prefab with empty path and/or name");
+
+		GameObject go = AssetBundleUtil.loadAsset<GameObject> (prefabPath, prefabName);
 		GameObject inst;
 		if (parentID == "")
 			inst = Instantiate (go, Vector3.zero, Quaternion.identity);
@@ -92,6 +102,7 @@ public class RegisteredObject : MonoBehaviour
 		RegisteredObject ro = inst.GetComponent<RegisteredObject> ();
 		ro.registeredID = registeredID;
 		ro.prefabPath = prefabPath;
+		ro.prefabName = prefabName;
 		return inst;
 	}
 
@@ -177,7 +188,8 @@ public class RegisteredObject : MonoBehaviour
 
 		//pass in a prefabPath so that if this RO is a prefab, it can be spawned again later
 		collection.prefabPath = prefabPath;
-		if (prefabPath != "")
+		collection.prefabName = prefabName;
+		if (prefabPath != "" && prefabName != "")
 			collection.registeredID = registeredID;
 
 		//pass in this RO's parent object, ifex
@@ -207,6 +219,7 @@ public class RegisteredObject : MonoBehaviour
 
 		//intercept and save prefabPath
 		prefabPath = collection.prefabPath;
+		prefabName = collection.prefabName;
 
 		collection.sowSeeds (gameObject, holes);
 	}
