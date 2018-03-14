@@ -13,15 +13,15 @@ public class SceneStateManager : ISerializable
 	// The time it takes to reset an unvisted scene
 	private const float RESET_TIMER_MAX = 900f;
 
-	private static SceneStateManager _instance;
-	public static SceneStateManager instance()
+	private static SceneStateManager instance;
+	public static SceneStateManager getInstance()
 	{
-		if (_instance == null)
+		if (instance == null)
 		{
-			_instance = new SceneStateManager ();
+			instance = new SceneStateManager ();
 			GameManager.instance.currentScene = SceneManager.GetActiveScene ().name;
 		}
-		return _instance;
+		return instance;
 	}
 	#endregion
 
@@ -67,10 +67,10 @@ public class SceneStateManager : ISerializable
 			ignoreSet.Add((string)info.GetValue ("ignoreSet" + i, typeof(string)));
 
 		//replace existing SSM
-		SceneManager.activeSceneChanged -= _instance.activeSceneTransitioned;
+		SceneManager.activeSceneChanged -= instance.activeSceneTransitioned;
 		SceneManager.activeSceneChanged += activeSceneTransitioned;
 
-		_instance = this;
+		instance = this;
 	}
 		
 	~SceneStateManager()

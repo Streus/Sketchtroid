@@ -220,7 +220,7 @@ public class RegisteredObject : MonoBehaviour
 		SeedCollection seed = reap ();
 		seed.destroyed = true;
 
-		SceneStateManager.instance ().store (rID, seed);
+		SceneStateManager.getInstance ().store (rID, seed);
 	}
 
 	public bool getIgnoreReset()

@@ -27,7 +27,7 @@ public class SceneTransition : MonoBehaviour
 		else if (curr.name.Equals("test2"))
 			nextRoom = "test1";
 
-		SceneStateManager.instance().transitionTo (nextRoom);
+		SceneStateManager.getInstance().transitionTo (nextRoom);
 	}
 
 	public void spawnRegisteredPrefabs(int amount)
@@ -66,6 +66,6 @@ public class SceneTransition : MonoBehaviour
 
 	public void debugSSM()
 	{
-		Debug.Log (SceneStateManager.instance ().ToString ());
+		Debug.Log (SceneStateManager.getInstance ().ToString ());
 	}
 }

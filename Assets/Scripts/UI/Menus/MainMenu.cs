@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour
 	public void continueGame()
 	{
 		//TODO continue button functionality
-		SceneStateManager.instance().jumpTo("test1"); //DEBUG temp continue func
+		SceneStateManager.getInstance().jumpTo("test1"); //DEBUG temp continue func
 	}
 
 	public void beginExit()

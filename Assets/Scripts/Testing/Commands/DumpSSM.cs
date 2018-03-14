@@ -18,7 +18,7 @@ namespace Commands
 
 		public override string execute (params string[] args)
 		{
-			return SceneStateManager.instance().ToString();
+			return SceneStateManager.getInstance().ToString();
 		}
 	}
 }

@@ -65,6 +65,6 @@ public class GameTypeSelector : MonoBehaviour
 
 	private void startCampaign()
 	{
-		SceneStateManager.instance().jumpTo("test1"); //DEBUG change debug starting room
+		SceneStateManager.getInstance().jumpTo("test1"); //DEBUG change debug starting room
 	}
 }

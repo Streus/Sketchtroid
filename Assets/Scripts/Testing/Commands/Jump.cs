@@ -29,12 +29,12 @@ namespace Commands
 			{
 				if (saveData)
 				{
-					SceneStateManager.instance ().transitionTo (jumpRoom);
+					SceneStateManager.getInstance ().transitionTo (jumpRoom);
 					Console.println ("Transitioned to " + jumpRoom, Console.Tag.info);
 				}
 				else
 				{
-					SceneStateManager.instance ().jumpTo (jumpRoom);
+					SceneStateManager.getInstance ().jumpTo (jumpRoom);
 					Console.println ("Jumped to " + jumpRoom, Console.Tag.info);
 				}
 			}

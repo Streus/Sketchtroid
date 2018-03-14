@@ -119,7 +119,7 @@ public class SceneDoor : MonoBehaviour
 			Vector2 screenPos = Camera.main.WorldToScreenPoint (target.transform.position);
 			if (screenPos.x > Screen.width + borderPadding || screenPos.x < -borderPadding
 			    || screenPos.y > Screen.height + borderPadding || screenPos.y < -borderPadding)
-				SceneStateManager.instance ().transitionTo (destination);
+				SceneStateManager.getInstance ().transitionTo (destination);
 		}
 	}
 

@@ -15,7 +15,7 @@ public class LandingPageMenu : MonoBehaviour
 			if (nextMenu != null)
 				MenuManager.menusys.showMenu (nextMenu);
 			else
-				SceneStateManager.instance().jumpTo ("test1");
+				SceneStateManager.getInstance().jumpTo ("test1");
 
 			active = false;
 		}
