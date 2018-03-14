@@ -8,6 +8,8 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class AbilitySelector : MonoBehaviour
 {
+	private const string PREF_DIR = "core/prefabs/ui";
+
 	private const int ABIL_INDEX_MAX = 3;
 
 	/* Static Vars */
@@ -28,7 +30,7 @@ public class AbilitySelector : MonoBehaviour
 	/* Static Methods */
 	public static AbilitySelector create(Transform parent, string abilityName, int abilityIndex, ToggleGroup tg)
 	{
-		GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/AbilityToggle");
+		GameObject pref = AssetBundleUtil.loadAsset<GameObject> (PREF_DIR, "AbilityToggle");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		AbilitySelector aSel = inst.GetComponent<AbilitySelector> ();
 		aSel.abilityName = abilityName;

@@ -1,0 +1,31 @@
+ManifestFileVersion: 0
+CRC: 4001251547
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 3b2bc7a8f61301f676023d272e723638
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: dbc44b7a0b7afe8439101dc610de329a
+HashAppended: 0
+ClassTypes:
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Animations/UI/Menus/DefaultEnter.anim
+- Assets/Animations/UI/Menus/Main.controller
+- Assets/Animations/UI/Menus/Default.controller
+- Assets/Animations/UI/Menus/NewGame_Split.anim
+- Assets/Animations/UI/BasicButton.controller
+- Assets/Animations/UI/Menus/Landing.controller
+- Assets/Animations/UI/Menus/DefaultEmpty.anim
+- Assets/Animations/UI/Menus/LandingEmpty.anim
+- Assets/Animations/UI/Menus/LandingEnter.anim
+- Assets/Animations/UI/Menus/NewGame_Infinite.anim
+- Assets/Animations/UI/Menus/NewGame_Campaign.anim
+- Assets/Animations/UI/Menus/NewGameInternal.controller
+Dependencies: []

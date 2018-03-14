@@ -13,7 +13,7 @@ public sealed partial class Ability : ISerializable
 	private static Dictionary<string, Ability> repository;
 
 	// The resources directory that holds all ability icons
-	private const string ICON_DIR = "Sprites/HUD/Abilities/";
+	private const string ICON_DIR = "core/art/ui";
 
 	// The latest ID number not assigned to an ability
 	private static int latestID;
@@ -101,7 +101,7 @@ public sealed partial class Ability : ISerializable
 		this.desc = desc;
 		this.iconPath = iconPath;
 		if (iconPath != "")
-			icon = Resources.Load<Sprite> (ICON_DIR + iconPath);
+			icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
 		else
 			icon = null;
 
@@ -141,7 +141,7 @@ public sealed partial class Ability : ISerializable
 		name = info.GetString ("name");
 		desc = info.GetString ("desc");
 		iconPath = info.GetString ("iconPath");
-		icon = Resources.Load<Sprite>(ICON_DIR + iconPath);
+		icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
 
 		cooldownMax = info.GetSingle ("cooldownMax");
 		_cooldownCurr = info.GetSingle ("cooldownCurr");

@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 3292862753
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 3ec666b9a9a4de65411a398cb72b91cf
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 21f0dc8ebad690f009368069428e0a1a
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/Bullets/SprayBullet.png
+Dependencies: []

@@ -1,0 +1,23 @@
+ManifestFileVersion: 0
+CRC: 3721691888
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 934b6492ffec267c3150ac509b3606f7
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 21f0dc8ebad690f009368069428e0a1a
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/Misc/Symbol_voidDT.png
+- Assets/Sprites/Misc/Symbol_physicalDT.png
+- Assets/Sprites/Misc/Symbol_electricDT.png
+- Assets/Sprites/Misc/Symbol_cryogenicDT.png
+- Assets/Sprites/Misc/Symbol_biologicalDT.png
+- Assets/Sprites/Misc/Symbol_pyrotechnicDT.png
+Dependencies: []

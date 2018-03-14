@@ -19,7 +19,7 @@ public class TextPrompt : MonoBehaviour
 	// Create a text prompt with a given text value and duration
 	public static TextPrompt create(RectTransform parent, string title, string caption, float duration)
 	{
-		GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/TextPrompt");
+		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui/", "TextPrompt");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		TextPrompt tp = inst.GetComponent<TextPrompt> ();
 

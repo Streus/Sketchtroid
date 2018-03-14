@@ -34,7 +34,7 @@ public class GameSummary : MonoBehaviour
 	/* Static Methods */
 	public static GameSummary create(RectTransform parent, GameManager.Save data)
 	{
-		GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/GameSummary");
+		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui", "GameSummary");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		GameSummary summary = inst.GetComponent<GameSummary> ();
 		summary.setName (data.gameName);

@@ -1,0 +1,37 @@
+ManifestFileVersion: 0
+CRC: 1518253185
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: core/prefabs/managers
+      Dependencies: {}
+    Info_1:
+      Name: core/prefabs/entities
+      Dependencies:
+        Dependency_0: core/art/entities
+        Dependency_1: core/art/misc
+    Info_2:
+      Name: core/prefabs/ui
+      Dependencies:
+        Dependency_0: core/animations/ui
+        Dependency_1: core/art/ui
+        Dependency_2: core/art/misc
+    Info_3:
+      Name: core/animations/ui
+      Dependencies: {}
+    Info_4:
+      Name: core/art/ui
+      Dependencies: {}
+    Info_5:
+      Name: core/art/entities
+      Dependencies: {}
+    Info_6:
+      Name: core/art/misc
+      Dependencies: {}
+    Info_7:
+      Name: core/prefabs/bullets
+      Dependencies:
+        Dependency_0: core/art/bullets
+    Info_8:
+      Name: core/art/bullets
+      Dependencies: {}

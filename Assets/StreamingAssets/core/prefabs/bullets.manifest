@@ -1,0 +1,37 @@
+ManifestFileVersion: 0
+CRC: 518388741
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ebaa6d6b18e9940c1908982c78292199
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: dea5ab7b3b90f764dcd88c5b1e043afe
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 50
+  Script: {instanceID: 0}
+- Class: 58
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: d0cebe61b2c34f1409ef59e725ac64bf, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9ee2c1478953fad4a9d7bd4978968c7c, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 212
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Prefabs/Bullets/Basic.prefab
+Dependencies:
+- C:/Users/Streus/Documents/GitHub/Sketchtroid/AssetBundles/StandaloneWindows/core/art/bullets

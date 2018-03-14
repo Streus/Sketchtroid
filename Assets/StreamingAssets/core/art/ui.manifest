@@ -1,0 +1,40 @@
+ManifestFileVersion: 0
+CRC: 1517692544
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 16bbec743cc3076b8d9ab3f897ff8de8
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 21f0dc8ebad690f009368069428e0a1a
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/UI/Menus/General/overlayPaper.png
+- Assets/Sprites/Testing/UI/BasicUIElement.png
+- Assets/Sprites/UI/Menus/General/UI_BasicFrame.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigNormal.png
+- Assets/Sprites/UI/HUD/ResourceBar_health.png
+- Assets/Sprites/UI/Menus/Main/ButtonText_NewGame.png
+- Assets/Sprites/UI/Menus/Main/ButtonText_Exit.png
+- Assets/Sprites/Testing/BasicTestBullet.png
+- Assets/Sprites/UI/Menus/Load/UI_LoadMenuGamePanel.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigHard.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigEasy.png
+- Assets/Sprites/Testing/BasicTestEntity.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigMaster.png
+- Assets/Sprites/UI/Misc/SketchtroidProtoLogo.png
+- Assets/Sprites/UI/Menus/Main/ButtonText_Load.png
+- Assets/Sprites/UI/HUD/ResourceBar_shields.png
+- Assets/Sprites/Testing/PolyTestEntity.png
+- Assets/Sprites/UI/Misc/SketchtroidProtoLandingContinue.png
+- Assets/Sprites/UI/HUD/UI_AbilityFrame.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigExpert.png
+- Assets/Sprites/UI/Menus/Main/ButtonText_Continue.png
+- Assets/Sprites/Testing/UI/BasicCircleUIElement.png
+- Assets/Sprites/UI/HUD/UI_AbilityCDIndicator.png
+Dependencies: []

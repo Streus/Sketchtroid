@@ -11,7 +11,7 @@ public class HUDManager : MenuManager
 	{
 		if (instance == null)
 		{
-			GameObject pref = Resources.Load<GameObject> ("Prefabs/UI/HUD/HUD");
+			GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/ui", "HUD");
 			instance = Instantiate<GameObject> (pref).GetComponent<HUDManager>();
 		}
 		return instance;

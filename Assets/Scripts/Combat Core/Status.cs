@@ -9,6 +9,8 @@ public sealed partial class Status : ISerializable
 {
 	#region STATIC_VARS
 
+	private const string ICON_DIR = "core/art/ui";
+
 	// A repo for commonly used statuses
 	private static Dictionary<string, Status> repo;
 
@@ -88,7 +90,7 @@ public sealed partial class Status : ISerializable
 		this.name = name;
 		this.desc = desc;
 		this.iconPath = iconPath;
-		this.icon = Resources.Load<Sprite> (iconPath);
+		this.icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
 
 		decayType = dt;
 		initDuration = duration;
@@ -112,7 +114,7 @@ public sealed partial class Status : ISerializable
 		name = info.GetString ("name");
 		desc = info.GetString ("desc");
 		iconPath = info.GetString ("icon");
-		icon = Resources.Load<Sprite> (iconPath);
+		icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
 
 		decayType = (DecayType)info.GetInt32 ("decayType");
 		initDuration = info.GetSingle ("initDuration");

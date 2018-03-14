@@ -25,6 +25,8 @@ public enum DamageType
 public sealed class Bullet : MonoBehaviour
 {
 	#region STATIC_VARS
+	private const string PREF_DIR = "core/prefabs/bullets";
+
 	public static Color damageTypeToColor(DamageType type)
 	{
 		switch (type)
@@ -109,9 +111,8 @@ public sealed class Bullet : MonoBehaviour
 	}
 	public static Bullet create(string prefabName, Entity source, Faction faction = Faction.NEUTRAL)
 	{
-		GameObject go = Resources.Load<GameObject> ("Prefabs/Bullets/" + prefabName);
+		GameObject go = AssetBundleUtil.loadAsset<GameObject> (PREF_DIR, prefabName);
 		return create (go, source, faction);
-
 	}
 	public static Bullet create(string prefabName, Entity source, DamageType damageType, Faction faction = Faction.NEUTRAL)
 	{

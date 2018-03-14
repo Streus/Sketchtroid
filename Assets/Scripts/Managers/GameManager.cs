@@ -349,7 +349,7 @@ public class GameManager : MonoBehaviour
 	// Create a player object
 	public GameObject createPlayer()
 	{
-		GameObject pref = Resources.Load<GameObject> ("Prefabs/Entities/Player");
+		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core/prefabs/entities", "Player");
 		GameObject inst = Instantiate<GameObject> (pref);
 		_player = inst;
 		if (playerData != null)
