@@ -14,18 +14,19 @@ public class AbilityPickup : Pickup
 	[SerializeField]
 	private SpriteRenderer icon;
 
-
 	public void Update()
 	{
 		#if UNITY_EDITOR
-		abilData = Ability.get (ability);
-		if (abilData != null)
+		if(!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
 		{
-			icon.sprite = abilData.icon;
+			abilData = Ability.get (ability);
+			if (abilData != null)
+			{
+				icon.sprite = abilData.icon;
+			}
 		}
 		#endif
 	}
-
 
 	protected override void apply (Entity e)
 	{

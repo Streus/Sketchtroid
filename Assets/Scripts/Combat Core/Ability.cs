@@ -13,7 +13,7 @@ public sealed partial class Ability : ISerializable
 	private static Dictionary<string, Ability> repository;
 
 	// The resources directory that holds all ability icons
-	private const string ICON_DIR = "core/art/ui";
+	private const string ICON_DIR = "core";
 
 	// The latest ID number not assigned to an ability
 	private static int latestID;

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class AbilityDisplay : MonoBehaviour
 {
-	private const string PREF_DIR = "core/prefabs/ui";
+	private const string PREF_DIR = "core";
 
 	/* Instance Vars */
 	[SerializeField]

@@ -23,6 +23,11 @@ public static class AssetBundleUtil
 				Debug.Log (ab.name + " is already loaded."); //DEBUG
 				return ab.LoadAsset<T> (name);
 			}
+			else
+			{
+				Debug.Log (ab.name + " was unloaded."); //DEBUG
+				ab.Unload (false);
+			}
 		}
 
 		//load a new asset bundle
@@ -41,6 +46,7 @@ public static class AssetBundleUtil
 		Debug.Log ("Loaded new AssetBundle: " + bundle.name);
 
 		//load succeeded, load object
-		return bundle.LoadAsset<T> (name);
+		T asset = bundle.LoadAsset<T> (name);
+		return asset;
 	}
 }

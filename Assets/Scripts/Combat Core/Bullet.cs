@@ -25,7 +25,7 @@ public enum DamageType
 public sealed class Bullet : MonoBehaviour
 {
 	#region STATIC_VARS
-	private const string PREF_DIR = "core/prefabs/bullets";
+	private const string PREF_DIR = "core";
 
 	public static Color damageTypeToColor(DamageType type)
 	{

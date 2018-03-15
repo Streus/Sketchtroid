@@ -8,7 +8,7 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class AbilitySelector : MonoBehaviour
 {
-	private const string PREF_DIR = "core/prefabs/ui";
+	private const string PREF_DIR = "core";
 
 	private const int ABIL_INDEX_MAX = 3;
 

@@ -9,7 +9,7 @@ public sealed partial class Status : ISerializable
 {
 	#region STATIC_VARS
 
-	private const string ICON_DIR = "core/art/ui";
+	private const string ICON_DIR = "core";
 
 	// A repo for commonly used statuses
 	private static Dictionary<string, Status> repo;

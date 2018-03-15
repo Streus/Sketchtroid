@@ -134,6 +134,11 @@ public class RegisteredObject : MonoBehaviour
 			registeredID = Convert.ToBase64String (Guid.NewGuid ().ToByteArray ()).TrimEnd ('=');
 
 			Debug.LogWarning (ToString () + " generated a new ID.\n Old ID: " + oldROID);
+
+			#if UNITY_EDITOR
+			UnityEditor.EditorUtility.SetDirty(this);
+			#endif
+
 			return true;
 		}
 		return false;

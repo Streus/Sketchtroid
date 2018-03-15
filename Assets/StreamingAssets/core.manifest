@@ -1,0 +1,238 @@
+ManifestFileVersion: 0
+CRC: 3521840482
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 116b0ae2fcdfd6aad545b322013f2ba3
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 205c9bf43372c4eb6fd37aac91ab68e0
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 50
+  Script: {instanceID: 0}
+- Class: 58
+  Script: {instanceID: 0}
+- Class: 60
+  Script: {instanceID: 0}
+- Class: 61
+  Script: {instanceID: 0}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 81
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 92
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 952d3550a7354864886d044c6a700b1d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: dac8ec607a905a845afa146938e5959e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: d0cebe61b2c34f1409ef59e725ac64bf, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9ce2fae1693d280469c7058c6b55e571, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 6b3713f16c1094547869b956ed000126, type: 3}
+- Class: 114
+  Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 1741964061, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: -2095666955, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: -405508275, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 575553740, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 1573420865, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 2109663825, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: -1184210157, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a5fcd0d20b79ea1418da5d40ff95b889, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1c3f8cb5664d93c418e581ed3ebd123a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 0b6368060d9f09f43ae4e05b7ebd99a8, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9ee2c1478953fad4a9d7bd4978968c7c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 6fae948784ff85644a691bab2f9d3f9a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9439ae876fb67044fb3583ed685cf5b5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1fc80e28540405c49bc82acad544c2bd, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 41daf7781ccae5e42949ff3afd4b370f, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 317159a9ff1c6314abbbd66a80dd10ec, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 98a0c25ac3bf4df4ba3a33057add93ee, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: af26c6dabf1ae5f4a8d3e4cdba4d4b7d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 781a206be4b8d854da862a580c1a9c54, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5f36307b7cd58a045b1e95ec8df5bf81, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 15cc61ac550292c4c8b936c2d521902f, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 449ca32df6865984cbb77f71cfa064e3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9f1dda7db440f73459fbd5071eef053d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 90d3512efd5d25d45812832447881f5b, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: ba6d93bf067ef294e96ad8988fc6375c, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 124
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 212
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 223
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+- Class: 225
+  Script: {instanceID: 0}
+Assets:
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Flash.png
+- Assets/Prefabs/Entities/Player Parts/CoreCone.prefab
+- Assets/Sprites/Entities/Player/Engines/T1Engine.png
+- Assets/Sprites/Entities/Player/Cones/CoreCone.png
+- Assets/Sprites/Misc/Symbol_voidDT.png
+- Assets/Prefabs/UI/HUD/HUD.prefab
+- Assets/Prefabs/Entities/Player Parts/Ricochet.prefab
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Shift.png
+- Assets/Prefabs/Misc/Camera.prefab
+- Assets/Sprites/World/General/SavePoint_0.png
+- Assets/Prefabs/Entities/Player Parts/Flash.prefab
+- Assets/Prefabs/UI/Console.prefab
+- Assets/Prefabs/UI/HUD/TextPrompt.prefab
+- Assets/Sprites/Misc/Symbol_physicalDT.png
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Overdrive.png
+- Assets/Sprites/UI/Menus/General/overlayPaper.png
+- Assets/Sprites/Entities/Player/CoreCircle.png
+- Assets/Prefabs/Entities/Player Parts/Phase.prefab
+- Assets/Sprites/Entities/Player/Wings/T2Wing.png
+- Assets/Sprites/Entities/Player/Wings/T1Wing.png
+- Assets/Prefabs/Bullets/Basic.prefab
+- Assets/Prefabs/World/General/Background.prefab
+- Assets/Sprites/Entities/Player/Engines/T4Engine.png
+- Assets/Prefabs/Entities/Player Parts/Shift.prefab
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Phase.png
+- Assets/Prefabs/World/Pickups/InstantHealthPickup.prefab
+- Assets/Prefabs/UI/GameSummary.prefab
+- Assets/Sprites/Entities/Enemies/Plains/WormHead.png
+- Assets/Prefabs/World/Pickups/HOTPickup.prefab
+- Assets/Sprites/Testing/UI/BasicUIElement.png
+- Assets/Sprites/Entities/Player/Cones/T3Cone.png
+- Assets/Prefabs/Entities/Player Parts/Reflect.prefab
+- Assets/Sprites/Entities/Player/Wings/CoreWing.png
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Reflect.png
+- Assets/Sprites/Entities/Player/Wings/T3Wing.png
+- Assets/Sprites/UI/Menus/General/UI_BasicFrame.png
+- Assets/Sprites/Entities/Player/Wings/T4Wing.png
+- Assets/Sprites/Misc/Symbol_electricDT.png
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Refract.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigNormal.png
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Grapple.png
+- Assets/Sprites/Entities/Player/Engines/CoreEngine.png
+- Assets/Prefabs/UI/HUD/ChargeIndicator.prefab
+- Assets/Prefabs/Entities/Player Parts/Refract.prefab
+- Assets/Sprites/UI/HUD/ResourceBar_health.png
+- Assets/Sprites/Entities/Enemies/Plains/WormTail.png
+- Assets/Sprites/Entities/Player/Cones/T2Cone.png
+- Assets/Sprites/UI/Menus/Main/ButtonText_NewGame.png
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Displace.png
+- Assets/Sprites/UI/Menus/Main/ButtonText_Exit.png
+- Assets/Prefabs/Entities/Player Parts/Spray.prefab
+- Assets/Sprites/Entities/Player/Cones/T4Cone.png
+- Assets/Prefabs/UI/HUD/AbilityDisplay.prefab
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Propel.png
+- Assets/Prefabs/World/General/SceneDoor.prefab
+- Assets/Prefabs/World/Pickups/AbiltyPickup.prefab
+- Assets/Sprites/World/General/BasicWall.png
+- Assets/Sprites/Testing/BasicTestBullet.png
+- Assets/Prefabs/Entities/Player Parts/CoreEngine.prefab
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Spray.png
+- Assets/Prefabs/UI/Prompt.prefab
+- Assets/Sprites/UI/Menus/Load/UI_LoadMenuGamePanel.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigHard.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigEasy.png
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_Ricochet.png
+- Assets/Sprites/Testing/BasicTestEntity.png
+- Assets/Sprites/Misc/Symbol_cryogenicDT.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigMaster.png
+- Assets/Prefabs/UI/TempButton.prefab
+- Assets/Sprites/Entities/Player/Cones/T1Cone.png
+- Assets/Prefabs/Entities/Player.prefab
+- Assets/Sprites/UI/Misc/SketchtroidProtoLogo.png
+- Assets/Prefabs/Entities/Player Parts/Overdrive.prefab
+- Assets/Sprites/UI/Menus/Main/ButtonText_Load.png
+- Assets/Prefabs/UI/Menus/New Game/DifficultyCard.prefab
+- Assets/Prefabs/UI/Menus/New Game/Name Selector.prefab
+- Assets/Prefabs/Entities/Player Parts/Grapple.prefab
+- Assets/Prefabs/UI/MenuBase.prefab
+- Assets/Sprites/UI/HUD/ResourceBar_shields.png
+- Assets/Sprites/Testing/PolyTestEntity.png
+- Assets/Prefabs/Entities/Player Parts/Displace.prefab
+- Assets/Sprites/UI/Misc/SketchtroidProtoLandingContinue.png
+- Assets/Sprites/Entities/Enemies/Plains/WormBodySegment.png
+- Assets/Prefabs/Entities/Player Parts/Propel.prefab
+- Assets/Sprites/Bullets/SprayBullet.png
+- Assets/Prefabs/Entities/Player Parts/Lay Waste.prefab
+- Assets/Sprites/Misc/Symbol_biologicalDT.png
+- Assets/Sprites/UI/HUD/UI_AbilityFrame.png
+- Assets/Sprites/UI/Menus/Load/UI_InsigExpert.png
+- Assets/Prefabs/UI/HUD/AbilityToggle.prefab
+- Assets/Sprites/UI/HUD/Abilities/UI_Ability_LayWaste.png
+- Assets/Sprites/Misc/Symbol_pyrotechnicDT.png
+- Assets/Prefabs/Entities/TestEntity.prefab
+- Assets/Prefabs/World/General/BasicDoor.prefab
+- Assets/Prefabs/Entities/Player Parts/CoreWing.prefab
+- Assets/Sprites/UI/Menus/Main/ButtonText_Continue.png
+- Assets/Sprites/Entities/Player/Engines/T2Engine.png
+- Assets/Sprites/Testing/UI/BasicCircleUIElement.png
+- Assets/Sprites/Entities/Player/Engines/T3Engine.png
+- Assets/Sprites/UI/HUD/UI_AbilityCDIndicator.png
+- Assets/Sprites/World/General/seamless_paper_texture.png
+- Assets/Prefabs/World/General/BasicWall.prefab
+- Assets/Sprites/World/General/BasicSwitch.png
+Dependencies: []
