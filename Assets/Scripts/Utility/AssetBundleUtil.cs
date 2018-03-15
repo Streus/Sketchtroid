@@ -46,7 +46,6 @@ public static class AssetBundleUtil
 		Debug.Log ("Loaded new AssetBundle: " + bundle.name);
 
 		//load succeeded, load object
-		T asset = bundle.LoadAsset<T> (name);
-		return asset;
+		return bundle.LoadAsset<T> (name);
 	}
 }
