@@ -20,13 +20,7 @@ public static class AssetBundleUtil
 		{
 			if (ab.Contains (name))
 			{
-				Debug.Log (ab.name + " is already loaded."); //DEBUG
 				return ab.LoadAsset<T> (name);
-			}
-			else
-			{
-				Debug.Log (ab.name + " was unloaded."); //DEBUG
-				ab.Unload (false);
 			}
 		}
 
@@ -39,7 +33,6 @@ public static class AssetBundleUtil
 		//load failed
 		if (bundle == null)
 		{
-			Debug.LogError ("AssetBundle " + bundlePath + " could not be loaded!");
 			return default(T);
 		}
 
