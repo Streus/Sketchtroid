@@ -7,6 +7,8 @@ public class AbilityDisplay : MonoBehaviour
 {
 	private const string PREF_DIR = "core";
 
+	private const float CD_THRESH = 0.25f;
+
 	/* Instance Vars */
 	[SerializeField]
 	private Image cdIndicator, icon;
@@ -60,7 +62,7 @@ public class AbilityDisplay : MonoBehaviour
 			for (int i = 0; i < chargeList.childCount; i++)
 			{
 				Image icon = chargeList.GetChild (i).GetComponent<Image> ();
-				if (i < subject.charges)
+				if (i < subject.charges || subject.cooldownMax > CD_THRESH)
 				{
 					icon.fillAmount = 1f;
 				}
@@ -79,7 +81,10 @@ public class AbilityDisplay : MonoBehaviour
 	public void setSubject(Ability subject)
 	{
 		this.subject = subject;
-		icon.sprite = subject.icon;
+		if (subject != null)
+			icon.sprite = subject.icon;
+		else
+			icon.sprite = null;
 	}
 
 	public void changeCDColor(Color c)

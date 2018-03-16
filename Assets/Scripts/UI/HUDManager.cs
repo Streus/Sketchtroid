@@ -87,9 +87,12 @@ public class HUDManager : MenuManager
 			for (int i = 0; i < abilListRoot.childCount; i++)
 				Destroy (abilListRoot.GetChild (i).gameObject);
 
-
+			//clear old status list
 			for (int i = 0; i < statListRoot.childCount; i++)
 				Destroy (statListRoot.GetChild (i).gameObject);
+
+			subject.statusAdded -= addStatus;
+			subject.statusRemoved -= removeStatus;
 		}
 
 		//set up new subject
@@ -108,6 +111,12 @@ public class HUDManager : MenuManager
 		subject.abilityRemoved += removeAbility;
 		subject.abilitySwapped += swapAbilities;
 
+		//setup status list
+		//TODO add existing statuses
+
+		subject.statusAdded += addStatus;
+		subject.statusRemoved += removeStatus;
+
 		//misc
 		subject.damageTypeChanged += changeDamageType;
 		changeDamageType (subject.defaultDT);
@@ -118,6 +127,8 @@ public class HUDManager : MenuManager
 	{
 		return subject;
 	}
+
+
 
 	public void displayTextPrompt(string title, string caption, float duration = 5f)
 	{
@@ -138,13 +149,35 @@ public class HUDManager : MenuManager
 		{
 			ad = abilListRoot.GetChild (i).GetComponent<AbilityDisplay> ();
 			if (ad.hasAbility (a))
+			{
 				Destroy (ad.gameObject);
+				return;
+			}
 		}
 	}
 
 	private void swapAbilities(Ability a, Ability old, int index)
 	{
 		abilListRoot.GetChild (index).GetComponent<AbilityDisplay> ().setSubject (a);
+	}
+
+	private void addStatus (Status s)
+	{
+		StatusDisplay.create (statListRoot, s);
+	}
+
+	private void removeStatus (Status s)
+	{
+		StatusDisplay sd;
+		for (int i = 0; i < statListRoot.childCount; i++)
+		{
+			sd = statListRoot.GetChild (i).GetComponent<StatusDisplay> ();
+			if (sd.hasStatus (s))
+			{
+				Destroy (sd.gameObject);
+				return;
+			}
+		}
 	}
 
 	private void changeDamageType(DamageType dt)
