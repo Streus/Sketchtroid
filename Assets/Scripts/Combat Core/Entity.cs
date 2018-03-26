@@ -368,6 +368,13 @@ public sealed class Entity : MonoBehaviour, IReapable
 	{
 		return hasStatus (s.name);
 	}
+
+	// Get an IEnumerable so that the list can be iterated over, but not changed
+	// Casting totally isn't a thing, right?
+	public IEnumerable getStatusList()
+	{
+		return (IEnumerable)statuses;
+	}
 	#endregion
 
 	#region ABILITY_HANDLING

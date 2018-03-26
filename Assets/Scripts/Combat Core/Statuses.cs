@@ -8,8 +8,8 @@ public partial class Status
 
 		//template put
 		put (new Status (
-			"Empty",
-			"An empty status that does nothing",
+			"DEBUG",
+			"An empty status that does nothing, and lasts forever.",
 			"",
 			DecayType.serial,
 			1,

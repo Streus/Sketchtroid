@@ -15,7 +15,8 @@ public class Player : Controller
 	// Inject some test data into self
 	public void Start()
 	{
-		
+		//DEBUG add an infinite status
+		self.addStatus (Status.get ("DEBUG", float.PositiveInfinity));
 	}
 
 	public override void Update()

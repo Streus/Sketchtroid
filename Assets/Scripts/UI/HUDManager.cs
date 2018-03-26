@@ -112,7 +112,8 @@ public class HUDManager : MenuManager
 		subject.abilitySwapped += swapAbilities;
 
 		//setup status list
-		//TODO add existing statuses
+		foreach (Status s in subject.getStatusList())
+			addStatus (s);
 
 		subject.statusAdded += addStatus;
 		subject.statusRemoved += removeStatus;
