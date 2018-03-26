@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2889552061
+CRC: 2281156375
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: b673c9060e5f68ecdda5018094ac4e5d
+    Hash: 88171ec1c2c170396c1c10615dfa15e8
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 205c9bf43372c4eb6fd37aac91ab68e0
+    Hash: d5ef42d73139d9780cb3edcb3f56c97f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -112,6 +112,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 90d3512efd5d25d45812832447881f5b, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: e4127f7fb6f45274f9b6133e03812720, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: ba6d93bf067ef294e96ad8988fc6375c, type: 3}
 - Class: 115
   Script: {instanceID: 0}
@@ -140,6 +142,7 @@ Assets:
 - Assets/Prefabs/UI/HUD/HUD.prefab
 - Assets/Prefabs/Entities/Player Parts/Ricochet.prefab
 - Assets/Sprites/UI/HUD/Abilities/UI_Ability_Shift.png
+- Assets/Prefabs/UI/HUD/StatusDisplay.prefab
 - Assets/Prefabs/Misc/Camera.prefab
 - Assets/Sprites/World/General/SavePoint_0.png
 - Assets/Prefabs/Entities/Player Parts/Flash.prefab
