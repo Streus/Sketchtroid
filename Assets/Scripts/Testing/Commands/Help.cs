@@ -17,13 +17,13 @@ namespace Commands
 			return "help";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Command[] commands = Console.log.getCommandList ();
 			if (args.Length == 1)
 			{
 				foreach (Command c in commands)
-					Console.println (c.getInvocation() + " | " + c.getHelp (), Console.Tag.command_out);
+					Console.println (c.getInvocation() + " | " + c.getHelp (), Console.Tag.info);
 			}
 			else
 			{
@@ -31,13 +31,13 @@ namespace Commands
 				{
 					if (c.getInvocation () == args [1]) 
 					{
-						Console.println (c.getInvocation() + " | " + c.getHelp (), Console.Tag.command_out);
-						return "";
+						Console.println (c.getInvocation() + " | " + c.getHelp (), Console.Tag.info);
+						return Console.EXEC_SUCCESS;
 					}
 				}
 				throw new ExecutionException ("Unknown command: " + args [1]);
 			}
-			return "";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

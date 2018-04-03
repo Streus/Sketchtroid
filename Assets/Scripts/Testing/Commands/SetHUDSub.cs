@@ -17,7 +17,7 @@ namespace Commands
 			return "hudsub";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			GameObject inst = GameObject.Find (args [1]);
 			if (inst == null)
@@ -38,7 +38,8 @@ namespace Commands
 				throw new ExecutionException ("There is no currently active HUD!");
 			}
 
-			return "HUD is now pulling data from " + subject.name + ".";
+			Console.println ("HUD is now pulling data from " + subject.name + ".");
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

@@ -16,10 +16,10 @@ namespace Commands
 			return "end";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Console.log.closeScope ();
-			return "";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

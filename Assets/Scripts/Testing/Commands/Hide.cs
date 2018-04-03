@@ -16,10 +16,10 @@ namespace Commands
 			return "hide";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Console.log.isEnabled = false;
-			return "";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

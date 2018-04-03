@@ -19,13 +19,13 @@ namespace Commands
 			return "exit";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Application.Quit ();
 			#if UNITY_EDITOR
 			EditorApplication.isPlaying = false;
 			#endif
-			return "";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

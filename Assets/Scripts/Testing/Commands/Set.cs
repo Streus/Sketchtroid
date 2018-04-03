@@ -17,7 +17,7 @@ namespace Commands
 			return "set";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			int currArg = 1;
 			bool globalVar = false;
@@ -36,10 +36,17 @@ namespace Commands
 			value = args [currArg];
 
 			if (Console.log.declareVariable (name, value, globalVar))
-				return "Created new variable \"" + name + "\" with value \"" + value + "\"";
-			else if(Console.log.setVariableValue(name, value, globalVar))
-				return "Set existing variable \"" + name + "\" to value \"" + value + "\"";
-			return "";
+			{
+				Console.println ("Created new variable \"" + name + "\" with value \"" + value + "\"");
+				return Console.EXEC_SUCCESS;
+			}
+			else if (Console.log.setVariableValue (name, value, globalVar))
+			{
+				Console.println ("Set existing variable \"" + name + "\" to value \"" + value + "\"");
+				return Console.EXEC_SUCCESS;
+			}
+			else
+				return Console.EXEC_FAILURE;
 		}
 	}
 }

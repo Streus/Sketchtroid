@@ -17,7 +17,7 @@ namespace Commands
 			return "abil";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			int curIndex = 1;
 			string printOut = "ERROR";
@@ -42,7 +42,8 @@ namespace Commands
 					else
 						printOut += "\n" + "|";
 				}
-				return printOut;
+				Console.println (printOut, Console.Tag.info);
+				return Console.EXEC_SUCCESS;
 			}
 
 			//define action
@@ -101,7 +102,8 @@ namespace Commands
 				break;
 			}
 
-			return printOut;
+			Console.println (printOut, Console.Tag.info);
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

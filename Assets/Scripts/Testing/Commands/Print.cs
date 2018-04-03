@@ -9,7 +9,7 @@ namespace Commands
 		public override string getHelp ()
 		{
 			return "Print to the console. -e for error, -w for warning" +
-				", -o for normal output. Usage: print [-e|-w|-o] [\"message\"]";
+				", -i for normal output. Usage: print [-e|-w|-i] [\"message\"]";
 		}
 
 		public override string getInvocation ()
@@ -17,7 +17,7 @@ namespace Commands
 			return "print";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Console.Tag tag = Console.Tag.none;
 			int mesgArg = 2;
@@ -25,8 +25,8 @@ namespace Commands
 				tag = Console.Tag.error;
 			else if (args [1] == "-w")
 				tag = Console.Tag.warning;
-			else if (args [1] == "-o")
-				tag = Console.Tag.command_out;
+			else if (args [1] == "-i")
+				tag = Console.Tag.info;
 			else
 				mesgArg = 1;
 
@@ -39,9 +39,10 @@ namespace Commands
 			#pragma warning restore 0168
 			{
 				Console.println ("", tag);
+				return Console.EXEC_FAILURE;
 			}
 
-			return "";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

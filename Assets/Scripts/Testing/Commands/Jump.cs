@@ -16,7 +16,7 @@ namespace Commands
 			return "jump";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			bool saveData = false;
 			string jumpRoom = "";
@@ -43,10 +43,11 @@ namespace Commands
 			#pragma warning restore 0168
 			{
 				Console.println ("The scene " + jumpRoom + " is invalid.", Console.Tag.error);
-				return "";
+				return Console.EXEC_FAILURE;
 			}
 
-			return "Successfully changed scene!";
+			Console.println ("Successfully jumped to " + jumpRoom + "!");
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

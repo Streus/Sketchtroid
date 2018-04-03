@@ -17,10 +17,10 @@ namespace Commands
 			return "max";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Console.maximize ();
-			return "Maximized the console window.";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

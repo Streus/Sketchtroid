@@ -17,10 +17,10 @@ namespace Commands
 			return "min";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Console.minimize ();
-			return "Minimized the console window.";
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

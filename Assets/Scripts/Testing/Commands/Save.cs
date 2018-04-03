@@ -16,14 +16,15 @@ namespace Commands
 			return "save";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			int curIndex = 1;
 			if (args.Length > 1)
 				GameManager.instance.setGameName (args [curIndex++]);
 			GameManager.instance.saveGame ();
-			
-			return "Saved the game.";
+
+			Console.println ("Saved the game", Console.Tag.info);
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace Commands
 			return "difficulty";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			Difficulty newDiff = GameManager.instance.difficulty;
 			args [1] = args [1].ToLower ();
@@ -36,7 +36,8 @@ namespace Commands
 
 			GameManager.instance.difficulty = newDiff;
 			
-			return "Set difficulty to " + GameManager.instance.difficulty.ToString();
+			Console.println ("Set difficulty to " + GameManager.instance.difficulty.ToString ());
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

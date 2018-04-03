@@ -16,10 +16,9 @@ namespace Commands
 			return "exec";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
-			Console.log.executeFile (args [1]);
-			return "";
+			return Console.log.executeFile (args [1]) ? Console.EXEC_SUCCESS : Console.EXEC_FAILURE;
 		}
 	}
 }

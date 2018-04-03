@@ -17,13 +17,14 @@ namespace Commands
 			return "testparse";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
 			string str = "";
 			str = "|" + args [0] + "|";
 			for (int i = 1; i < args.Length; i++)
 				str += " |" + args [i] + "|";
-			return str;
+			Console.println(str);
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

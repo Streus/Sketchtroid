@@ -16,9 +16,10 @@ namespace Commands
 			return "dumpssm";
 		}
 
-		public override string execute (params string[] args)
+		public override int execute (params string[] args)
 		{
-			return SceneStateManager.getInstance().ToString();
+			Console.print (SceneStateManager.getInstance ().ToString ());
+			return Console.EXEC_SUCCESS;
 		}
 	}
 }

@@ -11,7 +11,7 @@ public abstract class Command
 	public abstract string getInvocation();
 
 	// Perform a function and return a string output
-	public abstract string execute(params string[] args);
+	public abstract int execute(params string[] args);
 
 	public class ExecutionException : System.Exception
 	{

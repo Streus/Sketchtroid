@@ -9,14 +9,16 @@ public class Console : MonoBehaviour
 {
 	#region STATIC_VARS
 
+	// GUI controls
 	private const string INPUT = "i", OUTPUT = "o";
 
 	// Channel constants
 	public const int 
-	MUTE = 0x0,
-	DEFAULT = 0x1,
-	BROADCAST = ~0x0;
+	CH_MUTE = 0x0,
+	CH_DEFAULT = 0x1,
+	CH_BROADCAST = ~0x0;
 
+	// Singleton ref
 	public static Console log;
 
 	// Tags that are appended to print calls
@@ -25,9 +27,13 @@ public class Console : MonoBehaviour
 		"",
 		"<color=#ff1111ff><b>[ERR]</b></color>", //red
 		"<color=#ffff11ff><b>[WRN]</b></color>", //yellow
-		"<color=#11ffffff><b>[INF]</b></color>", //cyan
-		"<color=#11ff11ff><b>[OUT]</b></color>" //green
+		"<color=#11ffffff><b>[INF]</b></color>"  //cyan
 	};
+
+	// Command execution success status
+	public const int
+	EXEC_SUCCESS = 0,
+	EXEC_FAILURE = 1;
 	#endregion
 
 	#region INSTANCE_VARS
@@ -119,7 +125,7 @@ public class Console : MonoBehaviour
 	{
 		if (channel == 0)
 		{
-			Debug.LogError ("Channel 1 is reserved!");
+			Debug.LogError ("Channel 0 is reserved!");
 			return;
 		}
 
@@ -142,35 +148,41 @@ public class Console : MonoBehaviour
 		}
 
 		//if the channel does not exist, should be muted
-		return MUTE;
+		return CH_MUTE;
 	}
 
 	// Print a message to the console
-	public static void println(string message, int channelMask = DEFAULT)
+	public static void println(string message, int channelMask = CH_DEFAULT)
 	{
 		print (message + "\n", channelMask);
 	}
-	public static void println(string message, Tag tag, int channelMask = DEFAULT)
+	public static void println(string message, Tag tag, int channelMask = CH_DEFAULT)
 	{
 		print (message + "\n", tag, channelMask);
 	}
-	public static void print(string message, int channelMask = DEFAULT)
+	public static void print(string message, int channelMask = CH_DEFAULT)
 	{
 		print (message, Tag.none, channelMask);
 	}
-	public static void print(string message, Tag tag, int channelMask = DEFAULT)
+	public static void print(string message, Tag tag, int channelMask = CH_DEFAULT)
 	{
 		if (log == null)
 			return;
 
-		channelMask |= DEFAULT;
+		channelMask |= 1 << log.currentChannel | CH_DEFAULT;
 
 		//update all channels in the mask
 		for(int i = 0, c = sizeof(int) * 8; i < c; i++)
 		{
 			if ((channelMask & (1 << i)) != 0)
 			{
-				log.channels [i] += tags [(int)tag] + " " + message;
+				if (tag == Tag.input)
+					log.channels [i] += "<color=#11ff11ff><b>[" +
+						log.channelNames [log.currentChannel] + " ~ ]</b></color>";
+				else
+					log.channels [i] += tags [(int)tag];
+				
+				log.channels[i] += " " + message;
 			}
 		}
 
@@ -205,6 +217,13 @@ public class Console : MonoBehaviour
 		if(log != null)
 			log.outputFieldSize = log.defaultOFSize;
 	}
+
+	// Set the current channel, 0-31
+	public static void setChannel(int channel)
+	{
+		if (log != null && channel >= 0 && channel < 32)
+			log.currentChannel = channel;
+	}
 	#endregion
 
 	#region INSTANCE_METHODS
@@ -218,7 +237,7 @@ public class Console : MonoBehaviour
 			input = "";
 
 			channels = new string[channelNames.Length];
-			channelNames [0] = "Default";
+			channelNames [0] = "DEFAULT";
 
 			scrollPos = Vector2.zero;
 			outputFieldSize = defaultOFSize;
@@ -240,6 +259,7 @@ public class Console : MonoBehaviour
 	{
 		commands = new Dictionary<string, Command> ();
 
+		putInCL (new Commands.ChangeChannel ());
 		putInCL (new Commands.Clear ());
 		putInCL (new Commands.DumpSSM ());
 		putInCL (new Commands.EndScope ());
@@ -248,6 +268,7 @@ public class Console : MonoBehaviour
 		putInCL (new Commands.Help ());
 		putInCL (new Commands.Hide ());
 		putInCL (new Commands.Jump ());
+		putInCL (new Commands.ListChannels ());
 		putInCL (new Commands.Maximize ());
 		putInCL (new Commands.Minimize ());
 		putInCL (new Commands.ModAbilities ());
@@ -316,7 +337,6 @@ public class Console : MonoBehaviour
 		GUIContent outText = new GUIContent (channels[currentChannel]);
 		GUIContent inText = new GUIContent (input);
 
-		//TODO channel select
 		float csw = 120f;
 		currentChannel = GUI.SelectionGrid(
 			new Rect(Screen.width - csw, 0, csw, Screen.height),
@@ -337,6 +357,23 @@ public class Console : MonoBehaviour
 
 		GUI.SetNextControlName (INPUT);
 		input = GUI.TextField (new Rect (0, outputFieldSize, Screen.width - csw, ith), input, textStyle);
+	}
+
+	// Flashes the GUI a certain color for a second
+	private IEnumerator flashGUI(Color flashColor)
+	{
+		Color defaultColor = textStyle.normal.textColor;
+		textStyle.normal.textColor = flashColor;
+		for (float lp = 0f; lp <= 1f; lp += Time.deltaTime)
+		{
+			textStyle.normal.textColor = Color.Lerp (textStyle.normal.textColor, defaultColor, lp);
+			yield return null;
+		}
+	}
+
+	public string[] getChannelNames()
+	{
+		return (string[])channelNames.Clone ();
 	}
 
 	// Invoked when the user presses enter and the console is active
@@ -422,8 +459,9 @@ public class Console : MonoBehaviour
 	// Attempt to execute a command. Fills output with the result of a successful command
 	public bool execute(string command)
 	{
-		string commOut = "";
-		bool success = false;
+		println (command, Tag.input);
+
+		int cStatus = EXEC_FAILURE;
 
 		//parse input
 		string[] args = parseLine(command);
@@ -434,7 +472,7 @@ public class Console : MonoBehaviour
 		{
 			try
 			{
-				commOut = c.execute (args);
+				cStatus = c.execute (args);
 			}
 			catch(Command.ExecutionException ee)
 			{
@@ -446,17 +484,18 @@ public class Console : MonoBehaviour
 			{
 				println ("Provided too few arguments.\n" + c.getHelp(), Tag.error);
 			}
-
-			if (commOut != "")
-				println (commOut, Tag.command_out);
-
-			success = true;
 		}
-		if(!success)
+		else
 			println ("Command not found.  Try \"help\" for a list of commands", Tag.error);
-		history.Insert (0, input);
+		history.Insert (0, command);
 
-		return success;
+		//flash input line 
+		if (cStatus == EXEC_FAILURE)
+		{
+			StartCoroutine (flashGUI (Color.red));
+		}
+
+		return cStatus == EXEC_SUCCESS;
 	}
 
 	// Parse an individual input line and return an array of args
@@ -596,7 +635,7 @@ public class Console : MonoBehaviour
 	// Used to tag output with appending strings and colors
 	public enum Tag
 	{
-		none, error, warning, info, command_out
+		none, error, warning, info, input
 	}
 
 	// To be used to save and retrive values in commands and .cser files
