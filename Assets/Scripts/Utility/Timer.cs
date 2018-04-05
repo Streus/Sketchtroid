@@ -45,7 +45,7 @@ public class Timer : ISerializable
 	/// </summary>
 	public bool tick(float delta)
 	{
-		return value = Mathf.Min(value + delta, max);
+		return (value = Mathf.Min(value + delta, max)) >= max;
 	}
 
 	public float getValue()
