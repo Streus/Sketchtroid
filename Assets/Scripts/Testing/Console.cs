@@ -278,6 +278,7 @@ public class Console : MonoBehaviour
 		putInCL (new Commands.SetDifficulty ());
 		putInCL (new Commands.SetHUDSub ());
 		putInCL (new Commands.StartScope ());
+		putInCL (new Commands.SystemInformation ());
 		putInCL (new Commands.TestParse ());
 	}
 	private void putInCL(Command c)
@@ -374,6 +375,21 @@ public class Console : MonoBehaviour
 	public string[] getChannelNames()
 	{
 		return (string[])channelNames.Clone ();
+	}
+
+	/// <summary>
+	/// Returns a formatted string containing details about the runtime environment
+	/// </summary>
+	public string getSystemInfo()
+	{
+		string str = "<b>[System Info]</b>\n";
+		#if UNITY_EDITOR
+		str += "<i>Is Editor Build </i>\n";
+		#endif
+		str += "<b>OS: </b>" + SystemInfo.operatingSystem + "\n";
+		str += "<b>GPU: </b>" + SystemInfo.graphicsDeviceName + "\n";
+
+		return str;
 	}
 
 	// Invoked when the user presses enter and the console is active

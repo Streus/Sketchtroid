@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System;
 
 [Serializable]
-public class SceneStateManager : ISerializable
+public sealed class SceneStateManager : ISerializable
 {
 	#region STATIC_VARS
 
