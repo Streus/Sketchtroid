@@ -3,22 +3,25 @@ using System.Collections;
 
 namespace CircuitNodes
 {
-	public class NotGate : CircuitNode
+	public class LeafNode : CircuitNode
 	{
 		[Tooltip("The node watch and invert")]
 		[SerializeField]
 		private CircuitNode target;
 
+		[SerializeField]
+		private bool invert;
+
 		public override bool isActivated ()
 		{
 			if (target != null)
-				return !target.isActivated ();
+				return invert ? !target.isActivated () : target.isActivated();
 			return false;
 		}
 
 		public override void setActive (bool state)
 		{
-			Debug.LogWarning ("Cannot set " + gameObject.name + "; it is a NOT gate.");
+			Debug.LogWarning ("Cannot set " + gameObject.name + "; it is a Leaf node.");
 		}
 
 		public override void OnDrawGizmos ()
