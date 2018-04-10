@@ -6,11 +6,13 @@ public class PressurePlate : Toggle
 {
 	public void OnTriggerEnter2D(Collider2D other)
 	{
-		setActive (true);
+		if(other.GetComponent<Bullet>() == null)
+			setActive (true);
 	}
 
 	public void OnTriggerExit2D(Collider2D other)
 	{
-		setActive (false);
+		if(other.GetComponent<Bullet>() == null)
+			setActive (false);
 	}
 }

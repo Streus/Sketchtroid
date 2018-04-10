@@ -413,7 +413,10 @@ public class GameManager : MonoBehaviour
 	// Unlock an ability
 	public void unlockAbility(Ability a)
 	{
-		_abilities |= (1 << a.ID);
+		if (a != null)
+			_abilities |= (1 << a.ID);
+		else
+			Debug.LogError ("Tried to unlock a null ability.");
 	}
 
 	#endregion
