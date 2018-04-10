@@ -7,13 +7,13 @@ namespace CircuitNodes
 	public class Toggle : CircuitNode, IReapable
 	{
 		[SerializeField]
-		private bool active = false;
+		protected bool active = false;
 
 		[Tooltip("Will attempt to lock these to this toggle's internal state")]
 		[SerializeField]
 		private CircuitNode[] targets;
 
-		public void Awake()
+		public virtual void Start()
 		{
 			setActive (active);
 		}

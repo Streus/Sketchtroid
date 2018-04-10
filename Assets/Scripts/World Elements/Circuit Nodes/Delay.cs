@@ -9,6 +9,11 @@ namespace CircuitNodes
 		[SerializeField]
 		private float delayTime = 1f;
 
+		public override void Start ()
+		{
+			base.setActive (active);
+		}
+
 		private IEnumerator delayActive(bool state)
 		{
 			yield return new WaitForSeconds (delayTime);
