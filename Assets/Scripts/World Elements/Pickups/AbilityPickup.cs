@@ -9,10 +9,17 @@ public class AbilityPickup : Pickup
 {
 	[SerializeField]
 	private string ability;
+	[HideInInspector]
+	[SerializeField]
 	private Ability abilData;
 
 	[SerializeField]
 	private SpriteRenderer icon;
+
+	public void Awake()
+	{
+		Update ();
+	}
 
 	public void Update()
 	{

@@ -57,7 +57,7 @@ public class AbilitySelectMenu : MonoBehaviour
 		ToggleGroup tg = layout.GetComponent<ToggleGroup> ();
 		for (int i = 0; i < abilityList.Length; i++)
 		{
-			if (true/*DEBUG*/ || GameManager.instance.isAbilityUnlocked (abilityList [i]))
+			if (/*true ||*/ GameManager.instance.isAbilityUnlocked (abilityList [i]))
 			{
 				Ability a = HUDManager.getInstance().getSubject ().getAbility (abilityIndex);
 				AbilitySelector aSel = AbilitySelector.create (layout, abilityList [i], abilityIndex, tg);
