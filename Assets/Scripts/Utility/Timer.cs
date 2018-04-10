@@ -9,9 +9,11 @@ public class Timer : ISerializable
 	#region INSTANCE_VARS
 
 	// The current value of this timer 
+	[SerializeField]
 	private float value;
 
 	// The maximum value
+	[SerializeField]
 	private float max;
 
 	// Halts updating of the value if true
@@ -46,6 +48,14 @@ public class Timer : ISerializable
 	public bool tick(float delta)
 	{
 		return (value = Mathf.Min(value + delta, max)) >= max;
+	}
+
+	/// <summary>
+	/// Returns true if the value is greater than the max, false otherwise
+	/// </summary>
+	public bool check()
+	{
+		return value >= max;
 	}
 
 	public float getValue()

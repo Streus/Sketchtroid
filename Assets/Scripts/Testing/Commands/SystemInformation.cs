@@ -19,7 +19,14 @@ namespace Commands
 
 		public override int execute (params string[] args)
 		{
-			Console.print (Console.log.getSystemInfo ());
+			string str = "<b>[System Info]</b>\n";
+			#if UNITY_EDITOR
+			str += "<i>Is Editor Build </i>\n";
+			#endif
+			str += "<b>OS: </b>" + SystemInfo.operatingSystem + "\n";
+			str += "<b>GPU: </b>" + SystemInfo.graphicsDeviceName + "\n";
+
+			Console.print (str);
 			return Console.EXEC_SUCCESS;
 		}
 	}

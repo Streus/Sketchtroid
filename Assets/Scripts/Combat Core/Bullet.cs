@@ -175,7 +175,7 @@ public sealed class Bullet : MonoBehaviour
 	{
 		Entity e = col.GetComponent<Entity> ();
 		CollisionRelay relay = col.GetComponent<CollisionRelay> ();
-		Interactable i = col.GetComponent<Interactable> ();
+		CircuitNode i = null; //TODO bullet activated circuit node
 		Destructable d = col.GetComponent<Destructable> ();
 
 		if (relay != null && e == null)
@@ -196,7 +196,7 @@ public sealed class Bullet : MonoBehaviour
 		else if (i != null)
 		{
 			onHit (col);
-			i.OnInteract (damageType);
+//			i.OnInteract (damageType);
 		}
 		else if (d != null)
 		{

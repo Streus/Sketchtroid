@@ -32,20 +32,6 @@ public class Player : Controller
 		if (Input.GetKey (KeyCode.Space)) //TODO swap for proper bindings later
 			useAbility (2, Vector2.zero);
 
-		//TODO better way of interacting things?
-		if (Input.GetKeyDown (KeyCode.E))
-		{
-			RaycastHit2D[] hits;
-			hits = Physics2D.CircleCastAll (transform.position, 1f, Vector2.zero);
-
-			foreach(RaycastHit2D hit in hits)
-			{
-				Interactable i = hit.collider.GetComponent<Interactable> ();
-				if (i != null)
-					i.OnInteract ();
-			}
-		}
-
 		//TODO bring up damage type selector a-la TE ?
 		if (Input.GetKeyDown (KeyCode.Q))
 		{
