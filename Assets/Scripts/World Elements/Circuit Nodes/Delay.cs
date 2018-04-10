@@ -1,35 +1,55 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Runtime.Serialization;
 
 namespace CircuitNodes
 {
-	public class Delay : CircuitNode
+	public class Delay : Toggle
 	{
-		[Tooltip("The node's state to watch")]
 		[SerializeField]
-		private CircuitNode parent;
+		private float delayTime = 1f;
 
-		[SerializeField]
-		private Timer delay = new Timer(1f);
-
-		// A stored state of the parent node
-		private bool? prevState = null;
-
-		public void Update()
+		private IEnumerator delayActive(bool state)
 		{
-			//TODO Delay circuit node behavior
-		}
-			
-		public override bool isActivated ()
-		{
-			return delay.check ();
+			yield return new WaitForSeconds (delayTime);
+			base.setActive (state);
 		}
 
 		public override void setActive (bool state)
 		{
-			Debug.LogWarning ("Cannot directly set " + gameObject.name + "; Delays watch a parent.");
+			StartCoroutine (delayActive (state));
 		}
 
-		//TODO Delay serialization
+		public override SeedCollection.Base reap ()
+		{
+			return new DelaySeed (this);
+		}
+
+		public override void sow (SeedCollection.Base seed)
+		{
+			base.sow (seed);
+			DelaySeed ds = (DelaySeed)seed;
+			delayTime = ds.delayTime;
+		}
+
+		private class DelaySeed : Seed
+		{
+			public float delayTime;
+
+			public DelaySeed(Delay d) : base(d)
+			{
+				delayTime = d.delayTime;
+			}
+			public DelaySeed(SerializationInfo info, StreamingContext context) : base(info, context)
+			{
+				delayTime = info.GetSingle("delayTime");
+			}
+
+			public override void GetObjectData (SerializationInfo info, StreamingContext context)
+			{
+				base.GetObjectData (info, context);
+				info.AddValue ("delayTime", delayTime);
+			}
+		}
 	}
 }

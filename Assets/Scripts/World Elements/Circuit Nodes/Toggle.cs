@@ -13,6 +13,11 @@ namespace CircuitNodes
 		[SerializeField]
 		private CircuitNode[] targets;
 
+		public void Awake()
+		{
+			setActive (active);
+		}
+
 		public override bool isActivated ()
 		{
 			return active;
@@ -49,18 +54,18 @@ namespace CircuitNodes
 
 		#region IReapable implementation
 
-		public SeedCollection.Base reap ()
+		public virtual SeedCollection.Base reap ()
 		{
 			return new Seed (this);
 		}
 
-		public void sow (SeedCollection.Base seed)
+		public virtual void sow (SeedCollection.Base seed)
 		{
 			Seed s = (Seed)seed;
 			active = s.active;
 		}
 
-		private class Seed : SeedCollection.Base
+		protected class Seed : SeedCollection.Base
 		{
 			public bool active;
 
