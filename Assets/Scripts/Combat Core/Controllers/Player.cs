@@ -5,11 +5,13 @@ using UnityEngine;
 public class Player : Controller
 {
 	/* Instance Vars */
+	private Bindings binds;
 
 	/* Instance Methods */
 	public override void Awake ()
 	{
 		base.Awake ();
+		binds = OptionsManger.getInstance ().getBindings ();
 	}
 
 	// Inject some test data into self
@@ -25,11 +27,11 @@ public class Player : Controller
 			return;
 
 		//invoke abilities
-		if (Input.GetKey (KeyCode.Mouse0)) //TODO swap for proper bindings later
+		if (binds.getControl(Bindings.C_ABIL_1))
 			useAbility (0, Vector2.zero, self.defaultDT);
-		if (Input.GetKey (KeyCode.Mouse1)) //TODO swap for proper bindings later
+		if (binds.getControl(Bindings.C_ABIL_2))
 			useAbility (1, Vector2.zero);
-		if (Input.GetKey (KeyCode.Space)) //TODO swap for proper bindings later
+		if (binds.getControl(Bindings.C_ABIL_3))
 			useAbility (2, Vector2.zero);
 
 		//TODO bring up damage type selector a-la TE ?
@@ -59,7 +61,6 @@ public class Player : Controller
 			GameManager.instance.unlockDT (DamageType.PYRO);
 		if (Input.GetKeyDown (KeyCode.Alpha5))
 			GameManager.instance.unlockDT (DamageType.VOID);
-			
 	}
 
 	public override void FixedUpdate()
@@ -74,10 +75,10 @@ public class Player : Controller
 		//movement
 		Vector2 movementVector = Vector2.zero;
 
-		bool up = Input.GetKey (KeyCode.W); //TODO swap for proper bindings later
-		bool left = Input.GetKey(KeyCode.A);
-		bool down = Input.GetKey (KeyCode.S);
-		bool right = Input.GetKey (KeyCode.D);
+		bool up = binds.getControl (Bindings.C_FORWARD);
+		bool left = binds.getControl (Bindings.C_LEFT);
+		bool down = binds.getControl (Bindings.C_DOWN);
+		bool right = binds.getControl (Bindings.C_RIGHT);
 
 		if (up)
 			movementVector += Vector2.up;

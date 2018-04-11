@@ -13,11 +13,14 @@ public class Bindings : ISerializable //TODO Bindings class
 	C_FORWARD = 0,
 	C_LEFT = 1,
 	C_DOWN = 2,
-	C_RIGHT = 3;
+	C_RIGHT = 3,
+	C_ABIL_1 = 4,
+	C_ABIL_2 = 5,
+	C_ABIL_3 = 6;
 	//TODO expand bindings list
 
 	// Length of the bindings list
-	private const int length = 4;
+	public const int length = 7;
 
 	#endregion
 
@@ -38,7 +41,7 @@ public class Bindings : ISerializable //TODO Bindings class
 	}
 	public Bindings(SerializationInfo info, StreamingContext context)
 	{
-		
+		keys = (KeyCode[])info.GetValue ("keys", typeof(KeyCode[]));
 	}
 
 	/// <summary>
@@ -84,7 +87,7 @@ public class Bindings : ISerializable //TODO Bindings class
 
 	public void GetObjectData (SerializationInfo info, StreamingContext context)
 	{
-		throw new System.NotImplementedException ();
+		info.AddValue ("keys", keys);
 	}
 	#endregion
 
