@@ -136,6 +136,7 @@ public class Console : MonoBehaviour
 		}
 	}
 
+	//FIXME this has a some kind of OBO error
 	public static int nameToChannel(string name)
 	{
 		if (name == "")
@@ -164,11 +165,13 @@ public class Console : MonoBehaviour
 	{
 		print (message, Tag.none, channelMask);
 	}
+	//TODO have all log messages also get dumped into a log file
 	public static void print(string message, Tag tag, int channelMask = CH_DEFAULT)
 	{
 		if (log == null)
 			return;
 
+		//always write to the default channel
 		channelMask |= 1 << log.currentChannel | CH_DEFAULT;
 
 		//update all channels in the mask
@@ -176,13 +179,28 @@ public class Console : MonoBehaviour
 		{
 			if ((channelMask & (1 << i)) != 0)
 			{
+				//add the entry tag
 				if (tag == Tag.input)
 					log.channels [i] += "<color=#11ff11ff><b>[" +
 						log.channelNames [log.currentChannel] + " ~ ]</b></color>";
 				else
 					log.channels [i] += tags [(int)tag];
-				
+
+				//add message
 				log.channels[i] += " " + message;
+
+				//cull extra lines
+				int linesDiff = log.channels [i].Split ('\n').Length - log.linesMax;
+				Debug.Log ("LinesDiff: " + linesDiff); //DEBUG
+				int newStart = 0;
+				for (; linesDiff >= 0; linesDiff--)
+					newStart = log.channels [i].IndexOf ('\n', newStart);
+				Debug.Log ("NewStart: " + newStart); //DEBUG
+				if (newStart != 0)
+				{
+					log.channels [i] = log.channels [i].Substring (newStart);
+					Debug.Log ("Truncated " + log.channelNames [i]); //DEBUG
+				}
 			}
 		}
 
