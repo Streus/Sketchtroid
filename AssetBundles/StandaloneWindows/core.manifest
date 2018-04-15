@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2281156375
+CRC: 1060354584
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 88171ec1c2c170396c1c10615dfa15e8
+    Hash: 76656992ea2d718504d1c844d85895dd
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d5ef42d73139d9780cb3edcb3f56c97f
+    Hash: dafdb87b894193e0f3ed6cc2318988c8
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -95,8 +95,6 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 41daf7781ccae5e42949ff3afd4b370f, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 317159a9ff1c6314abbbd66a80dd10ec, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 98a0c25ac3bf4df4ba3a33057add93ee, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: af26c6dabf1ae5f4a8d3e4cdba4d4b7d, type: 3}
 - Class: 114
@@ -228,7 +226,6 @@ Assets:
 - Assets/Sprites/UI/HUD/Abilities/UI_Ability_LayWaste.png
 - Assets/Sprites/Misc/Symbol_pyrotechnicDT.png
 - Assets/Prefabs/Entities/TestEntity.prefab
-- Assets/Prefabs/World/General/BasicDoor.prefab
 - Assets/Prefabs/Entities/Player Parts/CoreWing.prefab
 - Assets/Sprites/UI/Menus/Main/ButtonText_Continue.png
 - Assets/Sprites/Entities/Player/Engines/T2Engine.png

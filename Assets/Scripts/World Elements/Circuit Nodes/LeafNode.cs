@@ -5,7 +5,7 @@ namespace CircuitNodes
 {
 	public class LeafNode : CircuitNode
 	{
-		[Tooltip("The node watch and invert")]
+		[Tooltip("The node to watch")]
 		[SerializeField]
 		private CircuitNode target;
 
@@ -28,8 +28,11 @@ namespace CircuitNodes
 		{
 			base.OnDrawGizmos ();
 			Gizmos.color = Color.gray;
-			Vector3 dir = target.transform.position - transform.position;
-			Gizmos.DrawLine (transform.position + dir.normalized, target.transform.position);
+			if (target != null)
+			{
+				Vector3 dir = target.transform.position - transform.position;
+				Gizmos.DrawLine (transform.position + dir.normalized, target.transform.position);
+			}
 		}
 	}
 }

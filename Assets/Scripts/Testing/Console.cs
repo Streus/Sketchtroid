@@ -189,6 +189,8 @@ public class Console : MonoBehaviour
 				//add message
 				log.channels[i] += " " + message;
 
+				//FIXME console lines culling
+				#if FALSE
 				//cull extra lines
 				int linesDiff = log.channels [i].Split ('\n').Length - log.linesMax;
 				Debug.Log ("LinesDiff: " + linesDiff); //DEBUG
@@ -201,6 +203,7 @@ public class Console : MonoBehaviour
 					log.channels [i] = log.channels [i].Substring (newStart);
 					Debug.Log ("Truncated " + log.channelNames [i]); //DEBUG
 				}
+				#endif
 			}
 		}
 
