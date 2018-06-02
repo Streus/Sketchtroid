@@ -72,7 +72,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 	// The Statuses currently affecting this Entity
 	[SerializeField]
-	private List<Status> statuses;
+	private Dictionary<string, Status> statuses;
 
 	// The Abilities that this Entity
 	private Ability[] abilities;
@@ -168,7 +168,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (e.health > e.healthMax)
 			e.health = e.healthMax;
 
-		foreach (Status s in e.statuses)
+		foreach (Status s in e.statuses.Values)
 			s.onHealed (e, healAmount);
 
 		if(e.healed != null)
@@ -194,7 +194,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		rooted = new Stat (0, 0);
 		freezeProgress = 0f;
 
-		statuses = new List<Status> ();
+		statuses = new Dictionary<string, Status>();
 		abilities = new Ability[3];
 		abilSize = 0;
 
@@ -268,7 +268,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		//status list
 		statuses = seed.statuses;
-		foreach(Status st in statuses)
+		foreach(Status st in statuses.Values)
 		{
 			st.durationCompleted += removeStatus;
 			if (statusAdded != null)
@@ -286,15 +286,16 @@ public sealed class Entity : MonoBehaviour, IReapable
 	public void Update()
 	{
 		//update all statuses
-		for (int i = 0; i < statuses.Count; i++)
+		List<string> removeList = new List<string> ();
+		foreach (Status s in statuses.Values)
 		{
-			if (statuses [i].updateDuration (this, Time.deltaTime))
-			{
-				//if a status ended and was removed from the list, then backtrack
-				//to ensure a status is not skipped
-				i--;
-			}
+			if (s.updateDuration (this, Time.deltaTime))
+				removeList.Add (s.name);
 		}
+
+		//remove statuses that have finished their durations
+		for (int i = 0; i < removeList.Count; i++)
+			statuses.Remove (removeList[i]);
 
 		//update all abilities
 		for (int i = 0; i < abilities.Length; i++)
@@ -328,16 +329,15 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Add a status to the Entity and begin listening for its end
 	public void addStatus(Status s)
 	{
-		Status existing = statuses.Find (delegate(Status obj) { return obj.Equals(s); });
-		if (existing != null)
+		Status existing;
+		if (statuses.TryGetValue (s.name, out existing))
 		{
-			//a status of this type is already on this Entity
 			existing.stack (this, 1);
 			return;
 		}
 
 		//this status is new to this Entity
-		statuses.Add (s);
+		statuses.Add (s.name, s);
 		s.durationCompleted += removeStatus;
 		s.onApply (this);
 
@@ -351,7 +351,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	{
 		s.onRevert (this);
 		s.durationCompleted -= removeStatus;
-		statuses.Remove (s);
+		statuses.Remove (s.name);
 
 		//notify listeners
 		if (statusRemoved != null)
@@ -361,7 +361,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Check for a specific status in this Entity's status list
 	public bool hasStatus(string name)
 	{
-		return statuses.Find (delegate(Status obj) { return obj.name == name; }) != null;
+		return statuses.ContainsKey (name);
 	}
 
 	public bool hasStatus(Status s)
@@ -559,7 +559,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		{
 			stunned += 1;
 
-			foreach (Status s in statuses)
+			foreach (Status s in statuses.Values)
 				s.onStunned (this);
 
 			if (wasStunned != null)
@@ -580,7 +580,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		{
 			rooted += 1;
 
-			foreach (Status s in statuses)
+			foreach (Status s in statuses.Values)
 				s.onRooted (this);
 
 			if (wasRooted != null)
@@ -601,7 +601,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// This Entity took damage
 	private void onDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
-		foreach (Status s in statuses)
+		foreach (Status s in statuses.Values)
 			s.onDamageTaken (this, attacker, rawDamage, calcDamage, dt, hitShields);
 
 		if (tookDamage != null)
@@ -611,7 +611,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// This Entity dealt damage
 	private void onDamageDealt(Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
-		foreach (Status s in statuses)
+		foreach (Status s in statuses.Values)
 			s.onDamageDealt (this, victim, rawDamage, calcDamage, dt, hitShields);
 
 		if (tookDamage != null)
@@ -621,7 +621,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// This Entity has died
 	public void onDeath()
 	{
-		foreach (Status s in statuses)
+		foreach (Status s in statuses.Values)
 			s.onDeath (this);
 		
 		if (died != null)
@@ -633,7 +633,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Shields have fallen to zero
 	private void onShieldsDown()
 	{
-		foreach (Status s in statuses)
+		foreach (Status s in statuses.Values)
 			s.onShieldsDown (this);
 
 		if (shieldsBroken != null)
@@ -643,7 +643,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// Shields have recharged to full
 	private void onShieldsRecharged()
 	{
-		foreach (Status s in statuses)
+		foreach (Status s in statuses.Values)
 			s.onShieldsRecharged (this);
 
 		if (shieldsRecharged != null)
@@ -717,7 +717,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		public float freezeProgress;
 
-		public List<Status> statuses;
+		public Dictionary<string, Status> statuses;
 		public Ability[] abilities;
 
 		/* Constructors */
@@ -792,10 +792,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 			freezeProgress = info.GetSingle("freezeProgress");
 
-			int statusSize = info.GetInt32("statusSize");
-			statuses =  new List<Status>();
-			for(int i = 0; i < statusSize; i++)
-				statuses.Add((Status)info.GetValue("status" + i, typeof(Status)));
+			statuses = (Dictionary<string, Status>)info.GetValue ("statuses", typeof (Dictionary<string, Status>));
 
 			int abilSize = info.GetInt32("abilSize");
 			abilities = new Ability[abilSize];
@@ -835,9 +832,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 			info.AddValue ("freezeProgress", freezeProgress);
 
-			info.AddValue ("statusSize", statuses.Count);
-			for (int i = 0; i < statuses.Count; i++)
-				info.AddValue ("status" + i, statuses [i]);
+			info.AddValue ("statuses", statuses);
 
 			info.AddValue ("abilSize", abilities.Length);
 			for (int i = 0; i < abilities.Length; i++)
