@@ -6,10 +6,10 @@ public class StartUp
 {
 	static StartUp()
 	{
-		EditorApplication.playmodeStateChanged += initStart;
+		EditorApplication.playModeStateChanged += initStart;
 	}
 
-	private static void initStart()
+	private static void initStart(PlayModeStateChange obj)
 	{
 		if (EditorApplication.isPlaying)
 		{

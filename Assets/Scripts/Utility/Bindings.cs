@@ -73,11 +73,11 @@ public class Bindings : ISerializable //TODO Bindings class
 
 		switch (type)
 		{
-		case EventType.used:
+		case EventType.Used:
 			return Input.GetKey (keys [control]);
-		case EventType.keyDown:
+		case EventType.KeyDown:
 			return Input.GetKeyDown (keys [control]);
-		case EventType.keyUp:
+		case EventType.KeyUp:
 			return Input.GetKeyUp (keys [control]);
 		default:
 			Debug.LogError (type.ToString () + " is not a valid event for controls.");
