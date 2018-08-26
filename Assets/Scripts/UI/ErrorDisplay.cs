@@ -20,10 +20,10 @@ public class ErrorDisplay : MonoBehaviour
 	{
 		displayTime -= Time.deltaTime;
 		if (displayTime <= 0f)
-			dismissWindow ();
+			DismissWindow ();
 	}
 
-	public void displayError(string errText, float displayTime = 3f)
+	public void DisplayError(string errText, float displayTime = 3f)
 	{
 		if(textDisplay != null)
 			textDisplay.text = errText;
@@ -31,7 +31,7 @@ public class ErrorDisplay : MonoBehaviour
 		this.displayTime = displayTime;
 	}
 
-	public void dismissWindow()
+	public void DismissWindow()
 	{
 		gameObject.SetActive (false);
 	}

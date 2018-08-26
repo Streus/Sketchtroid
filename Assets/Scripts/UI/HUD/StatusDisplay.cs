@@ -16,11 +16,11 @@ public class StatusDisplay : MonoBehaviour
 
 	public static StatusDisplay create(RectTransform parent, Status subject)
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core", "StatusDisplay");
+		GameObject pref = ABU.LoadAsset<GameObject> ("core", "StatusDisplay");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		StatusDisplay sd = inst.GetComponent<StatusDisplay> ();
 
-		sd.setSubject (subject);
+		sd.SetSubject (subject);
 
 		return sd;
 	}
@@ -32,11 +32,11 @@ public class StatusDisplay : MonoBehaviour
 	{
 		if (subject != null)
 		{
-			durationIndicator.fillAmount = subject.durationPercentage;
+			durationIndicator.fillAmount = subject.DurationPercentage;
 		}
 	}
 
-	public void setSubject(Status s)
+	public void SetSubject(Status s)
 	{
 		subject = s;
 		if (subject != null)
@@ -45,7 +45,7 @@ public class StatusDisplay : MonoBehaviour
 			icon.sprite = null;
 	}
 
-	public bool hasStatus(Status s)
+	public bool HasStatus(Status s)
 	{
 		return subject == s;
 	}

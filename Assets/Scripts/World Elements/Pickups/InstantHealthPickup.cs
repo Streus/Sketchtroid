@@ -7,9 +7,9 @@ public class InstantHealthPickup : Pickup
 	[SerializeField]
 	private float healAmount = 20f;
 
-	protected override void apply (Entity e)
+	protected override void Apply (Entity e)
 	{
-		Entity.healEntity (e, healAmount);
+		Entity.HealEntity (e, healAmount);
 		//TODO heal pickup vfx and sfx
 	}
 }

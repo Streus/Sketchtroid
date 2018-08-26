@@ -11,10 +11,13 @@ public class Timer : ISerializable
 	// The current value of this timer 
 	[SerializeField]
 	private float value;
+	public float Value { get { return value; } }
+	public float MirrorValue { get { return max - value; } }
 
 	// The maximum value
 	[SerializeField]
 	private float max;
+	public float Max { get { return Max; } }
 
 	// Halts updating of the value if true
 	private bool paused;
@@ -45,7 +48,7 @@ public class Timer : ISerializable
 	/// Updates the value by delta.  Returns true if the value is greater than
 	/// the max after the addition, false otherwise.
 	/// </summary>
-	public bool tick(float delta)
+	public bool Tick(float delta)
 	{
 		return (value = Mathf.Min(value + delta, max)) >= max;
 	}
@@ -53,25 +56,15 @@ public class Timer : ISerializable
 	/// <summary>
 	/// Returns true if the value is greater than the max, false otherwise
 	/// </summary>
-	public bool check()
+	public bool Check()
 	{
 		return value >= max;
-	}
-
-	public float getValue()
-	{
-		return value;
-	}
-
-	public float getMax()
-	{
-		return max;
 	}
 
 	/// <summary>
 	/// Sets the value back to zero
 	/// </summary>
-	public void reset()
+	public void Reset()
 	{
 		value = 0f;
 	}
@@ -79,7 +72,7 @@ public class Timer : ISerializable
 	/// <summary>
 	/// Checks if this Timer is paused.
 	/// </summary>
-	public bool isPaused()
+	public bool IsPaused()
 	{
 		return paused;
 	}
@@ -87,7 +80,7 @@ public class Timer : ISerializable
 	/// <summary>
 	/// Registers a pause
 	/// </summary>
-	public void setPause(bool val)
+	public void SetPause(bool val)
 	{
 		paused = val;
 	}
@@ -95,9 +88,14 @@ public class Timer : ISerializable
 	/// <summary>
 	/// Returns the value as a percentage of the max (0-1)
 	/// </summary>
-	public float getCompletionPerc()
+	public float GetCompletionPerc()
 	{
 		return value / max;
+	}
+
+	public float GetMirroredCompletionPerc()
+	{
+		return 1 - GetCompletionPerc ();
 	}
 
 	/// <summary>

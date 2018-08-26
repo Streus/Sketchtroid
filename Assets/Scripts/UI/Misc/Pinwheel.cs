@@ -28,11 +28,11 @@ public class Pinwheel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
 	public void Update()
 	{
-		applyLayout ();
+		ApplyLayout ();
 		distanceToCenter = Mathf.Lerp (distanceToCenter, isExpanded ? expandedDistance : constrictedDistance, Time.deltaTime * expandSpeed);
 	}
 
-	private void applyLayout()
+	private void ApplyLayout()
 	{
 		//in the case of one child, do not apply offset or rotation
 		if (transform.childCount == 1)

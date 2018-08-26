@@ -38,13 +38,13 @@ public sealed class OptionsManger : ISerializable
 		bindings = new Bindings ();
 
 		//set default bindings
-		bindings.setBinding(Bindings.C_FORWARD, KeyCode.W);
-		bindings.setBinding(Bindings.C_LEFT, KeyCode.A);
-		bindings.setBinding(Bindings.C_DOWN, KeyCode.S);
-		bindings.setBinding(Bindings.C_RIGHT, KeyCode.D);
-		bindings.setBinding(Bindings.C_ABIL_1, KeyCode.Mouse0);
-		bindings.setBinding(Bindings.C_ABIL_2, KeyCode.Mouse1);
-		bindings.setBinding(Bindings.C_ABIL_3, KeyCode.Space);
+		bindings.SetBinding(Bindings.C_FORWARD, KeyCode.W);
+		bindings.SetBinding(Bindings.C_LEFT, KeyCode.A);
+		bindings.SetBinding(Bindings.C_DOWN, KeyCode.S);
+		bindings.SetBinding(Bindings.C_RIGHT, KeyCode.D);
+		bindings.SetBinding(Bindings.C_ABIL_1, KeyCode.Mouse0);
+		bindings.SetBinding(Bindings.C_ABIL_2, KeyCode.Mouse1);
+		bindings.SetBinding(Bindings.C_ABIL_3, KeyCode.Space);
 	}
 	public OptionsManger(SerializationInfo info, StreamingContext context)
 	{

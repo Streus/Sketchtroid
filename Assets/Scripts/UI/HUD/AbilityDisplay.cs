@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class AbilityDisplay : MonoBehaviour
@@ -18,24 +16,24 @@ public class AbilityDisplay : MonoBehaviour
 	private Ability subject;
 
 	/* Static Methods */
-	public static AbilityDisplay create(RectTransform parent, Ability subject)
+	public static AbilityDisplay Create(RectTransform parent, Ability subject)
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> (PREF_DIR, "AbilityDisplay");
+		GameObject pref = ABU.LoadAsset<GameObject> (PREF_DIR, "AbilityDisplay");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 
 		AbilityDisplay ad = inst.GetComponent<AbilityDisplay> ();
-		ad.setSubject (subject);
+		ad.SetSubject (subject);
 
 		//fill charge list
-		GameObject c_pref = AssetBundleUtil.loadAsset<GameObject>(PREF_DIR, "ChargeIndicator");
-		for (int i = 0; i < subject.chargesMax; i++)
+		GameObject c_pref = ABU.LoadAsset<GameObject>(PREF_DIR, "ChargeIndicator");
+		for (int i = 0; i < subject.ChargesMax; i++)
 		{
 			GameObject c_inst = Instantiate<GameObject> (c_pref, ad.chargeList, false);
 			Image icon = c_inst.GetComponent<Image> ();
-			if (i < subject.charges)
+			if (i < subject.Charges)
 				icon.fillAmount = 1f;
-			else if (i == subject.charges)
-				icon.fillAmount = 1 - subject.cooldownPercentage();
+			else if (i == subject.Charges)
+				icon.fillAmount = 1 - subject.CooldownPercentage;
 			else
 				icon.fillAmount = 0f;
 		}
@@ -54,21 +52,21 @@ public class AbilityDisplay : MonoBehaviour
 	public void Update()
 	{
 		//initial cooldown
-		if (subject.charges == 0)
-			cdIndicator.fillAmount = subject.cooldownPercentage ();
+		if (subject.Charges == 0)
+			cdIndicator.fillAmount = subject.CooldownPercentage;
 		//charge accumulation
 		else
 		{
 			for (int i = 0; i < chargeList.childCount; i++)
 			{
 				Image icon = chargeList.GetChild (i).GetComponent<Image> ();
-				if (i < subject.charges || subject.cooldownMax > CD_THRESH)
+				if (i < subject.Charges || subject.CooldownMax > CD_THRESH)
 				{
 					icon.fillAmount = 1f;
 				}
-				else if (i == subject.charges)
+				else if (i == subject.Charges)
 				{
-					icon.fillAmount = 1 - subject.cooldownPercentage ();
+					icon.fillAmount = 1 - subject.CooldownPercentage;
 				}
 				else
 				{
@@ -78,7 +76,7 @@ public class AbilityDisplay : MonoBehaviour
 		}
 	}
 
-	public void setSubject(Ability subject)
+	public void SetSubject(Ability subject)
 	{
 		this.subject = subject;
 		if (subject != null)
@@ -87,7 +85,7 @@ public class AbilityDisplay : MonoBehaviour
 			icon.sprite = null;
 	}
 
-	public void changeCDColor(Color c)
+	public void ChangeCDColor(Color c)
 	{
 		cdIndicator.color = c;
 		for (int i = 0; i < chargeList.childCount; i++)
@@ -98,7 +96,7 @@ public class AbilityDisplay : MonoBehaviour
 		}
 	}
 
-	public bool hasAbility(Ability a)
+	public bool HasAbility(Ability a)
 	{
 		return a == subject;
 	}

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 public class CollisionRelay : MonoBehaviour
@@ -11,25 +9,25 @@ public class CollisionRelay : MonoBehaviour
 	{
 		Entity target = GetComponentInParent<Entity> ();
 		if (target != null && relayTarget == null)
-			addToNetwork (target);
+			AddToNetwork (target);
 	}
 
-	public void addToNetwork(Entity target)
+	public void AddToNetwork(Entity target)
 	{
 		relayTarget = target;
 	}
 
-	public void removeFromNetwork()
+	public void RemoveFromNetwork()
 	{
 		relayTarget = null;
 	}
 
-	public Entity logCollision(Bullet bullet)
+	public Entity LogCollision(Bullet bullet)
 	{
 		if (relayTarget == null)
 			return null;
 
-		if (!relayTarget.addColLogEntry (bullet))
+		if (!relayTarget.AddColLogEntry (bullet))
 		{
 			//the network has not collided with this bullet yet
 			return relayTarget;

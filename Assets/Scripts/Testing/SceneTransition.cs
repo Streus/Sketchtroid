@@ -27,14 +27,14 @@ public class SceneTransition : MonoBehaviour
 		else if (curr.name.Equals("test2"))
 			nextRoom = "test1";
 
-		SceneStateManager.getInstance().transitionTo (nextRoom);
+		SceneStateManager.GetInstance().TransitionTo (nextRoom);
 	}
 
 	public void spawnRegisteredPrefabs(int amount)
 	{
 		for (int i = 0; i < amount; i++)
 		{
-			RegisteredObject.create (
+			RegisteredObject.Create (
 				"core/prefabs/entities",
 				"TestEntityPrefab", 
 				(Vector3)Random.insideUnitCircle, 
@@ -44,7 +44,7 @@ public class SceneTransition : MonoBehaviour
 
 	public void spawnRegisteredChildPrefab(RegisteredObject obj)
 	{
-		RegisteredObject.create (
+		RegisteredObject.Create (
 			"core/prefabs/entities",
 			"TestEntityPrefab",
 			Vector3.zero,
@@ -69,6 +69,6 @@ public class SceneTransition : MonoBehaviour
 
 	public void debugSSM()
 	{
-		Debug.Log (SceneStateManager.getInstance ().ToString ());
+		Debug.Log (SceneStateManager.GetInstance ().ToString ());
 	}
 }

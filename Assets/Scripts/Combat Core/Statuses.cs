@@ -7,7 +7,7 @@ public partial class Status
 		repo = new Dictionary<string, Status> ();
 
 		//template put
-		put (new Status (
+		Put (new Status (
 			"DEBUG",
 			"An empty status that does nothing, and lasts forever.",
 			"",

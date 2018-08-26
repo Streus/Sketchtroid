@@ -20,10 +20,10 @@ namespace CircuitNodes
 		{
 			//complete the inactive timer
 			if (startActive)
-				inactiveTimer.tick (inactiveTimer.getMax ());
+				inactiveTimer.Tick (inactiveTimer.Max);
 			//complete the active timer
 			else
-				activeTimer.tick (activeTimer.getMax ());
+				activeTimer.Tick (activeTimer.Max);
 		}
 
 		public void Update()
@@ -31,35 +31,35 @@ namespace CircuitNodes
 			if (!running)
 				return;
 
-			if (activeTimer.check ())
+			if (activeTimer.Check ())
 			{
-				if (inactiveTimer.tick (Time.deltaTime))
-					activeTimer.reset ();
+				if (inactiveTimer.Tick (Time.deltaTime))
+					activeTimer.Reset ();
 			}
-			else if (inactiveTimer.check ())
+			else if (inactiveTimer.Check ())
 			{
-				if (activeTimer.tick (Time.deltaTime))
-					inactiveTimer.reset ();
+				if (activeTimer.Tick (Time.deltaTime))
+					inactiveTimer.Reset ();
 			}
 		}
 
-		public override bool isActivated ()
+		public override bool IsActivated ()
 		{
-			return inactiveTimer.check ();
+			return inactiveTimer.Check ();
 		}
 
-		public override void setActive (bool state)
+		public override void SetActive (bool state)
 		{
 			running = state;
 		}
 		
 		#region IReapable implementation
-		public SeedCollection.Base reap ()
+		public SeedCollection.Base Reap ()
 		{
 			return new Seed (this);
 		}
 
-		public void sow (SeedCollection.Base seed)
+		public void Sow (SeedCollection.Base seed)
 		{
 			Seed s = (Seed)seed;
 			running = s.running;

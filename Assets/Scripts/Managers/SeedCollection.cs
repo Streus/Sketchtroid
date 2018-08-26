@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 using System.Collections.Generic;
 using System;
 
-#pragma warning disable 0168
 [Serializable]
 public class SeedCollection : ISerializable
 {
@@ -69,7 +68,7 @@ public class SeedCollection : ISerializable
 
 		seeds = new Dictionary<Type, Base> ();
 		for (int i = 0; i < scripts.Length; i++)
-			seeds.Add (scripts [i].GetType (), scripts [i].reap ());
+			seeds.Add (scripts [i].GetType (), scripts [i].Reap ());
 	}
 
 	// Create a collection from serialized data that contains a transform and rigidbody state
@@ -149,13 +148,13 @@ public class SeedCollection : ISerializable
 		info.AddValue ("seeds", seeds);
 	}
 
-	public void sowSeeds(GameObject subject, params IReapable[] scripts)
+	public void SowSeeds(GameObject subject, params IReapable[] scripts)
 	{
 		// Default load values
 		if (destroyed)
 		{
 			//Entity is destroyed
-			MonoBehaviour.Destroy (subject);
+			UnityEngine.Object.Destroy (subject);
 			return;
 		}
 			
@@ -176,7 +175,7 @@ public class SeedCollection : ISerializable
 		for (int i = 0; i < scripts.Length; i++)
 		{
 			if (seeds.TryGetValue (scripts [i].GetType (), out seed))
-				scripts [i].sow (seed);
+				scripts [i].Sow (seed);
 			else
 				Console.println ("[SC] Script mismatch! " + scripts [i].GetType ().FullName
 					+ " is on the GameObject, but not in the collection!", Console.Tag.error);

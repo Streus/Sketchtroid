@@ -28,14 +28,14 @@ public class AbilitySelector : MonoBehaviour
 	private bool activeSet;
 
 	/* Static Methods */
-	public static AbilitySelector create(Transform parent, string abilityName, int abilityIndex, ToggleGroup tg)
+	public static AbilitySelector Create(Transform parent, string abilityName, int abilityIndex, ToggleGroup tg)
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> (PREF_DIR, "AbilityToggle");
+		GameObject pref = ABU.LoadAsset<GameObject> (PREF_DIR, "AbilityToggle");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		AbilitySelector aSel = inst.GetComponent<AbilitySelector> ();
 		aSel.abilityName = abilityName;
 		aSel.abilityIndex = abilityIndex;
-		aSel.setAbility ();
+		aSel.SetAbility ();
 
 		aSel.activeSet = true;
 
@@ -54,40 +54,40 @@ public class AbilitySelector : MonoBehaviour
 
 	public void Start()
 	{
-		toggle.onValueChanged.AddListener (toggleChanged);
+		toggle.onValueChanged.AddListener (ToggleChanged);
 	}
 
 	#if UNITY_EDITOR
 	public void Update()
 	{
-		setAbility ();
+		SetAbility ();
 	}
 	#endif
 
-	private void setAbility()
+	private void SetAbility()
 	{
-		ability = Ability.get (abilityName);
+		ability = Ability.Get (abilityName);
 		if (ability != null)
 		{
 			abilIcon.sprite = ability.icon;
 		}
 	}
 
-	public void setToggle(bool v)
+	public void SetToggle(bool v)
 	{
 		toggle.isOn = v;
 	}
 
-	public void setActive(bool active)
+	public void SetActive(bool active)
 	{
 		activeSet = active;
 	}
-	public bool isActive()
+	public bool IsActive()
 	{
 		return activeSet;
 	}
 
-	private void toggleChanged(bool v)
+	private void ToggleChanged(bool v)
 	{
 		#if UNITY_EDITOR
 		if(!EditorApplication.isPlaying)
@@ -97,34 +97,34 @@ public class AbilitySelector : MonoBehaviour
 		if (!activeSet)
 			return;
 
-		Entity player = HUDManager.getInstance().getSubject ();
+		Entity player = HUDManager.GetInstance().GetSubject ();
 		if (v)
 		{
-			ability = Ability.get (abilityName);
-			if (player.getAbility (abilityIndex) != null)
-				player.swapAbility (ability, abilityIndex);
+			ability = Ability.Get (abilityName);
+			if (player.GetAbility (abilityIndex) != null)
+				player.SwapAbility (ability, abilityIndex);
 			else
 			{
-				if (abilityIndex < 0 || abilityIndex >= player.abilityCap)
-					player.addAbility (ability);
+				if (abilityIndex < 0 || abilityIndex >= player.AbilityCap)
+					player.AddAbility (ability);
 				else
-					player.addAbility (ability, abilityIndex);
+					player.AddAbility (ability, abilityIndex);
 			}
 			Debug.Log ("Adding " + abilityName); //DEBUG ability added
 		}
 		else
 		{
-			player.removeAbility (abilityIndex);
+			player.RemoveAbility (abilityIndex);
 			Debug.Log("Removing " + abilityName); //DEBUG ability removed
 		}
 
 		//DEBUG
 		Debug.Log("Ability List");
-		for (int i = 0; i < player.abilityCap; i++)
+		for (int i = 0; i < player.AbilityCap; i++)
 		{
-			Ability a = player.getAbility (i);
+			Ability a = player.GetAbility (i);
 			if (a != null)
-				Debug.Log (i + ": " + player.getAbility (i).name);
+				Debug.Log (i + ": " + player.GetAbility (i).name);
 			else
 				Debug.Log (i + ": NULL");
 		}

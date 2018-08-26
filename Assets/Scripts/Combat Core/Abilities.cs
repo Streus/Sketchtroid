@@ -12,7 +12,7 @@ public partial class Ability
 		repository = new Dictionary<string, Ability> ();
 
 		//player offensive
-		put(new Ability (
+		Put(new Ability (
 			"Spray",
 			"Shoot a continuous stream of bullets",
 			"UI_Ability_Spray",
@@ -20,7 +20,7 @@ public partial class Ability
 			0,
 			"sprayShoot")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Refract",
 			"Fire a wide spread of 3 lasers",
 			"UI_Ability_Refract",
@@ -28,7 +28,7 @@ public partial class Ability
 			0,
 			"refractShoot")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Lay Waste",
 			"Fire a large, slow projectile that splits into eight smaller projectiles on impact",
 			"UI_Ability_LayWaste",
@@ -36,7 +36,7 @@ public partial class Ability
 			0,
 			"lwShoot")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Ricochet",
 			"Shoot a piercing bullet that bounces three times before expiring",
 			"UI_Ability_Ricochet",
@@ -46,7 +46,7 @@ public partial class Ability
 		);
 
 		//player mobility
-		put(new Ability (
+		Put(new Ability (
 			"Overdrive",
 			"Increase maximum movespeed for a short time",
 			"UI_Ability_Overdrive",
@@ -54,7 +54,7 @@ public partial class Ability
 			0,
 			"overMove")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Propel",
 			"Gain a large burst of speed in one direction",
 			"UI_Ability_Propel",
@@ -62,7 +62,7 @@ public partial class Ability
 			3,
 			"propMove")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Shift",
 			"Teleport to a nearby location over 2 seconds",
 			"UI_Ability_Shift",
@@ -70,7 +70,7 @@ public partial class Ability
 			0,
 			"shiftMove")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Phase",
 			"Lose some movespeed, but gain the ability to pass through phase walls for a short time",
 			"UI_Ability_Phase",
@@ -80,7 +80,7 @@ public partial class Ability
 		);
 
 		//player utility
-		put(new Ability (
+		Put(new Ability (
 			"Displace",
 			"Fire off a wave that pushes objects away",
 			"UI_Ability_Displace",
@@ -88,7 +88,7 @@ public partial class Ability
 			0,
 			"dispUtil")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Grapple",
 			"Thow out a grapple that attaches to any solid object",
 			"UI_Ability_Grapple",
@@ -96,7 +96,7 @@ public partial class Ability
 			0,
 			"grappUtil")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Flash",
 			"Discharge shield energy to stun enemies",
 			"UI_Ability_Flash",
@@ -104,7 +104,7 @@ public partial class Ability
 			0,
 			"flashUtil")
 		);
-		put(new Ability (
+		Put(new Ability (
 			"Reflect",
 			"Empower the shield to reflect projectiles for a short time",
 			"UI_Ability_Reflect",
@@ -119,7 +119,7 @@ public partial class Ability
 	// Spray
 	private bool sprayShoot(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		Bullet b = Bullet.create ("Basic", subject, subject.defaultDT, subject.getFaction ());
+		Bullet b = Bullet.create ("Basic", subject, subject.DefaultDT, subject.GetFaction ());
 		b.transform.position += subject.transform.up + (Vector3)UnityEngine.Random.insideUnitCircle * 0.3f;
 		return true;
 	}

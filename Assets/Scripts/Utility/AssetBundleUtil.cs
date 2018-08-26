@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-public static class AssetBundleUtil
+public static class ABU
 {
 	/// <summary>
 	/// Because I'm lazy.
@@ -10,7 +10,7 @@ public static class AssetBundleUtil
 	/// <param name="bundlePath">Bundle path.</param>
 	/// <param name="name">Name.</param>
 	/// <typeparam name="T">Type of asset to load</typeparam>
-	public static T loadAsset<T>(string bundlePath, string name) where T : UnityEngine.Object
+	public static T LoadAsset<T>(string bundlePath, string name) where T : Object
 	{
 		if (bundlePath == "" || name == "")
 			return default(T);

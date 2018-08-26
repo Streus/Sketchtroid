@@ -22,7 +22,7 @@ public sealed partial class Status : ISerializable
 
 	// The unique ID for this status
 	private int _id;
-	public int id { get { return _id; } }
+	public int ID { get { return _id; } }
 
 	// The displayed name of this Status
 	public readonly string name;
@@ -40,26 +40,23 @@ public sealed partial class Status : ISerializable
 	public readonly DecayType decayType;
 
 	// The number of stacks in this Status
-	public int stacks { get; private set; }
-	public readonly int stacksMax;
+	public int Stacks { get; private set; }
+	public readonly int StacksMax;
 
 	// The time this Status will exist until it expires
-	public float duration { get; private set; }
+	public float Duration { get; private set; }
 
 	// The initial duration value passed to this Status
 	private readonly float initDuration;
 
 	// The components that make up this Status
 	private StatusComponent[] components;
-
-	// Event that fires when this status's duration completes
-	public event StatusEnded durationCompleted;
 	#endregion
 
 	#region STATIC_METHODS
 
 	// Get a copy of the given status from the repository
-	public static Status get(string name, float duration = float.NaN)
+	public static Status Get(string name, float duration = float.NaN)
 	{
 		Status s;
 		if (repo.TryGetValue (name, out s))
@@ -71,15 +68,15 @@ public sealed partial class Status : ISerializable
 		return null;
 	}
 
-	private static Status assignID(Status s)
+	private static Status AssignID(Status s)
 	{
 		s._id = latestID++;
 		return s;
 	}
 
-	private static void put(Status s)
+	private static void Put(Status s)
 	{
-		repo.Add (s.name, assignID (s));
+		repo.Add (s.name, AssignID (s));
 	}
 	#endregion
 
@@ -90,95 +87,91 @@ public sealed partial class Status : ISerializable
 		this.name = name;
 		this.desc = desc;
 		this.iconPath = iconPath;
-		this.icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
+		this.icon = ABU.LoadAsset<Sprite> (ICON_DIR, iconPath);
 
 		decayType = dt;
 		initDuration = duration;
-		this.duration = initDuration;
+		this.Duration = initDuration;
 
-		this.stacksMax = stacksMax;
-		stacks = 1;
+		this.StacksMax = stacksMax;
+		Stacks = 1;
 
 		this.components = components;
 		for(int i = 0; i < components.Length; i++)
-			this.components [i].setParent(this).stacks = stacks;
+			this.components [i].SetParent(this).stacks = Stacks;
 	}
-	public Status (Status s) : this (s.name, s.desc, s.iconPath, s.decayType, s.stacksMax, s.initDuration, s.components) { }
+	public Status (Status s) : this (s.name, s.desc, s.iconPath, s.decayType, s.StacksMax, s.initDuration, s.components) { }
 	public Status(Status s, float duration) : this(s)
 	{
 		this.initDuration = duration;
-		this.duration = initDuration;
+		this.Duration = initDuration;
 	}
 	public Status(SerializationInfo info, StreamingContext context)
 	{
 		name = info.GetString ("name");
 		desc = info.GetString ("desc");
 		iconPath = info.GetString ("icon");
-		icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
+		icon = ABU.LoadAsset<Sprite> (ICON_DIR, iconPath);
 
 		decayType = (DecayType)info.GetInt32 ("decayType");
 		initDuration = info.GetSingle ("initDuration");
-		duration = info.GetSingle ("duration");
+		Duration = info.GetSingle ("duration");
 
-		stacksMax = info.GetInt32 ("stacksMax");
-		stacks = info.GetInt32 ("stacks");
+		StacksMax = info.GetInt32 ("stacksMax");
+		Stacks = info.GetInt32 ("stacks");
 
 		int numComponents = info.GetInt32 ("numComponents");
 		this.components = new StatusComponent[numComponents];
 		for (int i = 0; i < numComponents; i++)
-			components[i] = ((StatusComponent)info.GetValue ("component" + i, typeof(StatusComponent))).setParent(this);
+			components[i] = ((StatusComponent)info.GetValue ("component" + i, typeof(StatusComponent))).SetParent(this);
 	}
 
 	/* Instance Methods */
 
 	// Stack this Status with another of the same type
-	public void stack(Entity subject, int dStacks)
+	public void Stack(Entity subject, int dStacks)
 	{
-		duration = initDuration;
-		dStacks = Mathf.Clamp (dStacks, 0, stacksMax - stacks);
+		Duration = initDuration;
+		dStacks = Mathf.Clamp (dStacks, 0, StacksMax - Stacks);
 		if (dStacks == 0)
 			return;
 		foreach (StatusComponent sc in components)
 		{
-			sc.onRevert (subject);
+			sc.OnRevert (subject);
 			sc.stacks += dStacks;
-			if(this.stacks > 0)
-				sc.onApply (subject);
+			if(this.Stacks > 0)
+				sc.OnApply (subject);
 		}
-		this.stacks += dStacks;
+		this.Stacks += dStacks;
 	}
 
 	// Called by the subject during the update loop
 	// Returns true if it ended.
-	public bool updateDuration(Entity subject, float time)
+	public bool UpdateDuration(Entity subject, float time)
 	{
-		onUpdate (subject, time);
+		OnUpdate (subject, time);
 
-		duration -= time;
-		if (duration <= 0f)
+		Duration -= time;
+		if (Duration <= 0f)
 		{
 			switch (decayType)
 			{
 			case DecayType.communal:
-				onStatusEnded ();
 				return true;
 			case DecayType.serial:
-				stack (subject, -1);
-				if (stacks <= 0)
-				{
-					onStatusEnded ();
+				Stack (subject, -1);
+				if (Stacks <= 0)
 					return true;
-				}
 				break;
 			}
 		}
 		return false;
 	}
 
-	public float durationPercentage { get { return duration / initDuration; } }
+	public float DurationPercentage { get { return Duration / initDuration; } }
 
 	// Get a StatusComponent on this Status of type T
-	public T getComponent<T>() where T : StatusComponent
+	public T GetComponent<T>() where T : StatusComponent
 	{
 		foreach (StatusComponent sc in components)
 			if (sc.GetType () == typeof(T))
@@ -189,80 +182,80 @@ public sealed partial class Status : ISerializable
 	// --Hooks--
 
 	// Called when this Status is first added to an Entity
-	public void onApply(Entity subject)
+	public void OnApply(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onApply (subject);
+			sc.OnApply (subject);
 	}
 
 	// Called when this Status is removed from its subject
-	public void onRevert(Entity subject)
+	public void OnRevert(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onRevert (subject);
+			sc.OnRevert (subject);
 	}
 
 	// Called every update cycle by the subject
-	public void onUpdate(Entity subject, float time)
+	public void OnUpdate(Entity subject, float time)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onUpdate (subject, time);
+			sc.OnUpdate (subject, time);
 	}
 
 	// Called whenever the subject takes damage
-	public void onDamageTaken(Entity subject, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	public void OnDamageTaken(Entity subject, Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onDamageTaken (subject, attacker, rawDamage, calcDamage, dt, hitShields);
+			sc.OnDamageTaken (subject, attacker, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// Called whenever the subject deals damage
-	public void onDamageDealt(Entity subject, Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	public void OnDamageDealt(Entity subject, Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onDamageDealt (subject, victim, rawDamage, calcDamage, dt, hitShields);
+			sc.OnDamageDealt (subject, victim, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// Called when the subject dies
-	public void onDeath(Entity subject)
+	public void OnDeath(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onDeath (subject);
+			sc.OnDeath (subject);
 	}
 
 	// Called when the subject's shields fall to zero
-	public void onShieldsDown(Entity subject)
+	public void OnShieldsDown(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onShieldsDown (subject);
+			sc.OnShieldsDown (subject);
 	}
 
 	// Called when the subject's shields are fully recharged
-	public void onShieldsRecharged(Entity subject)
+	public void OnShieldsRecharged(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onShieldsRecharged (subject);
+			sc.OnShieldsRecharged (subject);
 	}
 
 	// Called when the subject enters a stunned state
 	public void onStunned(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onStunned (subject);
+			sc.OnStunned (subject);
 	}
 
 	// Called when the subject enters a rooted state
 	public void onRooted(Entity subject)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onRooted (subject);
+			sc.OnRooted (subject);
 	}
 
 	// Called when the subject is healed
 	public void onHealed(Entity subject, float healAmount)
 	{
 		foreach (StatusComponent sc in components)
-			sc.onHealed (subject, healAmount);
+			sc.OnHealed (subject, healAmount);
 	}
 
 	// For serialization
@@ -274,23 +267,16 @@ public sealed partial class Status : ISerializable
 
 		info.AddValue ("decayType", (int)decayType);
 		info.AddValue ("initDuration", initDuration);
-		info.AddValue ("duration", duration);
+		info.AddValue ("duration", Duration);
 
-		info.AddValue ("stacksMax", stacksMax);
-		info.AddValue ("stacks", stacks);
+		info.AddValue ("stacksMax", StacksMax);
+		info.AddValue ("stacks", Stacks);
 
 		info.AddValue ("numComponents", components.Length);
 		for (int i = 0; i < components.Length; i++)
 		{
 			info.AddValue ("components" + i, components [i]);
 		}
-	}
-
-	// Called when this Status's duration falls below zero
-	public void onStatusEnded()
-	{
-		if (durationCompleted != null)
-			durationCompleted (this);
 	}
 
 	// Equiv check
@@ -306,14 +292,12 @@ public sealed partial class Status : ISerializable
 	// String representation
 	public override string ToString ()
 	{
-		return name + "\n" + desc + "\n" + duration.ToString("#00.0") + " / " + initDuration.ToString("#00.0");
+		return name + "\n" + desc + "\n" + Duration.ToString("#00.0") + " / " + initDuration.ToString("#00.0");
 	}
 
 	#endregion
 
 	#region INTERNAL_TYPES
-	/* Delegates and Events */
-	public delegate void StatusEnded(Status s);
 
 	/* Inner classes, etc. */
 	public enum DecayType

@@ -22,18 +22,18 @@ public class ROProperty : Editor
 	{
 		tar.Update ();
 
-		EditorGUILayout.SelectableLabel (ro.rID, EditorStyles.largeLabel);
+		EditorGUILayout.SelectableLabel (ro.RID, EditorStyles.largeLabel);
 
 		GUI.enabled = !EditorApplication.isPlayingOrWillChangePlaymode;
 
 		EditorGUILayout.BeginHorizontal ();
 		EditorGUILayout.PrefixLabel ("Ignore Reset");
-		ro.setIgnoreReset (EditorGUILayout.Toggle (ro.getIgnoreReset ()));
+		ro.SetIgnoreReset (EditorGUILayout.Toggle (ro.GetIgnoreReset ()));
 		EditorGUILayout.EndHorizontal ();
 
 		EditorGUILayout.BeginHorizontal ();
 		EditorGUILayout.PrefixLabel ("Exclude From Directory");
-		ro.setExcludeFromDirectory (EditorGUILayout.Toggle (ro.getExcludeFromDirectory ()));
+		ro.SetExcludeFromDirectory (EditorGUILayout.Toggle (ro.GetExcludeFromDirectory ()));
 		EditorGUILayout.EndHorizontal ();
 
 		GUI.enabled = true;

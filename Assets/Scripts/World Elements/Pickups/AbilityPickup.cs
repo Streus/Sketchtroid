@@ -21,23 +21,23 @@ public class AbilityPickup : Pickup
 		Update ();
 	}
 
+#if UNITY_EDITOR
 	public void Update()
 	{
-		#if UNITY_EDITOR
 		if(!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
 		{
-			abilData = Ability.get (ability);
+			abilData = Ability.Get (ability);
 			if (abilData != null)
 			{
 				icon.sprite = abilData.icon;
 			}
 		}
-		#endif
 	}
+#endif
 
-	protected override void apply (Entity e)
+	protected override void Apply (Entity e)
 	{
 		GameManager.instance.unlockAbility (abilData);
-		RegisteredObject.destroy (gameObject);
+		RegisteredObject.Destroy (gameObject);
 	}
 }

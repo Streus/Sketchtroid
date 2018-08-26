@@ -12,14 +12,14 @@ namespace CircuitNodes
 		[SerializeField]
 		private bool invert;
 
-		public override bool isActivated ()
+		public override bool IsActivated ()
 		{
 			if (target != null)
-				return invert ? !target.isActivated () : target.isActivated();
+				return invert ? !target.IsActivated () : target.IsActivated();
 			return false;
 		}
 
-		public override void setActive (bool state)
+		public override void SetActive (bool state)
 		{
 			Debug.LogWarning ("Cannot set " + gameObject.name + "; it is a Leaf node.");
 		}

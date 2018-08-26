@@ -27,7 +27,7 @@ public sealed class Bullet : MonoBehaviour
 	#region STATIC_VARS
 	private const string PREF_DIR = "core";
 
-	public static Color damageTypeToColor(DamageType type)
+	public static Color DamageTypeToColor(DamageType type)
 	{
 		switch (type)
 		{
@@ -60,13 +60,13 @@ public sealed class Bullet : MonoBehaviour
 
 	// The type of damage this bullet deals
 	private DamageType _dt;
-	public DamageType damageType
+	public DamageType DamageType
 	{
 		get { return _dt; }
 		set
 		{
 			_dt = value;
-			GetComponent<SpriteRenderer> ().color = damageTypeToColor (_dt);
+			GetComponent<SpriteRenderer> ().color = DamageTypeToColor (_dt);
 		}
 	}
 
@@ -101,7 +101,7 @@ public sealed class Bullet : MonoBehaviour
 	#region STATIC_METHODS
 
 	// Create a new bullet instance
-	public static Bullet create(GameObject bullet, Entity source, Faction faction = Faction.NEUTRAL)
+	public static Bullet Create(GameObject bullet, Entity source, Faction faction = Faction.NEUTRAL)
 	{
 		GameObject inst = (GameObject)Instantiate (bullet, source.transform.position, source.transform.rotation);
 		Bullet b = inst.GetComponent<Bullet> ();
@@ -109,15 +109,15 @@ public sealed class Bullet : MonoBehaviour
 		b.source = source;
 		return b;
 	}
-	public static Bullet create(string prefabName, Entity source, Faction faction = Faction.NEUTRAL)
+	public static Bullet Create(string prefabName, Entity source, Faction faction = Faction.NEUTRAL)
 	{
-		GameObject go = AssetBundleUtil.loadAsset<GameObject> (PREF_DIR, prefabName);
-		return create (go, source, faction);
+		GameObject go = ABU.LoadAsset<GameObject> (PREF_DIR, prefabName);
+		return Create (go, source, faction);
 	}
 	public static Bullet create(string prefabName, Entity source, DamageType damageType, Faction faction = Faction.NEUTRAL)
 	{
-		Bullet bullet = create (prefabName, source, faction);
-		bullet.damageType = damageType;
+		Bullet bullet = Create (prefabName, source, faction);
+		bullet.DamageType = damageType;
 		return bullet;
 	}
 	#endregion
@@ -141,7 +141,7 @@ public sealed class Bullet : MonoBehaviour
 	public void Start()
 	{
 		if (behavior != null)
-			behavior.start (this);
+			behavior.OnStart (this);
 	}
 
 	public void Update()
@@ -156,19 +156,19 @@ public sealed class Bullet : MonoBehaviour
 		}
 
 		if (behavior != null)
-			behavior.update (this);
+			behavior.OnUpdate (this);
 	}
 
 	public void FixedUpdate()
 	{
 		if (behavior != null)
-			behavior.fixedUpdate (this);
+			behavior.OnFixedUpdate (this);
 	}
 
 	public void LateUpdate()
 	{
 		if (behavior != null)
-			behavior.lateUpdate (this);
+			behavior.OnLateUpdate (this);
 	}
 
 	public void OnTriggerEnter2D (Collider2D col)
@@ -180,50 +180,50 @@ public sealed class Bullet : MonoBehaviour
 
 		if (relay != null && e == null)
 		{
-			e = relay.logCollision (this);
+			e = relay.LogCollision (this);
 		}
 
 		if (e != null)
 		{
-			if (faction != e.getFaction ())
+			if (faction != e.GetFaction ())
 			{
-				Entity.damageEntity (e, source, damage, damageType);
-				onHit (col, e);
+				Entity.DamageEntity (e, source, damage, DamageType);
+				OnHit (col, e);
 				if (destroyOnHit)
 					OnDeath ();
 			}
 		}
 		else if (i != null)
 		{
-			onHit (col);
+			OnHit (col);
 //			i.OnInteract (damageType);
 		}
 		else if (d != null)
 		{
-			onHit (col);
-			d.applyDamage (damage);
+			OnHit (col);
+			d.ApplyDamage (damage);
 		}
 		else if (col.tag == "Indes")
 		{
-			onHit (col);
+			OnHit (col);
 			OnDeath ();
 		}
 	}
 
-	private void onHit(Collider2D col, Entity hit)
+	private void OnHit(Collider2D col, Entity hit)
 	{
 		if (behavior != null)
-			behavior.onHit (this, col, hit);
+			behavior.OnHit (this, col, hit);
 	}
-	private void onHit(Collider2D col)
+	private void OnHit(Collider2D col)
 	{
-		onHit (col, null);
+		OnHit (col, null);
 	}
 
 	public void OnDeath()
 	{
 		if (behavior != null)
-			behavior.onDeath (this);
+			behavior.OnDeath (this);
 
 		//finish up by destroying this bullet
 		Destroy(gameObject);
@@ -240,32 +240,32 @@ public sealed class Bullet : MonoBehaviour
 
 	#region GETTERS_SETTERS
 
-	public float getMovespeed()
+	public float GetMovespeed()
 	{
 		return movespeed;
 	}
 
-	public Entity getSource()
+	public Entity GetSource()
 	{
 		return source;
 	}
 
-	public float getDuration()
+	public float GetDuration()
 	{
 		return duration;
 	}
 
-	public void resetDuration()
+	public void ResetDuration()
 	{
 		duration = initDuration;
 	}
 
-	public Collider2D getColBody()
+	public Collider2D GetColBody()
 	{
 		return colbody;
 	}
 
-	public Rigidbody2D getPhysBody()
+	public Rigidbody2D GetPhysBody()
 	{
 		return physbody;
 	}

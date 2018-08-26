@@ -39,24 +39,24 @@ namespace StatusComponents
 			finalHeal = info.GetSingle ("finalHeal");
 		}
 
-		public override void onUpdate (Entity subject, float time)
+		public override void OnUpdate (Entity subject, float time)
 		{
 			currentTick -= time;
 			if (currentTick <= 0)
 			{
-				Entity.healEntity (subject, healPerTick);
-				if (parent.duration >= tickRate)
+				Entity.HealEntity (subject, healPerTick);
+				if (parent.Duration >= tickRate)
 					currentTick = tickRate;
 				else
 				{
-					finalHeal = healPerTick * (parent.duration / tickRate);
+					finalHeal = healPerTick * (parent.Duration / tickRate);
 				}
 			}
 		}
 
-		public override void onRevert (Entity subject)
+		public override void OnRevert (Entity subject)
 		{
-			Entity.healEntity (subject, finalHeal);
+			Entity.HealEntity (subject, finalHeal);
 		}
 
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)

@@ -5,21 +5,20 @@ using UnityEngine.UI;
 
 public class TextPrompt : MonoBehaviour
 {
-	/* Static Variables */
+	#region INSTANCE_VARS
 
-
-	/* Instance Variables */
 	[SerializeField]
 	private Text header;
 	[SerializeField]
 	private Text subText;
+	#endregion
 
-	/* Static Methods */
+	#region STATIC_METHODS
 
 	// Create a text prompt with a given text value and duration
-	public static TextPrompt create(RectTransform parent, string title, string caption, float duration)
+	public static TextPrompt Create(RectTransform parent, string title, string caption, float duration)
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core", "TextPrompt");
+		GameObject pref = ABU.LoadAsset<GameObject> ("core", "TextPrompt");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		TextPrompt tp = inst.GetComponent<TextPrompt> ();
 
@@ -30,8 +29,5 @@ public class TextPrompt : MonoBehaviour
 
 		return tp;
 	}
-
-	/* Instance Methods */
-
-
+	#endregion
 }

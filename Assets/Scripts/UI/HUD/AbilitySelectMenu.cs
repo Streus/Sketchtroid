@@ -29,16 +29,16 @@ public class AbilitySelectMenu : MonoBehaviour
 	{
 		Menu m = GetComponent<Menu> ();
 		if (m != null)
-			m.changedFocus += focusMenu;
+			m.changedFocus += FocusMenu;
 	}
 
-	private void focusMenu(bool inFocus)
+	private void FocusMenu(bool inFocus)
 	{
 		if (inFocus)
 		{
-			setupWheel (0, offensiveLayout, offensiveAbilities);
-			setupWheel (1, mobilityLayout, mobilityAbilities);
-			setupWheel (2, utilityLayout, utilityAbilities);
+			SetupWheel (0, offensiveLayout, offensiveAbilities);
+			SetupWheel (1, mobilityLayout, mobilityAbilities);
+			SetupWheel (2, utilityLayout, utilityAbilities);
 		}
 		else
 		{
@@ -52,20 +52,20 @@ public class AbilitySelectMenu : MonoBehaviour
 		}
 	}
 
-	private void setupWheel(int abilityIndex, Transform layout, string[] abilityList)
+	private void SetupWheel(int abilityIndex, Transform layout, string[] abilityList)
 	{
 		ToggleGroup tg = layout.GetComponent<ToggleGroup> ();
 		for (int i = 0; i < abilityList.Length; i++)
 		{
 			if (/*true ||*/ GameManager.instance.isAbilityUnlocked (abilityList [i]))
 			{
-				Ability a = HUDManager.getInstance().getSubject ().getAbility (abilityIndex);
-				AbilitySelector aSel = AbilitySelector.create (layout, abilityList [i], abilityIndex, tg);
+				Ability a = HUDManager.GetInstance().GetSubject ().GetAbility (abilityIndex);
+				AbilitySelector aSel = AbilitySelector.Create (layout, abilityList [i], abilityIndex, tg);
 				if (a != null && a.name == abilityList [i])
 				{
-					aSel.setActive (false);
-					aSel.setToggle (true);
-					aSel.setActive (true);
+					aSel.SetActive (false);
+					aSel.SetToggle (true);
+					aSel.SetActive (true);
 				}
 			}
 		}

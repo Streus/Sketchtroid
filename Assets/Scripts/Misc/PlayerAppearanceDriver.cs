@@ -172,7 +172,7 @@ public class PlayerAppearanceDriver : MonoBehaviour
 		}
 
 		dtSymbol.sprite = symbols [((int)dt) - 1];
-		dtSymbol.color = Bullet.damageTypeToColor (dt);
+		dtSymbol.color = Bullet.DamageTypeToColor (dt);
 	}
 
 	[System.Serializable]

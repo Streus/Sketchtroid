@@ -20,7 +20,7 @@ public class Bindings : ISerializable //TODO Bindings class
 	//TODO expand bindings list
 
 	// Length of the bindings list
-	public const int length = 7;
+	public const int LENGTH = 7;
 
 	#endregion
 
@@ -37,7 +37,7 @@ public class Bindings : ISerializable //TODO Bindings class
 
 	public Bindings()
 	{
-		keys = new KeyCode[length];
+		keys = new KeyCode[LENGTH];
 	}
 	public Bindings(SerializationInfo info, StreamingContext context)
 	{
@@ -47,7 +47,7 @@ public class Bindings : ISerializable //TODO Bindings class
 	/// <summary>
 	/// Sets the key for the associated control
 	/// </summary>
-	public void setBinding(int control, KeyCode key)
+	public void SetBinding(int control, KeyCode key)
 	{
 		try
 		{
@@ -63,9 +63,9 @@ public class Bindings : ISerializable //TODO Bindings class
 	/// Checks if the key associated with the control is in the given event.
 	/// Returns true if it is, false otherwise.
 	/// </summary>
-	public bool getControl(int control, EventType type = EventType.Used)
+	public bool GetControl(int control, EventType type = EventType.Used)
 	{
-		if (control < 0 || control > length)
+		if (control < 0 || control > LENGTH)
 		{
 			Debug.LogError ("Control index out of bounds: " + control);
 			return false;

@@ -119,11 +119,11 @@ public class SceneDoor : MonoBehaviour
 			Vector2 screenPos = Camera.main.WorldToScreenPoint (target.transform.position);
 			if (screenPos.x > Screen.width + borderPadding || screenPos.x < -borderPadding
 			    || screenPos.y > Screen.height + borderPadding || screenPos.y < -borderPadding)
-				SceneStateManager.getInstance ().transitionTo (destination);
+				SceneStateManager.GetInstance ().TransitionTo (destination);
 		}
 	}
 
-	public void startTransitionIn(GameObject player)
+	public void StartTransitionIn(GameObject player)
 	{
 		transitioningIn = true;
 		player.GetComponent<Controller> ().enabled = false;
@@ -142,6 +142,6 @@ public class SceneDoor : MonoBehaviour
 		player.GetComponent<Rigidbody2D> ().AddForce (player.transform.up * 60f, ForceMode2D.Impulse);
 
 		//show current scene name
-		HUDManager.getInstance().displayTextPrompt (SceneManager.GetActiveScene ().name, "");
+		HUDManager.GetInstance().DisplayTextPrompt (SceneManager.GetActiveScene ().name, "");
 	}
 }

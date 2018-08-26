@@ -41,7 +41,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	// The default damage type this Entity will deal
 	[SerializeField]
 	private DamageType _defaultDT = DamageType.PHYSICAL;
-	public DamageType defaultDT
+	public DamageType DefaultDT
 	{
 		get { return _defaultDT; }
 		set
@@ -59,13 +59,13 @@ public sealed class Entity : MonoBehaviour, IReapable
 	private float combatTimer;
 
 	// If > 0, this Entity will not take damage
-	private Stat invincible;
+	private int invincible;
 
 	// If > 0, this Entity's Controller cannot take any action
-	private Stat stunned;
+	private int stunned;
 
 	// If > 0, this Entity cannot move
-	private Stat rooted;
+	private int rooted;
 
 	// Used with Cryo damage type
 	private float freezeProgress;
@@ -84,7 +84,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 	#endregion
 
 	#region STATIC_METHODS
-	public static void damageEntity(Entity victim, Entity attacker, float damage, DamageType dt, bool ignoreShields = false, params Status[] s)
+	public static void DamageEntity(Entity victim, Entity attacker, float damage, DamageType dt, bool ignoreShields = false, params Status[] s)
 	{
 		//everyone is in combat
 		victim.combatTimer = COMBAT_TIMER_MAX;
@@ -95,72 +95,78 @@ public sealed class Entity : MonoBehaviour, IReapable
 		if (damage < 0)
 			damage = 0;
 
-		//victim is invincible, do nothing
-		if (victim.isInvincible())
-			return;
-
 		//the actual damage value that will be subtracted from health/shields
 		float calcDamage = damage;
 
-		//do special dt-based effects and apply resistances
-		switch (dt)
-		{
-		case DamageType.PHYSICAL:
-			calcDamage *= (100f - (float)victim.physResist.value) / 100f;
-			break;
-		case DamageType.ELECTRIC:
-			calcDamage *= (100f - (float)victim.elecResist.value) / 100f;
-			//TODO special electric dt effect
-			break;
-		case DamageType.BIO:
-			calcDamage *= (100f - (float)victim.biolResist.value) / 100f;
-			//TODO special biological dt effect
-			break;
-		case DamageType.CRYO:
-			calcDamage *= (100f - (float)victim.cryoResist.value) / 100f;
-			victim.freezeProgress++;
-			//TODO specal cryo dt effect. change sprite color based on freezeProg?
-			break;
-		case DamageType.PYRO:
-			calcDamage *= (100f - (float)victim.pyroResist.value) / 100f;
-			//TODO special pyro dt effect
-			break;
-		case DamageType.VOID:
-			calcDamage *= (100f - (float)victim.voidResist.value) / 100f;
-			//TODO special void dt effect
-			break;
-		}
+		bool hitShields = false;
 
-		bool hitShields = victim.shields > 0f && !ignoreShields;
-		if (hitShields)
+		//victim is invincible, do nothing
+		if (!victim.Invincible)
 		{
-			//deal damage to the shields
-			victim.shields -= calcDamage;
-			if (victim.shields <= 0f)
+			//do special dt-based effects and apply resistances
+			switch (dt)
 			{
-				victim.shields = 0f;
-				victim.onShieldsDown ();
-				victim.shieldDelay = victim.shieldDelayMax;
+			case DamageType.PHYSICAL:
+				calcDamage *= (100f - (float)victim.physResist.Value) / 100f;
+				break;
+			case DamageType.ELECTRIC:
+				calcDamage *= (100f - (float)victim.elecResist.Value) / 100f;
+				//TODO special electric dt effect
+				break;
+			case DamageType.BIO:
+				calcDamage *= (100f - (float)victim.biolResist.Value) / 100f;
+				//TODO special biological dt effect
+				break;
+			case DamageType.CRYO:
+				calcDamage *= (100f - (float)victim.cryoResist.Value) / 100f;
+				victim.freezeProgress++;
+				//TODO specal cryo dt effect. change sprite color based on freezeProg?
+				break;
+			case DamageType.PYRO:
+				calcDamage *= (100f - (float)victim.pyroResist.Value) / 100f;
+				//TODO special pyro dt effect
+				break;
+			case DamageType.VOID:
+				calcDamage *= (100f - (float)victim.voidResist.Value) / 100f;
+				//TODO special void dt effect
+				break;
+			}
+
+			hitShields = victim.shields > 0f && !ignoreShields;
+			if (hitShields)
+			{
+				//deal damage to the shields
+				victim.shields -= calcDamage;
+				if (victim.shields <= 0f)
+				{
+					victim.shields = 0f;
+					victim.OnShieldsDown ();
+					victim.shieldDelay = victim.shieldDelayMax;
+				}
+			}
+			else
+			{
+				//deal damage to health
+				victim.health -= calcDamage;
+				if (victim.health <= 0f)
+				{
+					victim.health = 0f;
+					victim.OnDeath ();
+				}
 			}
 		}
 		else
 		{
-			//deal damage to health
-			victim.health -= calcDamage;
-			if (victim.health <= 0f)
-			{
-				victim.health = 0f;
-				victim.onDeath ();
-			}
+			calcDamage = damage = 0f;
 		}
 
 		//combat event hooks
-		victim.onDamageTaken (attacker, damage, calcDamage, dt, hitShields);
+		victim.OnDamageTaken (attacker, damage, calcDamage, dt, hitShields);
 		if(attacker != null)
-			attacker.onDamageDealt (victim, damage, calcDamage, dt, hitShields);
+			attacker.OnDamageDealt (victim, damage, calcDamage, dt, hitShields);
 	}
 
-	public static void healEntity(Entity e, float healAmount)
+	public static void HealEntity(Entity e, float healAmount)
 	{
 		if (healAmount < 0f)
 			healAmount = 0f;
@@ -189,9 +195,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		combatTimer = 0f;
 
-		invincible = new Stat (0, 0);
-		stunned = new Stat (0, 0);
-		rooted = new Stat (0, 0);
+		invincible = 0;
+		stunned = 0;
+		rooted = 0;
 		freezeProgress = 0f;
 
 		statuses = new Dictionary<string, Status>();
@@ -207,28 +213,28 @@ public sealed class Entity : MonoBehaviour, IReapable
 		Destructable parDes = GetComponentInParent<Destructable> ();
 
 		if (parEnt != null && parEnt != this)
-			parEnt.died += onDeath;
+			parEnt.died += OnDeath;
 		else if (parDes != null)
-			parDes.destructed += onDeath;
+			parDes.destructed += OnDeath;
 	}
 
-	public float healthPerc { get { return health / healthMax; } }
-	public float shieldPerc { get { return shields / shieldsMax; } }
+	public float HealthPerc { get { return health / healthMax; } }
+	public float ShieldPerc { get { return shields / shieldsMax; } }
 
 
-	public Faction getFaction()
+	public Faction GetFaction()
 	{
 		return faction;
 	}
 
 	// --- IReapable Methods ---
-	public SeedCollection.Base reap()
+	public SeedCollection.Base Reap()
 	{
 		Seed seed = new Seed (gameObject);
 
 		return seed;
 	}
-	public void sow(SeedCollection.Base s)
+	public void Sow(SeedCollection.Base s)
 	{
 		if (s == null)
 			return;
@@ -255,7 +261,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 		pyroResist = seed.pyroResist;
 		voidResist = seed.voidResist;
 
-		defaultDT = seed.defaultDT;
+		DefaultDT = seed.defaultDT;
 
 		movespeed = seed.movespeed;
 
@@ -270,7 +276,6 @@ public sealed class Entity : MonoBehaviour, IReapable
 		statuses = seed.statuses;
 		foreach(Status st in statuses.Values)
 		{
-			st.durationCompleted += removeStatus;
 			if (statusAdded != null)
 				statusAdded (st);
 		}
@@ -289,19 +294,25 @@ public sealed class Entity : MonoBehaviour, IReapable
 		List<string> removeList = new List<string> ();
 		foreach (Status s in statuses.Values)
 		{
-			if (s.updateDuration (this, Time.deltaTime))
+			if (s.UpdateDuration (this, Time.deltaTime))
 				removeList.Add (s.name);
 		}
 
 		//remove statuses that have finished their durations
 		for (int i = 0; i < removeList.Count; i++)
-			statuses.Remove (removeList[i]);
+		{
+			Status s;
+			if (statuses.TryGetValue (removeList[i], out s))
+			{
+				RemoveStatus (s);
+			}
+		}
 
 		//update all abilities
 		for (int i = 0; i < abilities.Length; i++)
 		{
 			if (abilities [i] != null)
-				abilities [i].updateCooldown (Time.deltaTime);
+				abilities [i].UpdateCooldown (Time.deltaTime);
 		}
 
 		//update combat timer
@@ -327,19 +338,18 @@ public sealed class Entity : MonoBehaviour, IReapable
 	#region STATUS_HANDLING
 
 	// Add a status to the Entity and begin listening for its end
-	public void addStatus(Status s)
+	public void AddStatus(Status s)
 	{
 		Status existing;
 		if (statuses.TryGetValue (s.name, out existing))
 		{
-			existing.stack (this, 1);
+			existing.Stack (this, 1);
 			return;
 		}
 
 		//this status is new to this Entity
 		statuses.Add (s.name, s);
-		s.durationCompleted += removeStatus;
-		s.onApply (this);
+		s.OnApply (this);
 
 		//notify listeners
 		if (statusAdded != null)
@@ -347,10 +357,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// Either a status naturally ran out, or it is being manually removed
-	public void removeStatus(Status s)
+	public void RemoveStatus(Status s)
 	{
-		s.onRevert (this);
-		s.durationCompleted -= removeStatus;
+		s.OnRevert (this);
 		statuses.Remove (s.name);
 
 		//notify listeners
@@ -359,50 +368,50 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// Check for a specific status in this Entity's status list
-	public bool hasStatus(string name)
+	public bool HasStatus(string name)
 	{
 		return statuses.ContainsKey (name);
 	}
 
-	public bool hasStatus(Status s)
+	public bool HasStatus(Status s)
 	{
-		return hasStatus (s.name);
+		return HasStatus (s.name);
 	}
 
 	// Get an IEnumerable so that the list can be iterated over, but not changed
 	// Casting totally isn't a thing, right?
-	public IEnumerable getStatusList()
+	public IEnumerable GetStatusList()
 	{
-		return (IEnumerable)statuses;
+		return statuses;
 	}
 	#endregion
 
 	#region ABILITY_HANDLING
 
 	// Add an ability to this Entity
-	public bool addAbility(Ability a, int index = -1)
+	public bool AddAbility(Ability a, int index = -1)
 	{
 		//don't allow ability changes if in combat
 		//don't allow null insertions
 		//don't allow active ability additions
-		if (inCombat() || a == null || a.active)
+		if (InCombat() || a == null || a.Active)
 			return false;
 
 		//add the ability and set it to active
 		if (index == -1)
 		{
 			abilities [abilSize++] = a;
-			a.active = true;
+			a.Active = true;
 
 			if (abilSize >= abilities.Length)
-				resizeAbilities ();
+				ResizeAbilities ();
 		}
 		else if (index >= 0 && index < abilities.Length)
 		{
 			if (abilities [index] != null && abilityRemoved != null)
 				abilityRemoved (abilities [index], index);
 			abilities [index] = a;
-			a.active = true;
+			a.Active = true;
 		}
 		else
 			return false;
@@ -413,7 +422,7 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		return true;
 	}
-	private void resizeAbilities()
+	private void ResizeAbilities()
 	{
 		Ability[] temp = abilities;
 		abilities = new Ability[temp.Length * 2];
@@ -422,10 +431,10 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// Remove an ability from this Entity
-	public bool removeAbility(Ability a)
+	public bool RemoveAbility(Ability a)
 	{
 		//don't allow ability changes if in combat
-		if (inCombat())
+		if (InCombat())
 			return false;
 
 		//remove the ability and set it to inactive
@@ -433,14 +442,13 @@ public sealed class Entity : MonoBehaviour, IReapable
 		{
 			//look for equal reference
 			if (a == abilities [i])
-				return removeAbility (i);
+				return RemoveAbility (i);
 		}
 		return false;
 	}
-	#pragma warning disable 0168
-	public bool removeAbility(int index)
+	public bool RemoveAbility(int index)
 	{
-		if (inCombat ())
+		if (InCombat ())
 			return false;
 
 		Ability removed = null;
@@ -452,14 +460,14 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 			removed = abilities[index];
 			abilities[index] = null;
-			removed.active = false;
+			removed.Active = false;
 
 			if (abilityRemoved != null)
 				abilityRemoved (removed, index);
 		}
-		catch(IndexOutOfRangeException ioore)
+		catch(IndexOutOfRangeException)
 		{
-			Debug.LogError ("Attempted to remove a non-existant Ability."); //DEBUG
+			Debug.LogError ("Attempted to remove a non-existant Ability. Index: " + index); //DEBUG
 			return false;
 		}
 
@@ -467,9 +475,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// Swap the ability at index for a new ability. Returns the the old ability (null if fails)
-	public Ability swapAbility(Ability a, int index)
+	public Ability SwapAbility(Ability a, int index)
 	{
-		if (inCombat() || a == null)
+		if (InCombat() || a == null)
 			return null;
 
 		//swap 'em
@@ -479,13 +487,13 @@ public sealed class Entity : MonoBehaviour, IReapable
 			old = abilities [index];
 			abilities [index] = a;
 			if(a != null)
-				a.active = true;
+				a.Active = true;
 			if(old != null)
-				old.active = false;
+				old.Active = false;
 		}
-		catch(IndexOutOfRangeException ioore)
+		catch(IndexOutOfRangeException)
 		{
-			Debug.LogError ("Tried to swap out non-existant Ability"); //DEBUG
+			Debug.LogError ("Tried to swap out non-existant Ability. Index: " + index); //DEBUG
 			return null;
 		}
 
@@ -494,10 +502,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		return old;
 	}
-	#pragma warning restore 0168
 
 	// Ability getter
-	public Ability getAbility(int index)
+	public Ability GetAbility(int index)
 	{
 		if (index < 0 || index >= abilities.Length)
 			return null;
@@ -505,146 +512,126 @@ public sealed class Entity : MonoBehaviour, IReapable
 	}
 
 	// For externally looping through the ability list
-	public int abilityCount { get { return abilSize; } }
-	public int abilityCap { get { return abilities.Length; } }
+	public int AbilityCount { get { return abilSize; } }
+	public int AbilityCap { get { return abilities.Length; } }
 	#endregion
 
 	#region COLLISION_LOG_HANDLING
 
 	// Add an entry to the collision log
 	// Returns false if the entry already exists
-	public bool addColLogEntry(Bullet bullet)
+	public bool AddColLogEntry(Bullet bullet)
 	{
 		bool isNew = collisonLog.Add (bullet);
 		if (isNew)
-			bullet.bulletDied += removeColLogEntry;
+			bullet.bulletDied += RemoveColLogEntry;
 		return isNew;
 	}
 
 	// Called automatically by bullets in the collision log when they die
-	private void removeColLogEntry(Bullet bullet)
+	private void RemoveColLogEntry(Bullet bullet)
 	{
 		bool existed = collisonLog.Remove (bullet);
 		if (existed)
-			bullet.bulletDied -= removeColLogEntry;
+			bullet.bulletDied -= RemoveColLogEntry;
 	}
 	#endregion
 
 	#region BUILTIN_STATUSES
 
-	public bool inCombat()
+	public bool InCombat()
 	{
 		return combatTimer > 0f;
 	}
-	public bool frozen()
+	public bool Frozen
 	{
-		return freezeProgress > (float)cryoResist.value + 50f;
+		get { return freezeProgress > (cryoResist.Value + 50f); }
 	}
-	public bool setInvincible(bool val)
+	
+	public bool Invincible
 	{
-		if (val)
-			invincible += 1;
-		else
-			invincible -= 1;
-		return isInvincible ();
-	}
-	public bool isInvincible()
-	{
-		return invincible.value > 0;
-	}
-
-	public bool setStunned(bool val)
-	{
-		if (val)
+		get { return invincible >= 0; }
+		set
 		{
-			stunned += 1;
+			invincible += value ? 1 : -1;
+		}
+	}
 
-			foreach (Status s in statuses.Values)
-				s.onStunned (this);
-
-			if (wasStunned != null)
+	public bool Stunned
+	{
+		get { return stunned >= 0; }
+		set
+		{
+			int startStunned = stunned;
+			stunned += value ? 1 : -1;
+			if (startStunned <= 0 && stunned > 0 && wasStunned != null)
 				wasStunned ();
 		}
-		else
-			stunned -= 1;
-		return isStunned ();
-	}
-	public bool isStunned()
-	{
-		return stunned.value > 0;
 	}
 
-	public bool setRooted(bool val)
+	public bool Rooted
 	{
-		if (val)
+		get { return rooted >= 0; }
+		set
 		{
-			rooted += 1;
-
-			foreach (Status s in statuses.Values)
-				s.onRooted (this);
-
-			if (wasRooted != null)
+			int startRooted = rooted;
+			rooted += value ? 1 : -1;
+			if (startRooted <= 0 && rooted > 0 && wasRooted != null) 
 				wasRooted ();
 		}
-		else
-			rooted -= 1;
-		return isRooted ();
 	}
-	public bool isRooted()
-	{
-		return rooted.value > 0;
-	}
+
 	#endregion
 
 	#region HOOKS
 
 	// This Entity took damage
-	private void onDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	private void OnDamageTaken(Entity attacker, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (Status s in statuses.Values)
-			s.onDamageTaken (this, attacker, rawDamage, calcDamage, dt, hitShields);
+			s.OnDamageTaken (this, attacker, rawDamage, calcDamage, dt, hitShields);
 
 		if (tookDamage != null)
 			tookDamage (this, attacker, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// This Entity dealt damage
-	private void onDamageDealt(Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
+	private void OnDamageDealt(Entity victim, float rawDamage, float calcDamage, DamageType dt, bool hitShields)
 	{
 		foreach (Status s in statuses.Values)
-			s.onDamageDealt (this, victim, rawDamage, calcDamage, dt, hitShields);
+			s.OnDamageDealt (this, victim, rawDamage, calcDamage, dt, hitShields);
 
 		if (tookDamage != null)
 			dealtDamage (victim, this, rawDamage, calcDamage, dt, hitShields);
 	}
 
 	// This Entity has died
-	public void onDeath()
+	public void OnDeath()
 	{
 		foreach (Status s in statuses.Values)
-			s.onDeath (this);
+			s.OnDeath (this);
 		
 		if (died != null)
 			died ();
 
-		RegisteredObject.destroy (gameObject);
+		RegisteredObject.Destroy (gameObject);
 	}
 
 	// Shields have fallen to zero
-	private void onShieldsDown()
+	private void OnShieldsDown()
 	{
 		foreach (Status s in statuses.Values)
-			s.onShieldsDown (this);
+			s.OnShieldsDown (this);
 
 		if (shieldsBroken != null)
 			shieldsBroken ();
 	}
 
 	// Shields have recharged to full
-	private void onShieldsRecharged()
+	private void OnShieldsRecharged()
 	{
 		foreach (Status s in statuses.Values)
-			s.onShieldsRecharged (this);
+			s.OnShieldsRecharged (this);
 
 		if (shieldsRecharged != null)
 			shieldsRecharged ();
@@ -711,9 +698,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 		public float combatTimer;
 
-		public Stat invincible;
-		public Stat stunned;
-		public Stat rooted;
+		public int invincible;
+		public int stunned;
+		public int rooted;
 
 		public float freezeProgress;
 
@@ -786,9 +773,9 @@ public sealed class Entity : MonoBehaviour, IReapable
 
 			combatTimer = info.GetSingle("combatTimer");
 
-			invincible = (Stat)info.GetValue("invincible", typeof(Stat));
-			stunned = (Stat)info.GetValue("stunned", typeof(Stat));
-			rooted = (Stat)info.GetValue("rooted", typeof(Stat));
+			invincible = info.GetInt32("invincible");
+			stunned = info.GetInt32 ("stunned");
+			rooted = info.GetInt32 ("rooted");
 
 			freezeProgress = info.GetSingle("freezeProgress");
 

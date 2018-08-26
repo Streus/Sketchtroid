@@ -14,7 +14,7 @@ public sealed class SceneStateManager : ISerializable
 	private const float RESET_TIMER_MAX = 900f;
 
 	private static SceneStateManager instance;
-	public static SceneStateManager getInstance()
+	public static SceneStateManager GetInstance()
 	{
 		if (instance == null)
 		{
@@ -51,7 +51,7 @@ public sealed class SceneStateManager : ISerializable
 		resetTimers = new Dictionary<string, float> ();
 		ignoreSet = new HashSet<string> ();
 
-		SceneManager.activeSceneChanged += activeSceneTransitioned;
+		SceneManager.activeSceneChanged += ActiveSceneTransitioned;
 	}
 	public SceneStateManager(SerializationInfo info, StreamingContext context)
 	{
@@ -67,8 +67,8 @@ public sealed class SceneStateManager : ISerializable
 			ignoreSet.Add((string)info.GetValue ("ignoreSet" + i, typeof(string)));
 
 		//replace existing SSM
-		SceneManager.activeSceneChanged -= instance.activeSceneTransitioned;
-		SceneManager.activeSceneChanged += activeSceneTransitioned;
+		SceneManager.activeSceneChanged -= instance.ActiveSceneTransitioned;
+		SceneManager.activeSceneChanged += ActiveSceneTransitioned;
 
 		instance = this;
 	}
@@ -79,7 +79,7 @@ public sealed class SceneStateManager : ISerializable
 	}
 
 	// Save the data for the current scene
-	public void transitionTo(string nextName)
+	public void TransitionTo(string nextName)
 	{
 		//decrement timers based on time spent in current scene
 		float timeSpent = GameManager.instance.startScene();
@@ -116,8 +116,6 @@ public sealed class SceneStateManager : ISerializable
 		//update all timers
 		resetTimers = updatedTimers;
 
-		SceneManager.LoadScene(nextName, LoadSceneMode.Single);
-
 		//if the current scene is not ignored, save data from it
 		if (!ignoreSet.Contains (SceneManager.GetActiveScene ().name))
 		{
@@ -129,11 +127,11 @@ public sealed class SceneStateManager : ISerializable
 				currData = new Dictionary<string, SeedCollection> ();
 
 			//add each ROs data to the dictionary
-			foreach (RegisteredObject ro in RegisteredObject.getObjects())
+			foreach (RegisteredObject ro in RegisteredObject.GetObjects())
 			{
-				if (currData.ContainsKey (ro.rID))
-					currData.Remove (ro.rID);
-				currData.Add (ro.rID, ro.reap ());
+				if (currData.ContainsKey (ro.RID))
+					currData.Remove (ro.RID);
+				currData.Add (ro.RID, ro.Reap ());
 			}
 
 			//replace any old data with the new data (including resetTimer data)
@@ -147,35 +145,36 @@ public sealed class SceneStateManager : ISerializable
 			Console.println ("[SSM] " + SceneManager.GetActiveScene ().name + " is being ignored.", Console.Tag.info, Console.nameToChannel("SSM"));
 
 		//do the scene transition and tell the GM what scene was entered
-		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
-		GameManager.instance.currentScene = nextName;
 		GameManager.instance.savePlayer ();
+		SceneManager.LoadScene (nextName, LoadSceneMode.Single);
+		SceneManager.SetActiveScene (SceneManager.GetSceneByName (nextName));
 	}
 
 	// Go to a new scene without saving anything from the current scene
-	public void jumpTo(string sceneName)
+	public void JumpTo(string sceneName)
 	{
+		GameManager.instance.savePlayer ();
 		SceneManager.LoadScene (sceneName, LoadSceneMode.Single);
 		SceneManager.SetActiveScene (SceneManager.GetSceneByName (sceneName));
-		GameManager.instance.currentScene = sceneName;
-		GameManager.instance.savePlayer ();
 	}
 
 	// Load saved data into ROs in the new scene
-	private void activeSceneTransitioned(Scene prev, Scene curr)
+	private void ActiveSceneTransitioned(Scene prev, Scene curr)
 	{
+		GameManager.instance.currentScene = curr.name;
+
 		//create a player object from saved data
-		if(curr.name != "main") //TODO see if there's a better way to do this
+		if (curr.name != "main") //TODO see if there's a better way to do this
 			GameManager.instance.createPlayer();
 
-		Console.println ("[SSM] Loading values for " + curr.name + ".", Console.Tag.info, Console.nameToChannel("SSM"));
+		Console.println ("[SSM] Loading values for \"" + curr.name + "\"", Console.Tag.info, Console.nameToChannel("SSM"));
 
 		Dictionary<string, SeedCollection> currData;
 
 		//if no data is saved, exit the method
 		if (!scenes.TryGetValue (curr.name, out currData))
 		{
-			Console.println ("[SSM] No data to load for " + curr.name + ".", Console.Tag.info, Console.nameToChannel("SSM"));
+			Console.println ("[SSM] No data to load for \"" + curr.name + "\"", Console.Tag.info, Console.nameToChannel("SSM"));
 			return;
 		}
 
@@ -184,39 +183,39 @@ public sealed class SceneStateManager : ISerializable
 		{
 			if (sb.prefabPath != "")
 			{
-				if (RegisteredObject.recreate (sb.prefabPath, sb.prefabName, sb.registeredID, sb.parentID) != null)
-					Console.println ("[SSM] Respawned prefab object: " + sb.registeredID + ".", Console.Tag.info, Console.nameToChannel("SSM"));
+				if (RegisteredObject.Recreate (sb.prefabPath, sb.prefabName, sb.registeredID, sb.parentID) != null)
+					Console.println ("[SSM] Respawned prefab object: \"" + sb.registeredID + "\"", Console.Tag.info, Console.nameToChannel("SSM"));
 				else
-					Console.println ("[SSM] Failed to respawn prefab object: " + sb.registeredID + ".", Console.Tag.error, Console.nameToChannel("SSM"));
+					Console.println ("[SSM] Failed to respawn prefab object: \"" + sb.registeredID + "\"", Console.Tag.error, Console.nameToChannel("SSM"));
 			}
 		}
 
 		//iterate over the list of ROs and pass them data
-		foreach (RegisteredObject ro in RegisteredObject.getObjects())
+		foreach (RegisteredObject ro in RegisteredObject.GetObjects())
 		{
 			SeedCollection data;
-			if (currData.TryGetValue (ro.rID, out data))
-				ro.sow (data);
+			if (currData.TryGetValue (ro.RID, out data))
+				ro.Sow (data);
 		}
 	}
 
 	// Adds the current scene to the ignore list. Returns false if it already was in the
 	//ignore list (Also clears out existing data, ifex).
-	public bool ignoreCurrentScene()
+	public bool IgnoreCurrentScene()
 	{
 		string currName = SceneManager.GetActiveScene ().name;
 		scenes.Remove (currName);
 
 		bool newIgnore = ignoreSet.Add (currName);
 		if(newIgnore)
-			Console.println ("[SSM] Ignoring " + SceneManager.GetActiveScene ().name + ".", Console.Tag.warning, Console.nameToChannel("SSM"));
+			Console.println ("[SSM] Ignoring \"" + SceneManager.GetActiveScene ().name + "\"", Console.Tag.warning, Console.nameToChannel("SSM"));
 
 		return newIgnore;
 	}
 
 	// Called by RegisteredObjects when their client components are destroyed in gameplay.
 	// Places the passed seed into the current scene's dictionary
-	public void store(string ID, SeedCollection seed)
+	public void Store(string ID, SeedCollection seed)
 	{
 		//get the data for the current scene. if none exists, create a container
 		Dictionary<string, SeedCollection> currData;
@@ -231,7 +230,7 @@ public sealed class SceneStateManager : ISerializable
 			currData.Remove (ID);
 		currData.Add (ID, seed);
 
-		Console.println ("[SSM] Created destruction entry for " + ID + ".", Console.Tag.info, Console.nameToChannel("SSM"));
+		Console.println ("[SSM] Created destruction entry for \"" + ID + "\"", Console.Tag.info, Console.nameToChannel("SSM"));
 	}
 
 	// For serialization

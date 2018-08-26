@@ -32,10 +32,10 @@ namespace AI
 				if (p.decision.check (c))
 				{
 					if (p.success != null)
-						c.setState (p.success);
+						c.SetState (p.success);
 				}
 				else if (p.failure != null)
-					c.setState (p.failure);
+					c.SetState (p.failure);
 			}
 		}
 

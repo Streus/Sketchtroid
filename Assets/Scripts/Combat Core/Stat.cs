@@ -33,14 +33,14 @@ public struct Stat : ISerializable
 	private int maxValue;
 
 	// The externally viewable value of this Stat
-	public int value
+	public int Value
 	{
 		get
 		{
 			if (locked)
 				return lockValue;
 
-			int tVal = calculatedValue;
+			int tVal = CalculatedValue;
 
 			if (hasMin && tVal < minValue)
 				return minValue;
@@ -52,7 +52,7 @@ public struct Stat : ISerializable
 	}
 
 	// (bass + add) * mult
-	private int calculatedValue
+	private int CalculatedValue
 	{
 		get
 		{
@@ -61,7 +61,7 @@ public struct Stat : ISerializable
 		}
 	}
 
-	public int min
+	public int Min
 	{
 		get
 		{
@@ -71,13 +71,13 @@ public struct Stat : ISerializable
 		}
 		set
 		{
-			minValue = min;
+			minValue = Min;
 			hasMin = true;
 
 			OnStatChanged ();
 		}
 	}
-	public int max
+	public int Max
 	{
 		get
 		{
@@ -87,7 +87,7 @@ public struct Stat : ISerializable
 		}
 		set
 		{
-			maxValue = max;
+			maxValue = Max;
 			hasMax = true;
 			OnStatChanged ();
 		}
@@ -171,14 +171,14 @@ public struct Stat : ISerializable
 	/* Instance Methods */
 
 	// Modify the baseValue of this Stat
-	public void setBase(int baseValue)
+	public void SetBase(int baseValue)
 	{
 		this.baseValue = baseValue;
 		OnStatChanged ();
 	}
 
 	// Set the lockValue and indicate it should be used instead of the calculated value
-	public void lockTo(int lockValue)
+	public void LockTo(int lockValue)
 	{
 		this.lockValue = lockValue;
 		locked = true;
@@ -187,33 +187,33 @@ public struct Stat : ISerializable
 	}
 
 	// Indicate the calculated value should be used for now
-	public void unlock()
+	public void Unlock()
 	{
 		locked = false;
 		OnStatChanged ();
 	}
 
 	// Remove the maximum limit on this Stat
-	public void removeMax()
+	public void RemoveMax()
 	{
 		hasMax = false;
 		OnStatChanged ();
 	}
 
 	// Remove the maximum limit on this Stat
-	public void removeMin()
+	public void RemoveMin()
 	{
 		hasMin = false;
 		OnStatChanged ();
 	}
 
 	// Used for resource bar type applications
-	public void maximize()
+	public void Maximize()
 	{
 		if(hasMax)
 			addValue = maxValue;
 	}
-	public void minimize()
+	public void Minimize()
 	{
 		if (hasMin)
 			addValue = minValue;

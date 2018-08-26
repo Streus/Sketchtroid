@@ -11,9 +11,9 @@ public class HealOverTimePickup : Pickup
 	[SerializeField]
 	private float duration = 3f;
 
-	protected override void apply (Entity e)
+	protected override void Apply (Entity e)
 	{
-		e.addStatus (new Status (
+		e.AddStatus (new Status (
 			"Heal",
 			"Gaining health over time",
 			"",

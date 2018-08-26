@@ -17,7 +17,7 @@ public class PressurePlate : Toggle
 		if (other.GetComponent<Bullet> () == null)
 		{
 			occupants++;
-			setActive (true);
+			SetActive (true);
 		}
 	}
 
@@ -28,7 +28,7 @@ public class PressurePlate : Toggle
 			if (--occupants <= 0)
 			{
 				occupants = 0;
-				setActive (false);
+				SetActive (false);
 			}
 		}
 	}

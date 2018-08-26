@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy (gameObject);
 
-		SceneStateManager.getInstance ().ignoreCurrentScene ();
+		SceneStateManager.GetInstance ().IgnoreCurrentScene ();
 
 		paused = false;
 		pauseLock = false;
@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour
 				body.simulated = !paused;
 				Controller c = body.GetComponent<Controller> ();
 				if (c != null)
-					c.setPause (body.simulated);
+					c.SetPause (body.simulated);
 			}
 
 			if (pauseToggled != null)
@@ -227,7 +227,7 @@ public class GameManager : MonoBehaviour
 		save.prevScene = prevScene;
 		save.difficulty = _difficulty;
 
-		save.playerData = playerData = player.GetComponent<RegisteredObject>().reap();
+		save.playerData = playerData = player.GetComponent<RegisteredObject>().Reap();
 
 		save.dtUnlocks = _damageTypeUnlocks;
 		save.abilities = _abilities;
@@ -246,7 +246,7 @@ public class GameManager : MonoBehaviour
 		BinaryFormatter formatter = new BinaryFormatter ();
 		try
 		{
-			formatter.Serialize (file, SceneStateManager.getInstance());
+			formatter.Serialize (file, SceneStateManager.GetInstance());
 		}
 		catch(SerializationException se)
 		{
@@ -330,7 +330,7 @@ public class GameManager : MonoBehaviour
 		loadData (saveName);
 
 		playerSpawnType = SPAWN_AT_SVPNT;
-		SceneStateManager.getInstance ().jumpTo (save.currScene);
+		SceneStateManager.GetInstance ().JumpTo (save.currScene);
 	}
 
 	// Delete all the data associated with a given save
@@ -349,22 +349,22 @@ public class GameManager : MonoBehaviour
 	// Create a player object
 	public GameObject createPlayer()
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core", "Player");
+		GameObject pref = ABU.LoadAsset<GameObject> ("core", "Player");
 		GameObject inst = Instantiate<GameObject> (pref);
 		_player = inst;
 		if (playerData != null)
 		{
 			RegisteredObject ro = _player.GetComponent<RegisteredObject> ();
-			ro.sow (playerData);
+			ro.Sow (playerData);
 		}
-		HUDManager.getInstance().setSubject (_player.GetComponent<Entity>());
+		HUDManager.GetInstance().SetSubject (_player.GetComponent<Entity>());
 
 		switch (playerSpawnType)
 		{
 		case SPAWN_AT_DOOR:
 			//find destination and spawn there
 			SceneDoor door = SceneDoor.getDoor (prevScene);
-			door.startTransitionIn (inst);
+			door.StartTransitionIn (inst);
 			break;
 		case SPAWN_AT_SVPNT:
 			CameraManager.scene_cam.setTarget(inst.transform);
@@ -381,7 +381,7 @@ public class GameManager : MonoBehaviour
 	public void savePlayer()
 	{
 		if(_player != null)
-			playerData = _player.GetComponent<RegisteredObject> ().reap ();
+			playerData = _player.GetComponent<RegisteredObject> ().Reap ();
 	}
 
 	// --- Unlock Management ---
@@ -407,7 +407,7 @@ public class GameManager : MonoBehaviour
 	}
 	public bool isAbilityUnlocked(string name)
 	{
-		return isAbilityUnlocked(Ability.get (name));
+		return isAbilityUnlocked(Ability.Get (name));
 	}
 
 	// Unlock an ability

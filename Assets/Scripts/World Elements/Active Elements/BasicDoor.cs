@@ -7,19 +7,19 @@ public class BasicDoor : CircuitNodes.LeafNode
 	[SerializeField]
 	private float toggleSpeed = 0.1f;
 
-	public override bool isActivated ()
+	public override bool IsActivated ()
 	{
-		bool state = base.isActivated ();
-		setActive (state);
+		bool state = base.IsActivated ();
+		SetActive (state);
 		return state;
 	}
 
-	public override void setActive (bool state)
+	public override void SetActive (bool state)
 	{
-		StartCoroutine (moveDoor (state));
+		StartCoroutine (MoveDoor (state));
 	}
 
-	private IEnumerator moveDoor(bool targetState)
+	private IEnumerator MoveDoor(bool targetState)
 	{
 		if (targetState)
 			toggleSpeed *= -1f;

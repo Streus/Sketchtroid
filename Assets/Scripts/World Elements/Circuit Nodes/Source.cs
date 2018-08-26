@@ -5,12 +5,12 @@ namespace CircuitNodes
 {
 	public class Source : CircuitNode
 	{
-		public override bool isActivated ()
+		public override bool IsActivated ()
 		{
 			return true;
 		}
 
-		public override void setActive (bool state)
+		public override void SetActive (bool state)
 		{
 			Debug.LogWarning ("Cannot set " + gameObject.name + "; it is a Source.");
 		}

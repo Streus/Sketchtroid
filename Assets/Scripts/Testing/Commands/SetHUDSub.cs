@@ -29,7 +29,7 @@ namespace Commands
 
 			try
 			{
-				HUDManager.getInstance().setSubject (subject);
+				HUDManager.GetInstance().SetSubject (subject);
 			}
 			#pragma warning disable 0168
 			catch(System.NullReferenceException nre)

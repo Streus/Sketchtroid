@@ -6,10 +6,8 @@ using UnityEngine.EventSystems;
 
 public class GameSummary : MonoBehaviour
 {
-	/* Static Vars */
-
-
-	/* Instance Vars */
+	#region INSTANCE_VARS
+	
 	[SerializeField]
 	private Text gameName;
 	[SerializeField]
@@ -28,19 +26,21 @@ public class GameSummary : MonoBehaviour
 	private Button loadButton;
 	[SerializeField]
 	private Button deleteButton;
-
+	
 	private GameManager.Save data;
+	#endregion
 
-	/* Static Methods */
-	public static GameSummary create(RectTransform parent, GameManager.Save data)
+	#region STATIC_METHODS
+
+	public static GameSummary Create(RectTransform parent, GameManager.Save data)
 	{
-		GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core", "GameSummary");
+		GameObject pref = ABU.LoadAsset<GameObject> ("core", "GameSummary");
 		GameObject inst = Instantiate<GameObject> (pref, parent, false);
 		GameSummary summary = inst.GetComponent<GameSummary> ();
-		summary.setName (data.gameName);
-		summary.setDifficulty (data.difficulty);
-		summary.setTime (data.gameTime);
-		summary.setArea (data.currScene);
+		summary.SetName (data.gameName);
+		summary.SetDifficulty (data.difficulty);
+		summary.SetTime (data.gameTime);
+		summary.SetArea (data.currScene);
 
 		for (int i = 0; i < summary.damageTypes.Length; i++)
 		{
@@ -58,26 +58,28 @@ public class GameSummary : MonoBehaviour
 
 		return summary;
 	}
+	#endregion
 
-	/* Instance Methods */
+	#region INSTANCE_VARS
+
 	public void Start()
 	{
-		loadButton.onClick.AddListener (startGame);
-		deleteButton.onClick.AddListener (deleteSave);
+		loadButton.onClick.AddListener (StartGame);
+		deleteButton.onClick.AddListener (DeleteSave);
 	}
 
-	public void setName(string name)
+	public void SetName(string name)
 	{
 		gameName.text = name;
 	}
 
-	public void setDifficulty(Difficulty difficulty)
+	public void SetDifficulty(Difficulty difficulty)
 	{
-		this.difficulty.color = Bullet.damageTypeToColor ((DamageType) ((int)difficulty + 2));
+		this.difficulty.color = Bullet.DamageTypeToColor ((DamageType) ((int)difficulty + 2));
 		this.difficulty.sprite = difficultyInsignias [(int)difficulty];
 	}
 
-	public void setTime(double time)
+	public void SetTime(double time)
 	{
 		System.TimeSpan f_time = System.TimeSpan.FromSeconds (time);
 		string timeString = f_time.ToString ();
@@ -92,20 +94,21 @@ public class GameSummary : MonoBehaviour
 		this.time.text = "Game Time: " + timeString;
 	}
 
-	public void setArea(string areaName)
+	public void SetArea(string areaName)
 	{
 		this.area.text = "Location: " + areaName;
 	}
 
-	private void startGame()
+	private void StartGame()
 	{
 		GameManager.instance.loadGame (data);
 	}
 
-	private void deleteSave()
+	private void DeleteSave()
 	{
 		GameManager.instance.deleteSave (data.saveName);
 		transform.parent.GetComponent<GameListPanel> ().calcTargetX ();
 		Destroy (gameObject);
 	}
+	#endregion
 }

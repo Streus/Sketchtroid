@@ -21,7 +21,7 @@ public class RegisteredObject : MonoBehaviour
 	#region INSTANCE_VARS
 	[SerializeField]
 	private string registeredID;
-	public string rID
+	public string RID
 	{
 		get { return registeredID; }
 	}
@@ -47,12 +47,12 @@ public class RegisteredObject : MonoBehaviour
 	#endregion
 
 	#region STATIC_METHODS
-	public static RegisteredObject[] getObjects()
+	public static RegisteredObject[] GetObjects()
 	{
 		return directory.ToArray ();
 	}
 
-	public static RegisteredObject findObject(string ID)
+	public static RegisteredObject FindObject(string ID)
 	{
 		return directory.Find (delegate(RegisteredObject obj) {
 			return obj.registeredID == ID;
@@ -60,41 +60,41 @@ public class RegisteredObject : MonoBehaviour
 	}
 
 	// For first-time spawning of prefabs that should be tracked by the SSM
-	public static GameObject create(string prefabPath, string prefabName, Vector3 position, Quaternion rotation)
+	public static GameObject Create(string prefabPath, string prefabName, Vector3 position, Quaternion rotation)
 	{
-		return create (prefabPath, prefabName, position, rotation, null);
+		return Create (prefabPath, prefabName, position, rotation, null);
 	}
-	public static GameObject create(string prefabPath, string prefabName, Vector3 position, Quaternion rotation, Transform parent)
+	public static GameObject Create(string prefabPath, string prefabName, Vector3 position, Quaternion rotation, Transform parent)
 	{
 		if (prefabPath == "" || prefabName == "")
 			throw new ArgumentException ("Cannot create prefab with empty path and/or name");
 
-		GameObject go = AssetBundleUtil.loadAsset<GameObject> (prefabPath, prefabName);
+		GameObject go = ABU.LoadAsset<GameObject> (prefabPath, prefabName);
 		GameObject inst;
 		if(parent == null)
 			inst = Instantiate (go, position, rotation);
 		else
 			inst = Instantiate (go, position, rotation, parent);
 		RegisteredObject ro = inst.GetComponent<RegisteredObject> ();
-		ro.generateID ();
+		ro.GenerateID ();
 		ro.prefabPath = prefabPath;
 		ro.prefabName = prefabName;
 		return inst;
 	}
 
 	// For respawning a prefab in the sow cycle
-	public static GameObject recreate(string prefabPath, string prefabName, string registeredID, string parentID)
+	public static GameObject Recreate(string prefabPath, string prefabName, string registeredID, string parentID)
 	{
 		if (prefabPath == "" || prefabName == "")
 			throw new ArgumentException ("Cannot create prefab with empty path and/or name");
 
-		GameObject go = AssetBundleUtil.loadAsset<GameObject> (prefabPath, prefabName);
+		GameObject go = ABU.LoadAsset<GameObject> (prefabPath, prefabName);
 		GameObject inst;
 		if (parentID == "")
 			inst = Instantiate (go, Vector3.zero, Quaternion.identity);
 		else
 		{
-			RegisteredObject parent = RegisteredObject.findObject (parentID);
+			RegisteredObject parent = RegisteredObject.FindObject (parentID);
 			if (parent == null)
 				throw new ArgumentException ("[RO] " + parentID + " does not exist!");
 			inst = Instantiate (go, Vector3.zero, Quaternion.identity, parent.transform);
@@ -108,24 +108,24 @@ public class RegisteredObject : MonoBehaviour
 
 	// Special wrapper method for the generic Monobehaviour#Destroy
 	// Manages saving the destruction state of a RO
-	public static void destroy(GameObject go)
+	public static void Destroy(GameObject go)
 	{
 		RegisteredObject ro = go.GetComponent<RegisteredObject> ();
 		if (ro != null)
-			ro.saveDestruction ();
-		Destroy (go);
+			ro.SaveDestruction ();
+		UnityEngine.Object.Destroy (go);
 	}
 	#endregion
 
 	#region INSTANCE_METHODS
 
 	// Generate a new ID for this RO
-	public bool generateID()
+	public bool GenerateID()
 	{
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		if (!allowGeneration || UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
 			return false;
-		#endif
+#endif
 
 		if (instanceID != GetInstanceID () || registeredID == "")
 		{
@@ -148,39 +148,39 @@ public class RegisteredObject : MonoBehaviour
 	{
 		registeredID = "";
 		instanceID = 0;
-		generateID ();
+		GenerateID ();
 	}
 
 	public void Awake()
 	{
-		generateID();
-		#if UNITY_EDITOR
+		GenerateID();
+#if UNITY_EDITOR
 		if(UnityEditor.EditorApplication.isPlaying)
 		{
-		#endif
+#endif
 			if(!excludeFromDirectory)
 				directory.Add (this);
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		}
-		#endif
+#endif
 
 	}
 
 	public void OnDestroy()
 	{
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		if(UnityEditor.EditorApplication.isPlaying)
 		{
-		#endif
+#endif
 			if(!excludeFromDirectory)
 				directory.Remove (this);
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		}
-		#endif
+#endif
 	}
 
 	// Get the reapable scripts attached to this GO and return their seeds
-	public SeedCollection reap()
+	public SeedCollection Reap()
 	{
 		IReapable[] blades = GetComponents<IReapable> ();
 		if (blades.Length <= 0)
@@ -214,7 +214,7 @@ public class RegisteredObject : MonoBehaviour
 	}
 
 	// Take a seed collection and distrubute it among the reapable scripts attached to this GO
-	public void sow(SeedCollection collection)
+	public void Sow(SeedCollection collection)
 	{
 		IReapable[] holes = GetComponents<IReapable> ();
 		if (holes.Length <= 0)
@@ -226,45 +226,45 @@ public class RegisteredObject : MonoBehaviour
 		prefabPath = collection.prefabPath;
 		prefabName = collection.prefabName;
 
-		collection.sowSeeds (gameObject, holes);
+		collection.SowSeeds (gameObject, holes);
 	}
 
 	// Tells the SSM that a RO has been destroyed through gameplay
-	private void saveDestruction()
+	private void SaveDestruction()
 	{
 		if (prefabPath != "")
 			return;
 
-		SeedCollection seed = reap ();
+		SeedCollection seed = Reap ();
 		seed.destroyed = true;
 
-		SceneStateManager.getInstance ().store (rID, seed);
+		SceneStateManager.GetInstance ().Store (RID, seed);
 	}
 
-	public bool getIgnoreReset()
+	public bool GetIgnoreReset()
 	{
 		return ignoreReset;
 	}
 
-	public void setIgnoreReset(bool val)
+	public void SetIgnoreReset(bool val)
 	{
 		ignoreReset = val;
 	}
 
-	public bool getExcludeFromDirectory()
+	public bool GetExcludeFromDirectory()
 	{
 		return excludeFromDirectory;
 	}
 
-	public void setExcludeFromDirectory(bool val)
+	public void SetExcludeFromDirectory(bool val)
 	{
 		//prevent modification from anywhere but in non-playing editor
 		//changing this in runtime could cause some inconsistent behavior
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		if(UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
 			return;
 		excludeFromDirectory = val;
-		#endif
+#endif
 	}
 
 	public override string ToString ()

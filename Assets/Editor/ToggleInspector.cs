@@ -2,7 +2,7 @@
 using UnityEditor;
 using CircuitNodes;
 
-[CustomEditor(typeof(CircuitNodes.Toggle))]
+[CustomEditor(typeof(Toggle))]
 public class ToggleInspector : Editor
 {
 	public override void OnInspectorGUI ()
@@ -13,6 +13,6 @@ public class ToggleInspector : Editor
 
 		Toggle t = (Toggle)target;
 		if (GUILayout.Button ("Toggle"))
-			t.setActive (!t.isActivated ());
+			t.SetActive (!t.IsActivated ());
 	}
 }

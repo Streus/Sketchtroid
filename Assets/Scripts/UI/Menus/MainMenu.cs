@@ -10,18 +10,18 @@ public class MainMenu : MonoBehaviour
 	/* Instance Vars */
 
 	/* Instance Methods */
-	public void continueGame()
+	public void ContinueGame()
 	{
 		//TODO continue button functionality
-		SceneStateManager.getInstance().jumpTo("test1"); //DEBUG temp continue func
+		SceneStateManager.GetInstance().JumpTo("test1"); //DEBUG temp continue func
 	}
 
-	public void beginExit()
+	public void BeginExit()
 	{
-		MenuManager.menusys.displayYNPrompt ("Are you sure?", exitGame, null);
+		MenuManager.menusys.DisplayYNPrompt ("Are you sure?", ExitGame, null);
 	}
 
-	private void exitGame()
+	private void ExitGame()
 	{
 		Application.Quit ();
 		#if UNITY_EDITOR

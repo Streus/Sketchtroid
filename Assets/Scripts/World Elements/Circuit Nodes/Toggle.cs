@@ -15,15 +15,15 @@ namespace CircuitNodes
 
 		public virtual void Start()
 		{
-			setActive (active);
+			SetActive (active);
 		}
 
-		public override bool isActivated ()
+		public override bool IsActivated ()
 		{
 			return active;
 		}
 
-		public override void setActive (bool state)
+		public override void SetActive (bool state)
 		{
 			active = state;
 			if (targets != null)
@@ -31,7 +31,7 @@ namespace CircuitNodes
 				for (int i = 0; i < targets.Length; i++)
 				{
 					if (targets [i] != null)
-						targets [i].setActive (active);
+						targets [i].SetActive (active);
 				}
 			}
 		}
@@ -54,12 +54,12 @@ namespace CircuitNodes
 
 		#region IReapable implementation
 
-		public virtual SeedCollection.Base reap ()
+		public virtual SeedCollection.Base Reap ()
 		{
 			return new Seed (this);
 		}
 
-		public virtual void sow (SeedCollection.Base seed)
+		public virtual void Sow (SeedCollection.Base seed)
 		{
 			Seed s = (Seed)seed;
 			active = s.active;

@@ -5,19 +5,21 @@ using UnityEngine.UI;
 
 public class HUDManager : MenuManager
 {
-	/* Static Vars */
+	#region STATIC_VARS
+
 	private static HUDManager instance;
-	public static HUDManager getInstance()
+	public static HUDManager GetInstance()
 	{
 		if (instance == null)
 		{
-			GameObject pref = AssetBundleUtil.loadAsset<GameObject> ("core", "HUD");
+			GameObject pref = ABU.LoadAsset<GameObject> ("core", "HUD");
 			instance = Instantiate<GameObject> (pref).GetComponent<HUDManager>();
 		}
 		return instance;
 	}
+	#endregion
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
 
 	// The Entity from which the HUD will pull values.
 	private Entity subject;
@@ -39,8 +41,11 @@ public class HUDManager : MenuManager
 	private RectTransform statListRoot;
 	//TODO add more fields to the HUDManager
 
+	#endregion
 
-	/* Instance Methods */
+
+	#region INSTANCE_METHODS
+
 	public void Awake()
 	{
 		if (instance == null)
@@ -50,7 +55,7 @@ public class HUDManager : MenuManager
 		else
 			Destroy (gameObject);
 
-		setSubject (null);
+		SetSubject (null);
 	}
 
 	public void Update()
@@ -58,31 +63,31 @@ public class HUDManager : MenuManager
 		if (subject == null)
 			return;
 
-		healthBar.fillAmount = subject.healthPerc;
-		shieldBar.fillAmount = subject.shieldPerc;
+		healthBar.fillAmount = subject.HealthPerc;
+		shieldBar.fillAmount = subject.ShieldPerc;
 
 		if (Input.GetKeyDown (KeyCode.Tab)) //TODO swap for proper bindings later
 		{
 			if (currentMenu.name != "Ability Select Menu")
-				showMenu (abilitySelectMenu);
+				ShowMenu (abilitySelectMenu);
 			else
-				showMenu (defaultMenu);
+				ShowMenu (defaultMenu);
 		}
 	}
 
 	// Change the Entity from which the HUD will pull values
-	public void setSubject(Entity subject)
+	public void SetSubject(Entity subject)
 	{
 		//clear old subject data
 		if (subject != null)
 		{
 			//clear old misc
-			subject.damageTypeChanged -= changeDamageType;
+			subject.damageTypeChanged -= ChangeDamageType;
 
 			//clear old ability list
-			subject.abilityAdded -= addAbility;
-			subject.abilityRemoved -= removeAbility;
-			subject.abilitySwapped -= swapAbilities;
+			subject.abilityAdded -= AddAbility;
+			subject.abilityRemoved -= RemoveAbility;
+			subject.abilitySwapped -= SwapAbilities;
 
 			for (int i = 0; i < abilListRoot.childCount; i++)
 				Destroy (abilListRoot.GetChild (i).gameObject);
@@ -91,8 +96,8 @@ public class HUDManager : MenuManager
 			for (int i = 0; i < statListRoot.childCount; i++)
 				Destroy (statListRoot.GetChild (i).gameObject);
 
-			subject.statusAdded -= addStatus;
-			subject.statusRemoved -= removeStatus;
+			subject.statusAdded -= AddStatus;
+			subject.statusRemoved -= RemoveStatus;
 		}
 
 		//set up new subject
@@ -101,55 +106,53 @@ public class HUDManager : MenuManager
 			return;
 
 		//setup ability list
-		for (int i = 0; i < subject.abilityCap; i++)
+		for (int i = 0; i < subject.AbilityCap; i++)
 		{
-			if (subject.getAbility (i) != null)
-				AbilityDisplay.create (abilListRoot, subject.getAbility (i));
+			if (subject.GetAbility (i) != null)
+				AbilityDisplay.Create (abilListRoot, subject.GetAbility (i));
 		}
 
-		subject.abilityAdded += addAbility;
-		subject.abilityRemoved += removeAbility;
-		subject.abilitySwapped += swapAbilities;
+		subject.abilityAdded += AddAbility;
+		subject.abilityRemoved += RemoveAbility;
+		subject.abilitySwapped += SwapAbilities;
 
 		//setup status list
-		foreach (Status s in subject.getStatusList())
-			addStatus (s);
+		foreach (Status s in subject.GetStatusList())
+			AddStatus (s);
 
-		subject.statusAdded += addStatus;
-		subject.statusRemoved += removeStatus;
+		subject.statusAdded += AddStatus;
+		subject.statusRemoved += RemoveStatus;
 
 		//misc
-		subject.damageTypeChanged += changeDamageType;
-		changeDamageType (subject.defaultDT);
+		subject.damageTypeChanged += ChangeDamageType;
+		ChangeDamageType (subject.DefaultDT);
 
 		//TODO other clearing and resetting of elements?
 	}
-	public Entity getSubject()
+	public Entity GetSubject()
 	{
 		return subject;
 	}
 
-
-
-	public void displayTextPrompt(string title, string caption, float duration = 5f)
+	public void DisplayTextPrompt(string title, string caption, float duration = 5f)
 	{
-		TextPrompt.create (GetComponent<RectTransform>(), title, caption, duration);
+		TextPrompt.Create (GetComponent<RectTransform>(), title, caption, duration);
 	}
 
-	private void addAbility(Ability a, int index)
+	private void AddAbility(Ability a, int index)
 	{
-		AbilityDisplay ad = AbilityDisplay.create (abilListRoot, a);
-		ad.changeCDColor (Bullet.damageTypeToColor (subject.defaultDT));
+		AbilityDisplay ad = AbilityDisplay.Create (abilListRoot, a);
+		ad.ChangeCDColor (Bullet.DamageTypeToColor (subject.DefaultDT));
 		ad.transform.SetSiblingIndex (index);
 	}
 
-	private void removeAbility(Ability a, int index)
+	private void RemoveAbility(Ability a, int index)
 	{
 		AbilityDisplay ad;
 		for (int i = 0; i < abilListRoot.childCount; i++)
 		{
 			ad = abilListRoot.GetChild (i).GetComponent<AbilityDisplay> ();
-			if (ad.hasAbility (a))
+			if (ad.HasAbility (a))
 			{
 				Destroy (ad.gameObject);
 				return;
@@ -157,23 +160,23 @@ public class HUDManager : MenuManager
 		}
 	}
 
-	private void swapAbilities(Ability a, Ability old, int index)
+	private void SwapAbilities(Ability a, Ability old, int index)
 	{
-		abilListRoot.GetChild (index).GetComponent<AbilityDisplay> ().setSubject (a);
+		abilListRoot.GetChild (index).GetComponent<AbilityDisplay> ().SetSubject (a);
 	}
 
-	private void addStatus (Status s)
+	private void AddStatus (Status s)
 	{
 		StatusDisplay.create (statListRoot, s);
 	}
 
-	private void removeStatus (Status s)
+	private void RemoveStatus (Status s)
 	{
 		StatusDisplay sd;
 		for (int i = 0; i < statListRoot.childCount; i++)
 		{
 			sd = statListRoot.GetChild (i).GetComponent<StatusDisplay> ();
-			if (sd.hasStatus (s))
+			if (sd.HasStatus (s))
 			{
 				Destroy (sd.gameObject);
 				return;
@@ -181,13 +184,14 @@ public class HUDManager : MenuManager
 		}
 	}
 
-	private void changeDamageType(DamageType dt)
+	private void ChangeDamageType(DamageType dt)
 	{
 		for (int i = 0; i < abilListRoot.childCount; i++)
 		{
 			AbilityDisplay ad = abilListRoot.GetChild (i).GetComponent<AbilityDisplay> ();
 			if (ad != null)
-				ad.changeCDColor (Bullet.damageTypeToColor (dt));
+				ad.ChangeCDColor (Bullet.DamageTypeToColor (dt));
 		}
 	}
+	#endregion
 }

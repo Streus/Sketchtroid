@@ -18,7 +18,7 @@ public class Player : Controller
 	public void Start()
 	{
 		//DEBUG add an infinite status
-		self.addStatus (Status.get ("DEBUG", float.PositiveInfinity));
+		self.AddStatus (Status.Get ("DEBUG", float.PositiveInfinity));
 	}
 
 	public override void Update()
@@ -27,27 +27,27 @@ public class Player : Controller
 			return;
 
 		//invoke abilities
-		if (binds.getControl(Bindings.C_ABIL_1))
-			useAbility (0, Vector2.zero, self.defaultDT);
-		if (binds.getControl(Bindings.C_ABIL_2))
-			useAbility (1, Vector2.zero);
-		if (binds.getControl(Bindings.C_ABIL_3))
-			useAbility (2, Vector2.zero);
+		if (binds.GetControl(Bindings.C_ABIL_1))
+			UseAbility (0, Vector2.zero, self.DefaultDT);
+		if (binds.GetControl(Bindings.C_ABIL_2))
+			UseAbility (1, Vector2.zero);
+		if (binds.GetControl(Bindings.C_ABIL_3))
+			UseAbility (2, Vector2.zero);
 
 		//TODO bring up damage type selector a-la TE ?
 		if (Input.GetKeyDown (KeyCode.Q))
 		{
-			DamageType next = self.defaultDT;
+			DamageType next = self.DefaultDT;
 			for (int i = 1; i < 7; i++)
 			{
-				next = (DamageType) (((int)self.defaultDT + i) % 7);
+				next = (DamageType) (((int)self.DefaultDT + i) % 7);
 
 				if (GameManager.instance.isDTUnlocked (next))
 					break;
 			}
 
 			if (next != DamageType.NONE)
-				self.defaultDT = next;
+				self.DefaultDT = next;
 		}
 
 		//DEBUG unlocking damage types
@@ -70,15 +70,15 @@ public class Player : Controller
 
 		//face the mouse
 		Vector3 mousePos = Camera.main.ScreenToWorldPoint (new Vector3 (Input.mousePosition.x, Input.mousePosition.y, 0));
-		facePoint (mousePos);
+		FacePoint (mousePos);
 
 		//movement
 		Vector2 movementVector = Vector2.zero;
 
-		bool up = binds.getControl (Bindings.C_FORWARD);
-		bool left = binds.getControl (Bindings.C_LEFT);
-		bool down = binds.getControl (Bindings.C_DOWN);
-		bool right = binds.getControl (Bindings.C_RIGHT);
+		bool up = binds.GetControl (Bindings.C_FORWARD);
+		bool left = binds.GetControl (Bindings.C_LEFT);
+		bool down = binds.GetControl (Bindings.C_DOWN);
+		bool right = binds.GetControl (Bindings.C_RIGHT);
 
 		if (up)
 			movementVector += Vector2.up;
@@ -89,6 +89,6 @@ public class Player : Controller
 		if (right)
 			movementVector += Vector2.right;
 
-		physbody.AddForce (movementVector * self.movespeed.value);
+		physbody.AddForce (movementVector * self.movespeed.Value);
 	}
 }

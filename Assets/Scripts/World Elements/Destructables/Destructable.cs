@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Runtime.Serialization;
 using System;
 
@@ -22,7 +21,7 @@ public class Destructable : MonoBehaviour, IReapable
 			parDes.destructed += OnDeath;
 	}
 
-	public void applyDamage(float amount)
+	public void ApplyDamage(float amount)
 	{
 		OnHit (amount);
 
@@ -31,12 +30,12 @@ public class Destructable : MonoBehaviour, IReapable
 			OnDeath ();
 	}
 
-	public SeedCollection.Base reap()
+	public SeedCollection.Base Reap()
 	{
 		Seed seed = new Seed (gameObject);
 		return seed;
 	}
-	public void sow(SeedCollection.Base s)
+	public void Sow(SeedCollection.Base s)
 	{
 		Seed seed = (Seed)s;
 
@@ -53,7 +52,7 @@ public class Destructable : MonoBehaviour, IReapable
 		if (destructed != null)
 			destructed ();
 
-		RegisteredObject.destroy (gameObject);
+		RegisteredObject.Destroy (gameObject);
 	}
 
 	public void OnDestroy()

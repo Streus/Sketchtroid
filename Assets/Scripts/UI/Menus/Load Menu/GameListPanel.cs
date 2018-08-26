@@ -5,18 +5,14 @@ using System.IO;
 
 public class GameListPanel : MonoBehaviour
 {
-	/* Static Vars */
+	#region INSTANCE_VARS
 
-
-	/* Instance Vars */
 	[SerializeField]
 	private int targetChild;
 	private float targetX;
+	#endregion
 
-	/* Static Methods */
-
-
-	/* Instance Methods */
+	#region INSTANCE_METHODS
 	public void Awake()
 	{
 		transform.parent.GetComponent<Menu> ().changedFocus += modifyList;
@@ -69,7 +65,7 @@ public class GameListPanel : MonoBehaviour
 				int start = save.LastIndexOf (Path.DirectorySeparatorChar) + 1;
 				int end = save.LastIndexOf ('.');
 				string sani_save = save.Substring (start, end - start);
-				GameSummary.create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
+				GameSummary.Create (GetComponent<RectTransform> (), GameManager.instance.loadSave (sani_save));
 				Debug.Log ("Loaded " + sani_save); //DEBUG
 			}
 		}
@@ -83,4 +79,5 @@ public class GameListPanel : MonoBehaviour
 		if(transform.childCount > 0)
 			calcTargetX ();
 	}
+	#endregion
 }

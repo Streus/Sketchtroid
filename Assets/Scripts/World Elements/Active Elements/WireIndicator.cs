@@ -16,7 +16,7 @@ public class WireIndicator : LeafNode
 
 	public void Update()
 	{
-		if (isActivated ())
+		if (IsActivated ())
 			rend.color = activeColor;
 		else
 			rend.color = inactiveColor;

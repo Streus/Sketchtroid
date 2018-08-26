@@ -11,28 +11,28 @@ namespace CircuitNodes
 
 		public override void Start ()
 		{
-			base.setActive (active);
+			base.SetActive (active);
 		}
 
 		private IEnumerator delayActive(bool state)
 		{
 			yield return new WaitForSeconds (delayTime);
-			base.setActive (state);
+			base.SetActive (state);
 		}
 
-		public override void setActive (bool state)
+		public override void SetActive (bool state)
 		{
 			StartCoroutine (delayActive (state));
 		}
 
-		public override SeedCollection.Base reap ()
+		public override SeedCollection.Base Reap ()
 		{
 			return new DelaySeed (this);
 		}
 
-		public override void sow (SeedCollection.Base seed)
+		public override void Sow (SeedCollection.Base seed)
 		{
-			base.sow (seed);
+			base.Sow (seed);
 			DelaySeed ds = (DelaySeed)seed;
 			delayTime = ds.delayTime;
 		}

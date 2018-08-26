@@ -18,7 +18,7 @@ namespace Commands
 
 		public override int execute (params string[] args)
 		{
-			Console.print (SceneStateManager.getInstance ().ToString ());
+			Console.print (SceneStateManager.GetInstance ().ToString ());
 			return Console.EXEC_SUCCESS;
 		}
 	}

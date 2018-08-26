@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class LandingPageMenu : MonoBehaviour
 {
@@ -13,9 +11,9 @@ public class LandingPageMenu : MonoBehaviour
 		if (Input.anyKeyDown && active)
 		{
 			if (nextMenu != null)
-				MenuManager.menusys.showMenu (nextMenu);
+				MenuManager.menusys.ShowMenu (nextMenu);
 			else
-				SceneStateManager.getInstance().jumpTo ("test1");
+				SceneStateManager.GetInstance().JumpTo ("test1");
 
 			active = false;
 		}

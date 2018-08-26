@@ -12,7 +12,7 @@ namespace CircuitNodes
 		[SerializeField]
 		private bool invert;
 
-		public override bool isActivated ()
+		public override bool IsActivated ()
 		{
 			if (targets == null)
 				return false;
@@ -20,7 +20,7 @@ namespace CircuitNodes
 			bool activated = false;
 			for (int i = 0; i < targets.Length; i++)
 			{
-				if (targets[i] != null && targets [i].isActivated ())
+				if (targets[i] != null && targets [i].IsActivated ())
 				{
 					activated = true;
 					break;
@@ -30,7 +30,7 @@ namespace CircuitNodes
 			return invert ? !activated : activated;
 		}
 
-		public override void setActive (bool state)
+		public override void SetActive (bool state)
 		{
 			Debug.LogWarning ("Cannot set " + gameObject.name + "; it is a (N)OR gate.");
 		}

@@ -40,17 +40,17 @@ public sealed partial class Ability : ISerializable
 
 	// The current cooldown value
 	private float _cooldownCurr;
-	public float cooldownCurr { get { return _cooldownCurr; } }
+	public float CooldownCurr { get { return _cooldownCurr; } }
 
 	// The maximum possible cooldown value
-	public readonly float cooldownMax;
+	public readonly float CooldownMax;
 
 	// The number of use charges this ability has accrued (<= chargesMax)
 	private int _charges;
-	public int charges { get { return _charges; } }
+	public int Charges { get { return _charges; } }
 
 	// The maximum number of use charges this ability can accrue
-	public readonly int chargesMax;
+	public readonly int ChargesMax;
 
 	// Delegate pointing the the method that will run when this ability is used
 	private UseEffect effect;
@@ -64,10 +64,20 @@ public sealed partial class Ability : ISerializable
 	public readonly string postAnim;
 
 	// Can this Ability be activated?
-	public bool available;
+	private int available;
+	public bool Available
+	{
+		get { return available <= 0; }
+		set { available += value ? 1 : -1; }
+	}
 
 	// Is this Ability's cooldown being updated?
-	public bool active;
+	private int active;
+	public bool Active
+	{
+		get { return active <= 0; }
+		set { active += value ? 1 : -1; }
+	}
 
 	// Persistent data intended to carry over between invokes of this Ability
 	private ISerializable persData;
@@ -76,7 +86,7 @@ public sealed partial class Ability : ISerializable
 	#region STATIC_METHODS
 
 	// Get an ability from the ability repository, ifex
-	public static Ability get(string name)
+	public static Ability Get(string name)
 	{
 		Ability a;
 		if (name != null && repository.TryGetValue (name, out a))
@@ -85,9 +95,9 @@ public sealed partial class Ability : ISerializable
 	}
 
 	// Add an ability to the ability repository
-	private static void put(Ability a)
+	private static void Put(Ability a)
 	{
-		repository.Add (a.name, a.assignID());
+		repository.Add (a.name, a.AssignID());
 	}
 
 	#endregion
@@ -101,14 +111,14 @@ public sealed partial class Ability : ISerializable
 		this.desc = desc;
 		this.iconPath = iconPath;
 		if (iconPath != "")
-			icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
+			icon = ABU.LoadAsset<Sprite> (ICON_DIR, iconPath);
 		else
 			icon = null;
 
-		this.cooldownMax = cooldownMax;
+		this.CooldownMax = cooldownMax;
 		_cooldownCurr = cooldownMax;
 
-		this.chargesMax = chargesMax;
+		this.ChargesMax = chargesMax;
 		_charges = 0;
 
 		effectName = effect;
@@ -129,24 +139,24 @@ public sealed partial class Ability : ISerializable
 		this.preAnim = preAnim;
 		this.postAnim = postAnim;
 
-		active = false;
-		available = true;
+		Active = false;
+		Available = true;
 
 		persData = null;
 	}
-	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.cooldownMax, a.chargesMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ this.id = a.id; }
+	public Ability(Ability a) : this (a.name, a.desc, a.iconPath, a.CooldownMax, a.ChargesMax, a.effectName, a.checkName, a.preAnim, a.postAnim){ this.id = a.id; }
 	public Ability(SerializationInfo info, StreamingContext context)
 	{
 		id = info.GetInt32 ("id");
 		name = info.GetString ("name");
 		desc = info.GetString ("desc");
 		iconPath = info.GetString ("iconPath");
-		icon = AssetBundleUtil.loadAsset<Sprite> (ICON_DIR, iconPath);
+		icon = ABU.LoadAsset<Sprite> (ICON_DIR, iconPath);
 
-		cooldownMax = info.GetSingle ("cooldownMax");
+		CooldownMax = info.GetSingle ("cooldownMax");
 		_cooldownCurr = info.GetSingle ("cooldownCurr");
 
-		chargesMax = info.GetInt32 ("chargesMax");
+		ChargesMax = info.GetInt32 ("chargesMax");
 		_charges = info.GetInt32 ("charges");
 
 		effectName = info.GetString ("effect");
@@ -166,8 +176,8 @@ public sealed partial class Ability : ISerializable
 		
 		preAnim = info.GetString ("preAnim");
 		postAnim = info.GetString ("postAnim");
-		available = info.GetBoolean ("available");
-		active = info.GetBoolean ("active");
+		Available = info.GetBoolean ("available");
+		Active = info.GetBoolean ("active");
 
 		persData = (ISerializable)info.GetValue ("persData", typeof(ISerializable));
 	}
@@ -175,45 +185,45 @@ public sealed partial class Ability : ISerializable
 	/* Instance Methods */
 
 	// Can this Ability be used?
-	public bool isReady()
+	public bool IsReady()
 	{
-		return (_cooldownCurr <= 0 || charges > 0) && active && available;
+		return (_cooldownCurr <= 0 || Charges > 0) && Active && Available;
 	}
 
 	// Return the percentage of the cooldown that has been completed
-	public float cooldownPercentage()
+	public float CooldownPercentage
 	{
-		return _cooldownCurr / cooldownMax;
+		get { return _cooldownCurr / CooldownMax; }
 	}
 
 	// Update the cooldown in accordance with the time the last update took
-	public void updateCooldown(float time)
+	public void UpdateCooldown(float time)
 	{
-		if (!active)
+		if (!Active)
 			return;
 
 		_cooldownCurr -= time;
 		if (_cooldownCurr <= 0f)
 		{
 			_cooldownCurr = 0f;
-			if(_charges < chargesMax)
+			if(_charges < ChargesMax)
 			{
 				_charges++;
-				if(_charges != chargesMax)
-					_cooldownCurr = cooldownMax;
+				if(_charges != ChargesMax)
+					_cooldownCurr = CooldownMax;
 			}
 		}
 	}
 
-	public void initPersData(ISerializable data)
+	public void InitPersData(ISerializable data)
 	{
 		persData = data;
 	}
 
 	// Called to use the Ability
-	public bool use(Entity subject, Vector2 targetPosition, params object[] args)
+	public bool Use(Entity subject, Vector2 targetPosition, params object[] args)
 	{
-		if (!isReady ())
+		if (!IsReady ())
 			return false;
 
 		if (check != null && !check (subject))
@@ -223,8 +233,8 @@ public sealed partial class Ability : ISerializable
 		{
 			if (_charges > 0)
 				_charges--;
-			if (_charges < chargesMax || chargesMax == 0)
-				_cooldownCurr = cooldownMax;
+			if (_charges < ChargesMax || ChargesMax == 0)
+				_cooldownCurr = CooldownMax;
 			return true;
 		}
 		return false;
@@ -238,11 +248,11 @@ public sealed partial class Ability : ISerializable
 		info.AddValue ("desc", desc);
 		info.AddValue ("iconPath", iconPath);
 
-		info.AddValue ("cooldownCurr", cooldownCurr);
-		info.AddValue ("cooldownMax", cooldownMax);
+		info.AddValue ("cooldownCurr", CooldownCurr);
+		info.AddValue ("cooldownMax", CooldownMax);
 
 		info.AddValue ("charges", _charges);
-		info.AddValue ("chargesMax", chargesMax);
+		info.AddValue ("chargesMax", ChargesMax);
 
 		info.AddValue ("effect", effectName);
 
@@ -251,8 +261,8 @@ public sealed partial class Ability : ISerializable
 		info.AddValue ("preAnim", preAnim);
 		info.AddValue ("postAnim", postAnim);
 
-		info.AddValue ("available", available);
-		info.AddValue ("active", active);
+		info.AddValue ("available", Available);
+		info.AddValue ("active", Active);
 
 		info.AddValue ("persData", persData);
 	}
@@ -276,8 +286,8 @@ public sealed partial class Ability : ISerializable
 		return name + "\n" +
 			desc + "\n" +
 			"Icon: " + ICON_DIR + iconPath + "\n" +
-			"Cooldown: " + cooldownCurr.ToString ("##0.0") + " / " + cooldownMax.ToString ("##0.0") + "\n" +
-			"Charges: " + _charges + " / " + chargesMax + "\n" + 
+			"Cooldown: " + CooldownCurr.ToString ("##0.0") + " / " + CooldownMax.ToString ("##0.0") + "\n" +
+			"Charges: " + _charges + " / " + ChargesMax + "\n" + 
 			"Effect: " + effect.Method.ToString() + "\n" +
 			"Prereq: " + checkName + "\n" +
 			"PreAnim: " + preAnim + "\n" +
@@ -285,7 +295,7 @@ public sealed partial class Ability : ISerializable
 	}
 
 	// Setting of ID values
-	private Ability assignID()
+	private Ability AssignID()
 	{
 		id = Ability.latestID++;
 		return this;

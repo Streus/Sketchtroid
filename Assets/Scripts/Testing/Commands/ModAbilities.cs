@@ -23,20 +23,20 @@ namespace Commands
 			string printOut = "ERROR";
 
 			//pre-checks
-			if (HUDManager.getInstance() == null)
+			if (HUDManager.GetInstance() == null)
 				throw new ExecutionException ("No currently active HUD!");
-			if (HUDManager.getInstance().getSubject () == null)
+			if (HUDManager.GetInstance().GetSubject () == null)
 				throw new ExecutionException ("HUD has no subject!");
 
-			Entity rep = HUDManager.getInstance().getSubject ();
+			Entity rep = HUDManager.GetInstance().GetSubject ();
 
 			// no modifications, just print out ability list info
 			if (args.Length < 2)
 			{
-				printOut = "Abilities[" + rep.abilityCount + "]:";
-				for (int i = 0; i < rep.abilityCap; i++)
+				printOut = "Abilities[" + rep.AbilityCount + "]:";
+				for (int i = 0; i < rep.AbilityCap; i++)
 				{
-					Ability a = rep.getAbility (i);
+					Ability a = rep.GetAbility (i);
 					if(a != null)
 						printOut += "\n" + a.name;
 					else
@@ -52,7 +52,7 @@ namespace Commands
 			//add an ability to the entity's set
 			case "add":
 				curIndex++;
-				rep.addAbility (Ability.get (args [curIndex]));
+				rep.AddAbility (Ability.Get (args [curIndex]));
 				printOut = "Added " + args [curIndex] + " to " + rep.name
 					+ "'s ability set.";
 				break;
@@ -63,20 +63,20 @@ namespace Commands
 				int index = 0;
 				if (int.TryParse (args [curIndex], out index))
 				{
-					if (index >= rep.abilityCount)
-						throw new ExecutionException ("Entity only has " + rep.abilityCount + "abilities! "
+					if (index >= rep.AbilityCount)
+						throw new ExecutionException ("Entity only has " + rep.AbilityCount + "abilities! "
 						+ index + " is out of bounds!");
-					rep.removeAbility (index);
+					rep.RemoveAbility (index);
 					printOut = "Removed ability #" + index + " from " + rep.name
 						+ "'s ability set.";
 				}
 				else
 				{
-					for (int i = 0; i < rep.abilityCount; i++)
+					for (int i = 0; i < rep.AbilityCount; i++)
 					{
-						if (rep.getAbility (i).name == args [curIndex])
+						if (rep.GetAbility (i).name == args [curIndex])
 						{
-							rep.removeAbility (i);
+							rep.RemoveAbility (i);
 							break;
 						}
 					}
@@ -90,10 +90,10 @@ namespace Commands
 				curIndex++;
 				if (int.TryParse (args [curIndex], out index))
 				{
-					if (index >= rep.abilityCount)
-						throw new ExecutionException ("Entity only has " + rep.abilityCount + "abilities! "
+					if (index >= rep.AbilityCount)
+						throw new ExecutionException ("Entity only has " + rep.AbilityCount + "abilities! "
 						+ index + " is out of bounds!");
-					rep.swapAbility (Ability.get(args[++curIndex]), index);
+					rep.SwapAbility (Ability.Get(args[++curIndex]), index);
 					printOut = "Swapped ability #" + index + " with " + args[curIndex]
 					+ " in " + rep.name + "'s ability set.";
 				}

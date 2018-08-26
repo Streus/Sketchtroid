@@ -23,13 +23,13 @@ public class MenuManager : MonoBehaviour
 		menus = FindObjectsOfType<Menu>();
 
 		if (currentMenu != null)
-			showMenu (currentMenu);
+			ShowMenu (currentMenu);
 		else
 			Debug.Log ("No default menu!");
 	}
 
 	// Retrieve a specific menu for the menu list
-	public Menu getMenu(string name)
+	public Menu GetMenu(string name)
 	{
 		foreach(Menu menu in menus)
 			if(menu.gameObject.name == name)
@@ -38,7 +38,7 @@ public class MenuManager : MonoBehaviour
 	}
 
 	// Switch to menu from the current menu
-	public void showMenu(Menu menu)
+	public void ShowMenu(Menu menu)
 	{
 		if(currentMenu != null)
 			currentMenu.IsOpen = false;
@@ -48,25 +48,25 @@ public class MenuManager : MonoBehaviour
 	}
 
 	// Return to the last menu that was displayed, if there is one
-	public void returnToPreviousMenu()
+	public void ReturnToPreviousMenu()
 	{
 		if (prevMenu != null)
-			showMenu (prevMenu);
+			ShowMenu (prevMenu);
 	}
 
 	// Call up an error window and display error text in it.
-	public void displayError(string errorText)
+	public void DisplayError(string errorText)
 	{
 		if (errDisplay != null)
 		{
 			errDisplay.gameObject.SetActive (true);
-			errDisplay.displayError (errorText);
+			errDisplay.DisplayError (errorText);
 		}
 	}
 
 	// Create a yes/no prompt.
-	public void displayYNPrompt(string desc, UnityAction accept, UnityAction decline)
+	public void DisplayYNPrompt(string desc, UnityAction accept, UnityAction decline)
 	{
-		Prompt.create (GetComponent<RectTransform> (), desc, new Prompt.Option ("Yes", accept), new Prompt.Option ("No", decline));
+		Prompt.Create (GetComponent<RectTransform> (), desc, new Prompt.Option ("Yes", accept), new Prompt.Option ("No", decline));
 	}
 }

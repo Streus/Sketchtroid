@@ -33,38 +33,38 @@ public class GameTypeSelector : MonoBehaviour
 	{
 		animator = GetComponent<Animator> ();
 
-		selectInfinite.onClick.AddListener (toggleInfMenu);
-		selectCampaign.onClick.AddListener (toggleCamMenu);
+		selectInfinite.onClick.AddListener (ToggleInfMenu);
+		selectCampaign.onClick.AddListener (ToggleCamMenu);
 
 		//TODO infinite mode options func
 
-		camGameName.onValueChanged.AddListener (camChangedGameName);
-		camDifficulty.valueChanged += camChangedDifficulty;
-		camStartGame.onClick.AddListener (startCampaign);
+		camGameName.onValueChanged.AddListener (CamChangedGameName);
+		camDifficulty.valueChanged += CamChangedDifficulty;
+		camStartGame.onClick.AddListener (StartCampaign);
 	}
 
-	private void toggleInfMenu()
+	private void ToggleInfMenu()
 	{
 		animator.SetBool ("InInfMenu", !animator.GetBool ("InInfMenu"));
 	}
 
-	private void toggleCamMenu()
+	private void ToggleCamMenu()
 	{
 		animator.SetBool ("InCamMenu", !animator.GetBool ("InCamMenu"));
 	}
 
-	private void camChangedGameName(string s)
+	private void CamChangedGameName(string s)
 	{
 		GameManager.instance.setGameName (s);
 	}
 
-	private void camChangedDifficulty (Difficulty d)
+	private void CamChangedDifficulty (Difficulty d)
 	{
 		GameManager.instance.difficulty = d;
 	}
 
-	private void startCampaign()
+	private void StartCampaign()
 	{
-		SceneStateManager.getInstance().jumpTo("test1"); //DEBUG change debug starting room
+		SceneStateManager.GetInstance().JumpTo("test1"); //DEBUG change debug starting room
 	}
 }

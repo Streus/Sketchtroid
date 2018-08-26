@@ -9,23 +9,29 @@ using AI;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Controller : MonoBehaviour
 {
-	/* Static Vars */
+	#region STATIC_VARS
+
+	#endregion
 
 
-	/* Instance Vars */
+	#region INSTANCE_VARS
+
 	protected Entity self;
-	public Entity data { get { return self; } }
+	public Entity Data { get { return self; } }
 	protected Animator anim;
 	protected Rigidbody2D physbody;
 
 	// The initial state of this controller
 	[SerializeField]
 	private State activeState;
+	#endregion
 
-	/* Static Methods */
+	#region STATIC_METHODS
+
+	#endregion
 
 
-	/* Instance Methods */
+	#region INSTANCE_METHODS
 	public virtual void Awake()
 	{
 		self = GetComponent<Entity> ();
@@ -33,19 +39,19 @@ public class Controller : MonoBehaviour
 		physbody = GetComponent<Rigidbody2D> ();
 	}
 
-	public void setPause(bool pause)
+	public void SetPause(bool pause)
 	{
 		self.enabled = physbody.simulated = pause;
 	}
 
-	protected bool isUpdating()
+	protected bool IsUpdating()
 	{
-		return physbody.simulated && !self.isStunned () && !self.frozen();
+		return physbody.simulated && !self.Stunned && !self.Frozen;
 	}
 
 	public virtual void Update()
 	{
-		if (!isUpdating())
+		if (!IsUpdating())
 			return;
 
 		// Call currently active behavior
@@ -55,52 +61,51 @@ public class Controller : MonoBehaviour
 
 	public virtual void FixedUpdate()
 	{
-		if (!isUpdating())
+		if (!IsUpdating())
 			return;
 		
 			//TODO manage movement ?
 	}
 
-	public void setState(State state)
+	public void SetState(State state)
 	{
 		activeState.exit (this);
 		activeState = state;
 		activeState.enter (this);
 	}
 
-	protected void facePoint(Vector2 point)
+	protected void FacePoint(Vector2 point)
 	{
 		Quaternion rot = Quaternion.LookRotation (transform.position - new Vector3(point.x, point.y, -100f), Vector3.forward);
 		transform.rotation = rot;
 		transform.eulerAngles = new Vector3 (0f, 0f, transform.eulerAngles.z);
 	}
 
-	protected void faceTarget(Transform target)
+	protected void FaceTarget(Transform target)
 	{
 		if (transform != null)
-			facePoint (transform.position);
+			FacePoint (transform.position);
 	}
 
-	protected void faceTargetLeading(Transform target, float bulletSpeed)
+	protected void FaceTargetLeading(Transform target, float bulletSpeed)
 	{
 		Rigidbody2D body = target.GetComponent<Rigidbody2D> ();
 		if (body == null)
 			throw new ArgumentException ("Tried to lead a velocity-less target.");
 
 		float stepsToCollision = Vector2.Distance (transform.position, target.position);
-		facePoint ((Vector2)target.position + (body.velocity * stepsToCollision));
+		FacePoint ((Vector2)target.position + (body.velocity * stepsToCollision));
 	}
 
 	// Attempt to use the ability at the given index
-	protected bool useAbility(int index, Vector2 targetPos, params object[] args)
+	protected bool UseAbility(int index, Vector2 targetPos, params object[] args)
 	{
 		try
 		{
-			return self.getAbility (index).use (self, targetPos, args);
+			return self.GetAbility (index).Use (self, targetPos, args);
 		}
-		#pragma warning disable 0168
-		catch(NullReferenceException e) { return false; }
-		catch(IndexOutOfRangeException e) { return false; }
-		#pragma warning restore 0168
+		catch(NullReferenceException) { return false; }
+		catch(IndexOutOfRangeException) { return false; }
 	}
+	#endregion
 }
